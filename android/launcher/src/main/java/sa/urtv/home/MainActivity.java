@@ -120,7 +120,6 @@ public class MainActivity extends Activity {
     private View gridShade;
     private String[] wallpapers = new String[0];
     private int wallIndex = -1;
-    private long wallChangedAt;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Runnable rotateWallpaper = this::nextWallpaper;
     static final long WALLPAPER_INTERVAL_MS = 10 * 60 * 1000;
@@ -428,7 +427,7 @@ public class MainActivity extends Activity {
         super.onStart();
         shown = true;
         SaverSettingsCopy.refreshSoon(this);   // 4.4: the copy of the screensaver's settings kept fresh, at most every 30 min, on a thread
-        if (wallTrimmed) { wallTrimmed = false; nextWallpaper(); }
+        if (wallTrimmed) { wallTrimmed = false; returnWallpaper(); }
     }
 
     @Override
@@ -502,10 +501,11 @@ public class MainActivity extends Activity {
             firstShow = false;
             if (appsShown) playEntrance(); else entranceDue = true;
         }
-        // New photo on return if the current one has been up for the full interval.
-        if (wallTrimmed || wallIndex < 0 || SystemClock.elapsedRealtime() - wallChangedAt >= WALLPAPER_INTERVAL_MS) { wallTrimmed = false; nextWallpaper(); }
+        // New photo on return only if the current one has been up for the full interval (WallTurn: the wall clock kept in the prefs); a photo let go
+        // (a trim) or a home started again shows the one it left
+        if (wallTrimmed || wallIndex < 0 || WallTurn.due(prefs().getLong("wallpaperAt", 0), System.currentTimeMillis(), WALLPAPER_INTERVAL_MS)) { wallTrimmed = false; returnWallpaper(); }
         else {
-            scheduleWallpaper(WALLPAPER_INTERVAL_MS - (SystemClock.elapsedRealtime() - wallChangedAt));
+            scheduleWallpaper(WallTurn.left(prefs().getLong("wallpaperAt", 0), System.currentTimeMillis(), WALLPAPER_INTERVAL_MS));
             checkOwnChanged();   // the owner added or removed photos while another app was in front
         }
     }
@@ -5060,11 +5060,28 @@ public class MainActivity extends Activity {
         }).start();
     }
 
-    /** Decode the next photo off the main thread, then crossfade it in over the current one. */
+    private boolean wallStay;   // 4.4 beta 4: the next nextWallpaper() shows the photo it showed (returnWallpaper), not the next one
+
+    /**
+     * 4.4 beta 4 (Xiaomi A14: a new photo at every return to the home): the return's photo. The next one only when the interval is up (WallTurn),
+     * else the one shown before (decoded again when it was let go), and the timer keeps the rest of its interval.
+     */
+    private void returnWallpaper() {
+        long at = prefs().getLong("wallpaperAt", 0), now = System.currentTimeMillis();
+        if (WallTurn.due(at, now, WALLPAPER_INTERVAL_MS)) { nextWallpaper(); return; }
+        wallStay = true;
+        nextWallpaper();
+        scheduleWallpaper(WallTurn.left(at, now, WALLPAPER_INTERVAL_MS));
+    }
+
+    /** Decode the next photo off the main thread, then crossfade it in over the current one (the same one again after returnWallpaper). */
     private void nextWallpaper() {
+        final boolean stay = wallStay;
+        wallStay = false;
         handler.removeCallbacks(rotateWallpaper);
         if (scenesOn) return;   // 4.3.3 «الآفاق»: no ordinary photo is decoded while the scene home shows
         if (wallpapers.length == 0) return;
+        if (!stay) prefs().edit().putLong("wallpaperAt", System.currentTimeMillis()).apply();   // the interval starts now (on this thread: the return's check sees it at once)
         final int gen = ++wallGen;   // a photo that arrives after a newer request is not shown
         new Thread(() -> {
             // 4.3.1 hotfix: what is on the device (the screensaver app's provider, the disk) is read HERE, off the main thread: a dead screensaver process cold-starts for the first query and used to block the home's return
@@ -5082,9 +5099,10 @@ public class MainActivity extends Activity {
             final int packBase = base + ownCount;
             final int total = only ? ownCount : packBase + packSum;
             if (wallIndex < 0) wallIndex = prefs().getInt("wallpaper", -1);
-            wallIndex = (wallIndex + 1) % (total * 4096);   // a counter: the position inside a round, and the round
-            prefs().edit().putInt("wallpaper", wallIndex).apply();
-            wallChangedAt = SystemClock.elapsedRealtime();
+            if (!stay || wallIndex < 0) {   // the next one; a return within the interval keeps its own (wallIndex % total below: the same photo)
+                wallIndex = (wallIndex + 1) % (total * 4096);   // a counter: the position inside a round, and the round
+                prefs().edit().putInt("wallpaper", wallIndex).apply();
+            } else wallIndex %= total * 4096;
             final int idx = only ? wallIndex % total : WallShuffle.of(total, wallIndex / total)[wallIndex % total];
             final String fallback = "wallpapers/" + wallpapers[idx % wallpapers.length];
             // 1. what is on the device now, at once: the owner's photo, the hosted one already kept, else the bundled one
