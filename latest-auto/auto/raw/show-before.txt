@@ -1,4 +1,4 @@
-version: 4.4 (build 8)
+version: 4.4 (build 9)
 city: الرياض (24.6877, 46.7219)
 timezone: Asia/Riyadh
 country: SA
@@ -75,6 +75,7 @@ searchpill: off
 prayermethod: auto
 prayeradj: off fajr=0 dhuhr=0 asr=0 maghrib=0 isha=0
 hijrioffset: 0
+hijriline: on
 minrating: 7
 photos: 30 (30s needs 2 GB; 1477 MB here)
 digits: hindi
