@@ -1,7 +1,7 @@
 {
  "$schema": "https://json-schema.org/draft/2020-12/schema",
  "$id": "https://tshi-dev.github.io/UrTV/doctor/doctor-report-1.schema.json",
- "title": "urtv-doctor/1: one report of «فحص تلفزيونك» (docs/doctor/PLAN.md, section 4). Draft for the owner's review: phase 2 builds against it.",
+ "title": "urtv-doctor/1: one report of «فحص تلفزيونك» (docs/doctor/PLAN.md, section 8). Draft for the owner's review; phase 2 builds against it.",
  "type": "object",
  "additionalProperties": false,
  "required": [
@@ -12,6 +12,7 @@
   "tv",
   "urtv",
   "checks",
+  "home_cause",
   "consent",
   "hash"
  ],
@@ -37,9 +38,8 @@
     },
     "channel": {
      "enum": [
-      "latest",
-      "beta",
-      "next"
+      "doctor-latest",
+      "doctor-beta"
      ]
     }
    },
@@ -187,7 +187,7 @@
   },
   "checks": {
    "type": "array",
-   "maxItems": 32,
+   "maxItems": 40,
    "items": {
     "type": "object",
     "additionalProperties": false,
@@ -203,22 +203,36 @@
        "D1",
        "D2",
        "D3",
-       "D4",
-       "D5",
-       "D6",
        "H1",
        "H2",
        "H3",
        "H4",
        "H5",
        "H6",
+       "H7",
+       "H8",
+       "S1",
+       "S2",
+       "S3",
+       "S4",
+       "S5",
+       "S6",
+       "S7",
+       "S8",
        "K1",
        "K2",
+       "K3",
+       "K4",
+       "K5",
        "N1",
        "N2",
+       "N3",
        "T1",
        "Q1",
-       "W1",
+       "A1",
+       "P1",
+       "V1",
+       "U1",
        "C1"
       ]
      },
@@ -468,7 +482,457 @@
       "if": {
        "properties": {
         "id": {
-         "const": "D4"
+         "const": "H1"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "default": {
+             "anyOf": [
+              {
+               "$ref": "#/$defs/tok"
+              },
+              {
+               "type": "null"
+              }
+             ]
+            },
+            "candidates": {
+             "type": "array",
+             "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+               "pkg": {
+                "$ref": "#/$defs/tok"
+               },
+               "system": {
+                "type": "boolean"
+               },
+               "enabled": {
+                "type": "boolean"
+               },
+               "priority": {
+                "type": [
+                 "integer",
+                 "null"
+                ],
+                "minimum": -1000000000,
+                "maximum": 1000000000
+               },
+               "kind": {
+                "enum": [
+                 "ours",
+                 "stock",
+                 "wizard",
+                 "operator",
+                 "other"
+                ]
+               }
+              },
+              "required": [
+               "pkg",
+               "system",
+               "enabled",
+               "priority",
+               "kind"
+              ]
+             },
+             "maxItems": 12
+            }
+           },
+           "required": [
+            "default",
+            "candidates"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "H2"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "role_available": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            },
+            "request_screen": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            },
+            "role_ours": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            }
+           },
+           "required": [
+            "role_available",
+            "request_screen",
+            "role_ours"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "H3"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "wizard": {
+             "anyOf": [
+              {
+               "$ref": "#/$defs/tok"
+              },
+              {
+               "type": "null"
+              }
+             ]
+            },
+            "wizard_enabled": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            },
+            "wizard_home": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            },
+            "provisioned": {
+             "type": [
+              "integer",
+              "null"
+             ],
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "setup_complete": {
+             "type": [
+              "integer",
+              "null"
+             ],
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "cast_device": {
+             "type": "boolean"
+            }
+           },
+           "required": [
+            "wizard",
+            "wizard_enabled",
+            "wizard_home",
+            "provisioned",
+            "setup_complete",
+            "cast_device"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "H4"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "stock": {
+             "type": "array",
+             "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+               "pkg": {
+                "$ref": "#/$defs/tok"
+               },
+               "enabled": {
+                "type": "boolean"
+               },
+               "ours_off": {
+                "type": [
+                 "boolean",
+                 "null"
+                ]
+               },
+               "on_at_boot": {
+                "type": [
+                 "integer",
+                 "null"
+                ],
+                "minimum": 0,
+                "maximum": 1000000000
+               }
+              },
+              "required": [
+               "pkg",
+               "enabled",
+               "ours_off",
+               "on_at_boot"
+              ]
+             },
+             "maxItems": 6
+            }
+           },
+           "required": [
+            "stock"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "H5"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "operator": {
+             "type": "array",
+             "items": {
+              "$ref": "#/$defs/tok"
+             },
+             "maxItems": 4
+            },
+            "other": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            }
+           },
+           "required": [
+            "operator",
+            "other"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "H6"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "home_settings": {
+             "type": "boolean"
+            },
+            "default_apps": {
+             "type": "boolean"
+            }
+           },
+           "required": [
+            "home_settings",
+            "default_apps"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "H7"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "pressed": {
+             "enum": [
+              "got",
+              "left",
+              "missing",
+              "stuck",
+              "skipped",
+              "none"
+             ]
+            },
+            "reached_ours": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            },
+            "caught_by_addon": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            }
+           },
+           "required": [
+            "pressed",
+            "reached_ours",
+            "caught_by_addon"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "H8"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "boots": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "ok": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "last_ok": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            }
+           },
+           "required": [
+            "boots",
+            "ok",
+            "last_ok"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "S1"
         }
        }
       },
@@ -490,6 +954,11 @@
              "minimum": 0,
              "maximum": 1000000000
             },
+            "threshold_mb": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
             "low_ram": {
              "type": "boolean"
             },
@@ -498,22 +967,6 @@
             },
             "mem_class": {
              "type": "integer",
-             "minimum": 0,
-             "maximum": 1000000000
-            },
-            "cores": {
-             "type": "integer",
-             "minimum": 0,
-             "maximum": 1000000000
-            },
-            "abi64": {
-             "type": "boolean"
-            },
-            "max_mhz": {
-             "type": [
-              "integer",
-              "null"
-             ],
              "minimum": 0,
              "maximum": 1000000000
             },
@@ -548,12 +1001,10 @@
            "required": [
             "total_mb",
             "avail_mb",
+            "threshold_mb",
             "low_ram",
             "low_now",
             "mem_class",
-            "cores",
-            "abi64",
-            "max_mhz",
             "tier",
             "lite",
             "lite_auto"
@@ -571,7 +1022,109 @@
       "if": {
        "properties": {
         "id": {
-         "const": "D5"
+         "const": "S2"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "cores": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "abi64": {
+             "type": "boolean"
+            },
+            "max_mhz": {
+             "type": [
+              "integer",
+              "null"
+             ],
+             "minimum": 0,
+             "maximum": 1000000000
+            }
+           },
+           "required": [
+            "cores",
+            "abi64",
+            "max_mhz"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "S3"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "doctor_procs": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "home_alive": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            },
+            "saver_alive": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            },
+            "extras_alive": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            }
+           },
+           "required": [
+            "doctor_procs",
+            "home_alive",
+            "saver_alive",
+            "extras_alive"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "S4"
         }
        }
       },
@@ -611,7 +1164,7 @@
       "if": {
        "properties": {
         "id": {
-         "const": "D6"
+         "const": "S5"
         }
        }
       },
@@ -623,40 +1176,17 @@
            "type": "object",
            "additionalProperties": false,
            "properties": {
-            "asked": {
-             "enum": [
-              "yes",
-              "no"
-             ]
-            },
-            "removable": {
-             "type": "integer",
-             "minimum": 0,
-             "maximum": 1000000000
-            },
-            "mounted": {
-             "type": "integer",
-             "minimum": 0,
-             "maximum": 1000000000
-            },
-            "unmountable": {
-             "type": "integer",
-             "minimum": 0,
-             "maximum": 1000000000
-            },
-            "readable": {
+            "thermal": {
              "type": [
-              "boolean",
+              "integer",
               "null"
-             ]
+             ],
+             "minimum": 0,
+             "maximum": 1000000000
             }
            },
            "required": [
-            "asked",
-            "removable",
-            "mounted",
-            "unmountable",
-            "readable"
+            "thermal"
            ]
           },
           {
@@ -671,7 +1201,7 @@
       "if": {
        "properties": {
         "id": {
-         "const": "H1"
+         "const": "S6"
         }
        }
       },
@@ -683,33 +1213,16 @@
            "type": "object",
            "additionalProperties": false,
            "properties": {
-            "home": {
-             "anyOf": [
-              {
-               "$ref": "#/$defs/tok"
-              },
-              {
-               "type": "null"
-              }
-             ]
-            },
-            "ours": {
-             "type": "boolean"
-            },
-            "role": {
-             "type": [
-              "boolean",
-              "null"
-             ]
-            },
-            "others": {
+            "warm_ms": {
              "type": "array",
              "items": {
-              "$ref": "#/$defs/tok"
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
              },
-             "maxItems": 6
+             "maxItems": 3
             },
-            "provisioned": {
+            "cold_ms": {
              "type": [
               "integer",
               "null"
@@ -717,26 +1230,17 @@
              "minimum": 0,
              "maximum": 1000000000
             },
-            "setup_complete": {
+            "slow_first_frame": {
              "type": [
-              "integer",
+              "boolean",
               "null"
-             ],
-             "minimum": 0,
-             "maximum": 1000000000
-            },
-            "wizard_home": {
-             "type": "boolean"
+             ]
             }
            },
            "required": [
-            "home",
-            "ours",
-            "role",
-            "others",
-            "provisioned",
-            "setup_complete",
-            "wizard_home"
+            "warm_ms",
+            "cold_ms",
+            "slow_first_frame"
            ]
           },
           {
@@ -751,7 +1255,7 @@
       "if": {
        "properties": {
         "id": {
-         "const": "H2"
+         "const": "S7"
         }
        }
       },
@@ -763,43 +1267,32 @@
            "type": "object",
            "additionalProperties": false,
            "properties": {
-            "boots": {
+            "frames": {
              "type": "integer",
              "minimum": 0,
              "maximum": 1000000000
             },
-            "ok": {
+            "jank_pct": {
              "type": "integer",
              "minimum": 0,
              "maximum": 1000000000
             },
-            "last_ok": {
-             "type": [
-              "boolean",
-              "null"
-             ]
-            },
-            "home_fails": {
-             "type": [
-              "integer",
-              "null"
-             ],
+            "refresh_hz": {
+             "type": "integer",
              "minimum": 0,
              "maximum": 1000000000
             },
-            "crash_loop": {
-             "type": [
-              "boolean",
-              "null"
-             ]
+            "p90_ms": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
             }
            },
            "required": [
-            "boots",
-            "ok",
-            "last_ok",
-            "home_fails",
-            "crash_loop"
+            "frames",
+            "jank_pct",
+            "refresh_hz",
+            "p90_ms"
            ]
           },
           {
@@ -814,7 +1307,7 @@
       "if": {
        "properties": {
         "id": {
-         "const": "H3"
+         "const": "S8"
         }
        }
       },
@@ -826,273 +1319,29 @@
            "type": "object",
            "additionalProperties": false,
            "properties": {
-            "apps": {
-             "type": "array",
-             "items": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-               "pkg": {
-                "enum": [
-                 "sa.urtv.home",
-                 "sa.urtv.screensaver",
-                 "sa.urtv.extras",
-                 "sa.urtv.rescue",
-                 "sa.urtv.doctor"
-                ]
-               },
-               "version": {
-                "$ref": "#/$defs/tok"
-               },
-               "build": {
-                "type": "integer",
-                "minimum": 0,
-                "maximum": 1000000000
-               },
-               "enabled": {
-                "type": "boolean"
-               },
-               "ours": {
-                "type": "boolean"
-               }
-              },
-              "required": [
-               "pkg",
-               "version",
-               "build",
-               "enabled",
-               "ours"
-              ]
-             },
-             "maxItems": 5
-            },
-            "newest": {
+            "animator": {
              "type": [
-              "integer",
-              "null"
-             ],
-             "minimum": 0,
-             "maximum": 1000000000
-            },
-            "mismatch": {
-             "enum": [
-              "SAME",
-              "SAVER_OLDER",
-              "HOME_OLDER",
-              "NONE"
-             ]
-            }
-           },
-           "required": [
-            "apps",
-            "newest",
-            "mismatch"
-           ]
-          },
-          {
-           "type": "null"
-          }
-         ]
-        }
-       }
-      }
-     },
-     {
-      "if": {
-       "properties": {
-        "id": {
-         "const": "H4"
-        }
-       }
-      },
-      "then": {
-       "properties": {
-        "raw": {
-         "anyOf": [
-          {
-           "type": "object",
-           "additionalProperties": false,
-           "properties": {
-            "on": {
-             "type": "boolean"
-            },
-            "ours": {
-             "type": "array",
-             "items": {
-              "$ref": "#/$defs/tok"
-             },
-             "maxItems": 4
-            },
-            "others": {
-             "type": "integer",
-             "minimum": 0,
-             "maximum": 1000000000
-            },
-            "others_filter_keys": {
-             "type": "integer",
-             "minimum": 0,
-             "maximum": 1000000000
-            },
-            "ours_lost": {
-             "type": [
-              "boolean",
+              "number",
               "null"
              ]
             },
-            "home_key_catch": {
+            "transition": {
              "type": [
-              "boolean",
+              "number",
+              "null"
+             ]
+            },
+            "window": {
+             "type": [
+              "number",
               "null"
              ]
             }
            },
            "required": [
-            "on",
-            "ours",
-            "others",
-            "others_filter_keys",
-            "ours_lost",
-            "home_key_catch"
-           ]
-          },
-          {
-           "type": "null"
-          }
-         ]
-        }
-       }
-      }
-     },
-     {
-      "if": {
-       "properties": {
-        "id": {
-         "const": "H5"
-        }
-       }
-      },
-      "then": {
-       "properties": {
-        "raw": {
-         "anyOf": [
-          {
-           "type": "object",
-           "additionalProperties": false,
-           "properties": {
-            "checked": {
-             "type": "integer",
-             "minimum": 0,
-             "maximum": 1000000000
-            },
-            "visible": {
-             "type": "integer",
-             "minimum": 0,
-             "maximum": 1000000000
-            },
-            "off_ours": {
-             "type": "array",
-             "items": {
-              "$ref": "#/$defs/tok"
-             },
-             "maxItems": 10
-            },
-            "off_tv": {
-             "type": "integer",
-             "minimum": 0,
-             "maximum": 1000000000
-            },
-            "off_unknown": {
-             "type": "array",
-             "items": {
-              "$ref": "#/$defs/tok"
-             },
-             "maxItems": 10
-            },
-            "recognizer": {
-             "type": "boolean"
-            },
-            "speech_activity": {
-             "type": "boolean"
-            }
-           },
-           "required": [
-            "checked",
-            "visible",
-            "off_ours",
-            "off_tv",
-            "off_unknown",
-            "recognizer",
-            "speech_activity"
-           ]
-          },
-          {
-           "type": "null"
-          }
-         ]
-        }
-       }
-      }
-     },
-     {
-      "if": {
-       "properties": {
-        "id": {
-         "const": "H6"
-        }
-       }
-      },
-      "then": {
-       "properties": {
-        "raw": {
-         "anyOf": [
-          {
-           "type": "object",
-           "additionalProperties": false,
-           "properties": {
-            "timeout_ms": {
-             "type": [
-              "integer",
-              "null"
-             ],
-             "minimum": -1000000000,
-             "maximum": 1000000000
-            },
-            "enabled": {
-             "type": [
-              "integer",
-              "null"
-             ],
-             "minimum": 0,
-             "maximum": 1000000000
-            },
-            "ours_chosen": {
-             "type": [
-              "boolean",
-              "null"
-             ]
-            },
-            "readable": {
-             "type": "boolean"
-            },
-            "idle_set_ms": {
-             "type": [
-              "integer",
-              "null"
-             ],
-             "minimum": 0,
-             "maximum": 1000000000
-            },
-            "dream_installed": {
-             "type": "boolean"
-            }
-           },
-           "required": [
-            "timeout_ms",
-            "enabled",
-            "ours_chosen",
-            "readable",
-            "idle_set_ms",
-            "dream_installed"
+            "animator",
+            "transition",
+            "window"
            ]
           },
           {
@@ -1119,118 +1368,160 @@
            "type": "object",
            "additionalProperties": false,
            "properties": {
-            "up": {
-             "enum": [
-              "got",
+            "keys": {
+             "type": "object",
+             "additionalProperties": false,
+             "properties": {
+              "up": {
+               "enum": [
+                "got",
+                "left",
+                "missing",
+                "stuck",
+                "skipped",
+                "none"
+               ]
+              },
+              "down": {
+               "enum": [
+                "got",
+                "left",
+                "missing",
+                "stuck",
+                "skipped",
+                "none"
+               ]
+              },
+              "left": {
+               "enum": [
+                "got",
+                "left",
+                "missing",
+                "stuck",
+                "skipped",
+                "none"
+               ]
+              },
+              "right": {
+               "enum": [
+                "got",
+                "left",
+                "missing",
+                "stuck",
+                "skipped",
+                "none"
+               ]
+              },
+              "ok": {
+               "enum": [
+                "got",
+                "left",
+                "missing",
+                "stuck",
+                "skipped",
+                "none"
+               ]
+              },
+              "back": {
+               "enum": [
+                "got",
+                "left",
+                "missing",
+                "stuck",
+                "skipped",
+                "none"
+               ]
+              },
+              "home": {
+               "enum": [
+                "got",
+                "left",
+                "missing",
+                "stuck",
+                "skipped",
+                "none"
+               ]
+              },
+              "color": {
+               "enum": [
+                "got",
+                "left",
+                "missing",
+                "stuck",
+                "skipped",
+                "none"
+               ]
+              },
+              "app": {
+               "enum": [
+                "got",
+                "left",
+                "missing",
+                "stuck",
+                "skipped",
+                "none"
+               ]
+              },
+              "settings": {
+               "enum": [
+                "got",
+                "left",
+                "missing",
+                "stuck",
+                "skipped",
+                "none"
+               ]
+              },
+              "voice": {
+               "enum": [
+                "got",
+                "left",
+                "missing",
+                "stuck",
+                "skipped",
+                "none"
+               ]
+              }
+             },
+             "required": [
+              "up",
+              "down",
               "left",
-              "missing",
-              "skipped",
-              "none"
+              "right",
+              "ok",
+              "back",
+              "home",
+              "color",
+              "app",
+              "settings",
+              "voice"
              ]
             },
-            "down": {
-             "enum": [
-              "got",
-              "left",
-              "missing",
-              "skipped",
-              "none"
-             ]
+            "latency_ms": {
+             "type": "array",
+             "items": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+             },
+             "maxItems": 40
             },
-            "left": {
-             "enum": [
-              "got",
-              "left",
-              "missing",
-              "skipped",
-              "none"
-             ]
+            "stuck": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
             },
-            "right": {
-             "enum": [
-              "got",
-              "left",
-              "missing",
-              "skipped",
-              "none"
-             ]
-            },
-            "ok": {
-             "enum": [
-              "got",
-              "left",
-              "missing",
-              "skipped",
-              "none"
-             ]
-            },
-            "back": {
-             "enum": [
-              "got",
-              "left",
-              "missing",
-              "skipped",
-              "none"
-             ]
-            },
-            "home": {
-             "enum": [
-              "got",
-              "left",
-              "missing",
-              "skipped",
-              "none"
-             ]
-            },
-            "color": {
-             "enum": [
-              "got",
-              "left",
-              "missing",
-              "skipped",
-              "none"
-             ]
-            },
-            "app": {
-             "enum": [
-              "got",
-              "left",
-              "missing",
-              "skipped",
-              "none"
-             ]
-            },
-            "settings": {
-             "enum": [
-              "got",
-              "left",
-              "missing",
-              "skipped",
-              "none"
-             ]
-            },
-            "voice": {
-             "enum": [
-              "got",
-              "left",
-              "missing",
-              "skipped",
-              "none"
-             ]
+            "repeated": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
             }
            },
            "required": [
-            "up",
-            "down",
-            "left",
-            "right",
-            "ok",
-            "back",
-            "home",
-            "color",
-            "app",
-            "settings",
-            "voice"
+            "keys",
+            "latency_ms",
+            "stuck",
+            "repeated"
            ]
           },
           {
@@ -1277,7 +1568,12 @@
              "minimum": 0,
              "maximum": 1000000000
             },
-            "repeats": {
+            "moves": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "unanswered": {
              "type": "integer",
              "minimum": 0,
              "maximum": 1000000000
@@ -1288,7 +1584,164 @@
             "median_ms",
             "worst_ms",
             "frame_ms",
-            "repeats"
+            "moves",
+            "unanswered"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "K3"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "name": {
+             "anyOf": [
+              {
+               "$ref": "#/$defs/tok"
+              },
+              {
+               "type": "null"
+              }
+             ]
+            },
+            "vendor": {
+             "type": [
+              "integer",
+              "null"
+             ],
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "product": {
+             "type": [
+              "integer",
+              "null"
+             ],
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "external": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            }
+           },
+           "required": [
+            "name",
+            "vendor",
+            "product",
+            "external"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "K4"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "ours": {
+             "type": "array",
+             "items": {
+              "$ref": "#/$defs/tok"
+             },
+             "maxItems": 4
+            },
+            "others": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "others_filter_keys": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "ours_lost": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            }
+           },
+           "required": [
+            "ours",
+            "others",
+            "others_filter_keys",
+            "ours_lost"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "K5"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "cec": {
+             "type": [
+              "integer",
+              "null"
+             ],
+             "minimum": 0,
+             "maximum": 1000000000
+            }
+           },
+           "required": [
+            "cec"
            ]
           },
           {
@@ -1326,31 +1779,19 @@
             "validated": {
              "type": "boolean"
             },
-            "captive": {
-             "type": "boolean"
-            },
-            "private_dns": {
+            "rssi": {
              "type": [
-              "boolean",
+              "integer",
               "null"
-             ]
-            },
-            "probe": {
-             "enum": [
-              "204",
-              "200",
-              "30x",
-              "fail",
-              "skipped"
-             ]
+             ],
+             "minimum": -1000000000,
+             "maximum": 1000000000
             }
            },
            "required": [
             "transport",
             "validated",
-            "captive",
-            "private_dns",
-            "probe"
+            "rssi"
            ]
           },
           {
@@ -1366,6 +1807,48 @@
        "properties": {
         "id": {
          "const": "N2"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "captive": {
+             "type": "boolean"
+            },
+            "probe": {
+             "enum": [
+              "204",
+              "200",
+              "30x",
+              "fail",
+              "skipped"
+             ]
+            }
+           },
+           "required": [
+            "captive",
+            "probe"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "N3"
         }
        }
       },
@@ -1433,10 +1916,19 @@
               ]
              },
              "maxItems": 16
+            },
+            "speed_kbs": {
+             "type": [
+              "integer",
+              "null"
+             ],
+             "minimum": 0,
+             "maximum": 1000000000
             }
            },
            "required": [
-            "hosts"
+            "hosts",
+            "speed_kbs"
            ]
           },
           {
@@ -1640,7 +2132,7 @@
       "if": {
        "properties": {
         "id": {
-         "const": "W1"
+         "const": "A1"
         }
        }
       },
@@ -1652,16 +2144,47 @@
            "type": "object",
            "additionalProperties": false,
            "properties": {
-            "warm_ms": {
+            "apps": {
              "type": "array",
              "items": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 1000000000
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+               "pkg": {
+                "enum": [
+                 "sa.urtv.home",
+                 "sa.urtv.screensaver",
+                 "sa.urtv.extras",
+                 "sa.urtv.rescue",
+                 "sa.urtv.doctor"
+                ]
+               },
+               "version": {
+                "$ref": "#/$defs/tok"
+               },
+               "build": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000000000
+               },
+               "enabled": {
+                "type": "boolean"
+               },
+               "ours": {
+                "type": "boolean"
+               }
+              },
+              "required": [
+               "pkg",
+               "version",
+               "build",
+               "enabled",
+               "ours"
+              ]
              },
-             "maxItems": 3
+             "maxItems": 5
             },
-            "cold_ms": {
+            "newest": {
              "type": [
               "integer",
               "null"
@@ -1669,7 +2192,81 @@
              "minimum": 0,
              "maximum": 1000000000
             },
-            "slow_first_frame": {
+            "mismatch": {
+             "enum": [
+              "SAME",
+              "SAVER_OLDER",
+              "HOME_OLDER",
+              "NONE"
+             ]
+            }
+           },
+           "required": [
+            "apps",
+            "newest",
+            "mismatch"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "P1"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "checked": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "visible": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "off_ours": {
+             "type": "array",
+             "items": {
+              "$ref": "#/$defs/tok"
+             },
+             "maxItems": 10
+            },
+            "off_tv": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "off_unknown": {
+             "type": "array",
+             "items": {
+              "$ref": "#/$defs/tok"
+             },
+             "maxItems": 10
+            },
+            "recognizer": {
+             "type": "boolean"
+            },
+            "speech_activity": {
+             "type": "boolean"
+            },
+            "accounts_pkgs_on": {
              "type": [
               "boolean",
               "null"
@@ -1677,9 +2274,144 @@
             }
            },
            "required": [
-            "warm_ms",
-            "cold_ms",
-            "slow_first_frame"
+            "checked",
+            "visible",
+            "off_ours",
+            "off_tv",
+            "off_unknown",
+            "recognizer",
+            "speech_activity",
+            "accounts_pkgs_on"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "V1"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "timeout_ms": {
+             "type": [
+              "integer",
+              "null"
+             ],
+             "minimum": -1000000000,
+             "maximum": 1000000000
+            },
+            "enabled": {
+             "type": [
+              "integer",
+              "null"
+             ],
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "ours_chosen": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            },
+            "readable": {
+             "type": "boolean"
+            },
+            "idle_set_ms": {
+             "type": [
+              "integer",
+              "null"
+             ],
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "dream_installed": {
+             "type": "boolean"
+            }
+           },
+           "required": [
+            "timeout_ms",
+            "enabled",
+            "ours_chosen",
+            "readable",
+            "idle_set_ms",
+            "dream_installed"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "U1"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "asked": {
+             "enum": [
+              "yes",
+              "no"
+             ]
+            },
+            "removable": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "mounted": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "unmountable": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "readable": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            }
+           },
+           "required": [
+            "asked",
+            "removable",
+            "mounted",
+            "unmountable",
+            "readable"
            ]
           },
           {
@@ -1772,29 +2504,42 @@
     ]
    }
   },
+  "home_cause": {
+   "enum": [
+    "not_installed",
+    "signed_other_key",
+    "not_provisioned",
+    "wizard_owns_home",
+    "cast_device_wizard",
+    "gtv_starts_launcherx",
+    "stock_reenabled_at_boot",
+    "operator_launcher",
+    "other_launcher",
+    "no_default",
+    "unknown_own_home",
+    "ok",
+    "unknown"
+   ]
+  },
   "consent": {
    "type": "object",
    "additionalProperties": false,
    "properties": {
-    "city": {
+    "send": {
      "type": "boolean"
     },
-    "note": {
+    "city": {
      "type": "boolean"
     }
    },
    "required": [
-    "city",
-    "note"
+    "send",
+    "city"
    ]
   },
   "city": {
    "type": "string",
    "pattern": "^[A-Za-z][A-Za-z .'-]{0,39}$"
-  },
-  "note": {
-   "type": "string",
-   "maxLength": 300
   },
   "hash": {
    "type": "string",

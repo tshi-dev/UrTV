@@ -1,38 +1,34 @@
 <!doctype html><html lang="ar"><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><style>
-.main{position:absolute;right:100px;top:56px;width:1130px}
-.sum{display:flex;gap:40px;font-size:28px;margin:12px 0 14px}
+.main{position:absolute;right:100px;top:60px;width:1140px}
+.sum{display:flex;gap:40px;font-size:27px;margin:14px 0 22px}
 .sum b{font-weight:700}
-.sec{font-size:22px;color:var(--faint);margin:10px 8px 6px}
-.row{min-height:68px;font-size:28px;margin-bottom:10px}
-.row.open{flex-direction:row;align-items:flex-start;padding:22px 32px 24px}
+.row{min-height:74px;font-size:29px;margin-bottom:11px}
+.row.open{align-items:flex-start;padding:22px 32px 24px}
 .row.open .body{flex:1}
 .row.open .t{font-size:34px;font-weight:700;display:flex}
-.row.open .d{font-size:25px;line-height:1.6;margin-top:8px}
-.row.open .do{font-size:25px;line-height:1.6;margin-top:10px;color:#111;font-weight:600}
+.row.open .tip{font-size:26px;line-height:1.6;margin-top:12px;color:#111}
+.row.open .tip b{color:#1d8a46}
 .row.open .mark{margin:6px 0}
-.row.open .fix{font-size:25px;line-height:1.6;margin-top:10px;color:#1d8a46;font-weight:600}
+.st.fix{color:var(--warn)}
 .side{position:absolute;left:110px;top:250px;width:520px}
-.date{font-size:23px;color:var(--faint);text-align:center;margin-top:8px}
+.sent{font-size:23px;color:var(--faint);text-align:center;margin-top:8px;line-height:1.6}
+.sent span{direction:ltr;display:inline-block;color:var(--dim)}
 </style></head><body>
 <div class="main"><h1>نتيجة الفحص</h1>
-<div class="sum"><span class="bad"><b>٢</b> فيها مشكلة</span><span class="warn"><b>٣</b> انتبه لها</span><span class="ok"><b>١٤</b> تمام</span></div>
-<div class="sec">فيها مشكلة</div>
-<div class="row open f"><span class="mark bad"></span><div class="body"><div class="t">زر السهم اللي فوق ما يوصل<span class="st bad">فيه مشكلة</span></div>
-<div class="d">ضغطت السهم اللي فوق وما وصلنا، والأزرار الثانية وصلت.</div>
-<div class="fix">نعرف هذي المشكلة، ولها حل في نسخة ٤٫٤٫١. حدّث تلفزيونك من الإعدادات ← حول والتحديث.</div></div></div>
-<div class="row"><span class="mark bad"></span>زر الرئيسية يفتح مساعد الإعداد<span class="st bad">فيه مشكلة</span></div>
-<div class="sec">انتبه لها</div>
-<div class="row"><span class="mark warn"></span>الريموت يتأخر شوي<span class="v">٠٫١٨ ثانية لكل ضغطة</span><span class="st warn">انتبه</span></div>
-<div class="row"><span class="mark warn"></span>إذاعة القرآن<span class="v">١١ من ١٣ محطة تشتغل</span><span class="st warn">انتبه</span></div>
-<div class="row"><span class="mark warn"></span>فيه تحديث لتطبيقاتنا<span class="st warn">انتبه</span></div>
-<div class="sec">تمام</div>
-<div class="row"><span class="mark ok"></span>متصفح التلفزيون حديث<span class="st ok">تمام</span></div>
-<div class="row"><span class="mark ok"></span>ساعة التلفزيون مضبوطة<span class="st ok">تمام</span></div>
+<div class="sum"><span class="bad"><b>٢</b> فيها مشكلة ووصلنا تقريرك</span><span class="warn"><b>١</b> انحلّت بتحديث</span><span class="ok"><b>٨</b> تمام</span></div>
+<div class="row open f"><span class="mark bad"></span><div class="body"><div class="t">الواي فاي<span class="st bad">فيه مشكلة ووصلنا تقريرك</span></div>
+<div class="tip"><b>الحل المقترح:</b> الواي فاي ضعيف عند التلفزيون. قرّب الراوتر، أو وصّل سلك إنترنت.</div></div></div>
+<div class="row"><span class="mark bad"></span>زر الرئيسية<span class="st bad">فيه مشكلة ووصلنا تقريرك</span></div>
+<div class="row"><span class="mark warn"></span>الريموت<span class="st fix">انحلّت في الإصدار ٤٫٤٫١، حدّث</span></div>
+<div class="row"><span class="mark ok"></span>السرعة والذاكرة<span class="st ok">تمام</span></div>
+<div class="row"><span class="mark ok"></span>ساعة التلفزيون<span class="st ok">تمام</span></div>
+<div class="row"><span class="mark ok"></span>إذاعة القرآن<span class="st ok">تمام</span></div>
+<div class="row"><span class="mark ok"></span>شاشة التوقف<span class="st ok">تمام</span></div>
 </div>
 <div class="side">
-<div class="btn">أرسل التقرير</div>
+<div class="btn">تحليل</div>
 <div class="btn">افحص مرة ثانية</div>
 <div class="btn">رجوع</div>
-<div class="date">اليوم الساعة ٨:٤٠ م</div>
+<div class="sent">أرسلنا التقرير، رقمه <span>D-7K3Q-X9AB</span></div>
 </div>
 </body></html>
