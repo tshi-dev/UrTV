@@ -215,6 +215,19 @@ def is_read_only(cmd):
     return True
 
 
+ROLE_SDK = 29   # `cmd role` (the HOME role) is Android 10 and newer; Android 9 answers «Can't find service: role» to every one
+
+
+def no_role_here(tv, line):
+    """True for a `cmd role …` line on a TV older than Android 10: it is not sent (4.4: an Android 9 setup printed an error for each)."""
+    if not line.startswith("cmd role "):
+        return False
+    if not hasattr(tv, "_sdk"):
+        got = tv.shell("getprop ro.build.version.sdk").strip()
+        tv._sdk = int(got) if got.isdigit() else None   # unknown: sent as before
+    return tv._sdk is not None and tv._sdk < ROLE_SDK
+
+
 def shell_line(args):
     """The command line to send for these arguments. One argument is a whole command, as written ('pm list packages'); several are
     words of one, each quoted so that one with a space or a ; stays one word on the TV (a path as Git Bash may have rewritten it
@@ -803,6 +816,9 @@ def main():
                 save_identity(first)
     elif a[0] == "--batch":
         for line in batch:
+            if no_role_here(tv, line):
+                print(f"$ {line}\n(not sent: no HOME role before Android 10)")
+                continue
             print(f"$ {line}\n{tv.shell(line).rstrip()}")
     elif a[0] == "--pull":
         tv.call("pull", tv_path(a[1]), a[2])
@@ -827,7 +843,7 @@ def main():
         tv.call("pull", "/sdcard/_shot.png", a[1])
         tv.shell("rm /sdcard/_shot.png")
         print(f"saved {a[1]}")
-    else:
+    elif not no_role_here(tv, shell_line(a)):   # a `cmd role` question before Android 10 answers nothing, as a TV with no holder
         print(tv.shell(shell_line(a)).rstrip())
     tv.close()
 
