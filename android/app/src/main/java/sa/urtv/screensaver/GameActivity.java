@@ -585,9 +585,11 @@ public abstract class GameActivity extends Activity {
         {   // how this game is played, in a word at the end corner (left of the «!»): the same quiet outlined tag as on the list's tile
             GameChips.Row ph = c.get("phones");
             int way = GameRegistry.needsPhones(id()) ? 2 : ph == null ? 0 : ph.picked == 1 ? 2 : 0;
-            TextView tag = centered(wayWord(way), 30, L.ink, true); tag.setSingleLine(true);
-            tag.setBackground(shape(L.tile, L.ink, 3, false));
-            root.addView(tag, atEnd(way == 2 ? 168 : 144, 48, c.hasHelp ? 168 : 96, 70));
+            if (ph == null) {   // a game with the row «كيف تلعبون؟» says it there, not twice (UI review)
+                TextView tag = centered(wayWord(way), 30, L.ink, true); tag.setSingleLine(true);
+                tag.setBackground(shape(L.tile, L.ink, 3, false));
+                root.addView(tag, atEnd(way == 2 ? 168 : 144, 48, c.hasHelp ? 168 : 96, 70));
+            }
         }
         phoneRows(c);
         java.util.List<Integer> vis = c.shown();
@@ -776,8 +778,6 @@ public abstract class GameActivity extends Activity {
         FrameLayout.LayoutParams qp = new FrameLayout.LayoutParams(-1, -1); qp.setMargins(px(14), px(14), px(14), px(14));
         qrBox.addView(new QuizActivity.QrView(this, QrCode.encode(phones.url + (en ? "?l=en" : ""))), qp);
         root.addView(qrBox, at(360, 360, 96, 250));
-        TextView how = text(S.t("ما فتح؟ اكتب هذا العنوان في متصفح الجوال"), 38, L.ink, false); how.setMaxLines(3);
-        root.addView(how, at(552, 130, 504, 250));
         {   // the address is what people type: under the QR, never wider than it (360), shrunk to fit, or on two lines broken before the last «/»
             String url = phones.url.replace("http://", "");   // Latin digits always, the code is the end of it
             int slash = url.lastIndexOf('/');
@@ -790,6 +790,8 @@ public abstract class GameActivity extends Activity {
             addrBox.addView(addr, new FrameLayout.LayoutParams(-1, -1));
             root.addView(addrBox, at(360, 130, 96, 630));
         }
+        TextView how = text(S.t("ما فتح؟ اكتب هذا العنوان في متصفح الجوال"), 28, L.ink, false); how.setMaxLines(2);   // right under the address it talks about
+        root.addView(how, at(360, 76, 96, 766));
         java.util.List<String> names = phones.room.names();
         for (int i = 0; i < names.size(); i++) {
             FrameLayout st = stamp(L.tile, L.ink, 6, false);
@@ -804,12 +806,12 @@ public abstract class GameActivity extends Activity {
         if (!way) lobbyBtn = 0;
         if (!can) {   // the count only while it is short
             TextView short1 = text(missing == 1 ? S.t("ناقص لاعب") : S.t("ناقص %s", num(missing)), 44, L.ink, true);
-            root.addView(short1, at(552, 72, 504, 410));   // in the middle column, clear of the name tiles at the end
+            root.addView(short1, at(552, 72, 504, 250));   // in the middle column, clear of the name tiles at the end
         }
         TextView go = button(S.t("ابدأ"), lobbyBtn == 0);
         if (!can) go.setAlpha(.55f);
         root.addView(go, at(640, 104, 96, 856));
         if (way) root.addView(button(S.t("نلعب بالريموت"), lobbyBtn == 1), at(480, 104, 96 + 640 + 24, 856));
-        hints(S.t("اختيار"), lobbyBtn == 1 ? S.t("نلعب بالريموت") : S.t("ابدأ"), S.t("رجوع"), S.t("الإعدادات"));
+        hints(S.t("اختيار"), lobbyBtn == 1 ? S.t("نلعب بالريموت") : S.t("ابدأ"), S.t("رجوع"), S.t("أغلق الغرفة"));   // Back closes the room (and returns to the setup): the footer says what happens, there is no button
     }
 }
