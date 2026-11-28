@@ -25,7 +25,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
    مثال للوكيل: optimize/music.sh adhan add FILE  (or `--fajr FILE`)
    مثال للوكيل: optimize/music.sh adhan
 —— أذاني من ملف [كل التلفزيون]
-   لا أمر موثّق بعد
+   إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
 —— الأذان لكل صلاة [كل التلفزيون]
    مثال للوكيل: optimize/music.sh adhan state <fajr|dhuhr|asr|maghrib|isha> <both|sound|screen|none>
    مثال للوكيل: optimize/music.sh adhan screen <prayer> on|off
