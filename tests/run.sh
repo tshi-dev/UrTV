@@ -449,6 +449,7 @@ python3 tests/tournaments_fixtures_test.py   # 4.3.1 the CI tool of «البطو
 python3 tests/vector_drawables_test.py   # Every vector drawable's pathData must be one the Android Gradle plugin's own vector parser reads (the release
 python3 tests/wall_first_frame_test.py   # Hotfix 4.3: the home never shows black on the way back (a user's Mi Box on 4.3: the cards on black for a few s
 python3 tests/wall_turn_test.py   # 4.4 beta 4: the home's photo moves on by the timer only
+python3 tests/wall_keep_test.py   # 4.4 beta 4: the return puts the kept photo back before its first frame
 python3 tests/your_tv_hub_test.py   # «تلفزيونك» (YourTvHubActivity): what opening the app shows: four windows (the markets, the matches, the games,
 python3 tests/rescue_code_test.py   # the rescue app's Downloader code: the same on the setup page and in docs/RESCUE.md
 python3 tests/run_list_test.py   # every test file is run by this script (CI runs nothing else)

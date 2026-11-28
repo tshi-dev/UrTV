@@ -428,7 +428,27 @@ public class MainActivity extends Activity {
         super.onStart();
         shown = true;
         SaverSettingsCopy.refreshSoon(this);   // 4.4: the copy of the screensaver's settings kept fresh, at most every 30 min, on a thread
-        if (wallTrimmed) { wallTrimmed = false; returnWallpaper(); }
+        if (wallTrimmed) { wallTrimmed = false; if (!showKept()) returnWallpaper(); }   // 4.4 beta 4: the photo kept through a light trim, back before the first frame (WallKeep)
+    }
+
+    /** the photo's own bitmap, kept through a light trim (WallKeep), and its key */
+    private Bitmap wallKept;
+    private String wallKeptKey;
+
+    /** 4.4 beta 4: puts the kept photo back as it was, at once (no stand-in, no fade); false when there is none or the return shows another */
+    private boolean showKept() {
+        long at = prefs().getLong("wallpaperAt", 0), now = System.currentTimeMillis();
+        Bitmap b = wallKept;
+        if (!WallKeep.reuse(b != null && !b.isRecycled() && wallKeptKey != null && wallFront != null, WallTurn.due(at, now, WALLPAPER_INTERVAL_MS), scenesOn)) return false;
+        wallFront.animate().cancel();
+        wallFront.setImageBitmap(b);
+        wallFront.setAlpha(1f);
+        wallShownKey = wallKeptKey;
+        fullPhotoShown = true;
+        if (photoGlass != null) photoGlass.show(b, wallKeptKey, NetGate.allowed(resumed, NetGateAndroid.displayOn(this)));
+        android.util.Log.i("UrTVHome", "trim: the kept photo is back at once");
+        scheduleWallpaper(WallTurn.left(at, now, WALLPAPER_INTERVAL_MS));
+        return true;
     }
 
     @Override
@@ -553,6 +573,7 @@ public class MainActivity extends Activity {
         homeCard.destroy();
         if (sideCards != null) sideCards.drop();   // review F121: «كنبة»'s side cards are a second page in memory: let go with the first (onResume makes it again)
         if (sceneHome != null) sceneHome.trim();   // the scene not showing lets its pictures go
+        if (!WallKeep.keep(level)) { wallKept = null; wallKeptKey = null; }   // 4.4 beta 4: the photo's bitmap stays through a light trim (WallKeep), for an instant return
         thinWallpaper();   // the photos go, one tiny stand-in stays so the way back is not black until the next photo decodes
         wallTrimmed = true;
         firstWallpaper = true;   // the short fade when it comes back
@@ -5181,6 +5202,7 @@ public class MainActivity extends Activity {
     private void showWallpaper(Bitmap bm, String key) {
         if (bm == null || isDestroyed()) return;
         wallShownKey = key;
+        wallKept = bm; wallKeptKey = key;   // 4.4 beta 4: kept for the return after a light trim (WallKeep)
         // Swap roles: the old front becomes the back, the new photo fades in on top.
         final ImageView old = wallFront;
         wallFront = wallBack;
