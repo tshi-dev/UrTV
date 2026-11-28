@@ -1493,9 +1493,11 @@ final class Prefs {
     /** the style; read the first time after the update as the screen the TV shows now («كنبة» with the look «كنبة», else «أزرار»): no surprise switch */
     /**
      * 4.4 beta 4 (the findability review, §3): a TV set up from now on could open the settings in the side list («كنبة»), the tree's natural form. It is
-     * a default change, so it waits for the owner: false keeps «أزرار» for every TV, new or old. An installed TV is never switched by this.
+     * a default change: 4.4 the owner approved it (true). Only a fresh install (FreshInstall: never updated over an older version) gets «كنبة»; an
+     * installed TV is never switched by this (an update keeps the screen it showed). BootReceiver fixes the style at the first boot, so a TV whose
+     * app updated itself before the person opened the settings still counts as new.
      */
-    static final boolean SIDE_FOR_NEW_SETUPS = false;
+    static final boolean SIDE_FOR_NEW_SETUPS = true;
 
     String settingsStyle() {
         String v = sp.getString("settingsStyle", null);
