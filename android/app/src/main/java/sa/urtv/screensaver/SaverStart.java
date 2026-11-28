@@ -69,10 +69,10 @@ final class SaverStart {
         box.addView(page, 0, new FrameLayout.LayoutParams(-1, -1));   // under the picture
         android.util.Log.i("UrTVSaver", "snapshot: the page's view created in " + (android.os.SystemClock.elapsedRealtime() - c0) + " ms");
         if (!coverOn) return;
-        final long since = android.os.SystemClock.elapsedRealtime();
+        final long since = android.os.SystemClock.elapsedRealtime(), shownAt = System.currentTimeMillis();
         cover.postDelayed(new Runnable() {
-            @Override public void run() {
-                boolean live = page.getAlpha() >= 1f || android.os.SystemClock.elapsedRealtime() - since >= SaverSnapshot.LIVE_WAIT_MS;
+            @Override public void run() {   // 4.4 beta 4: at most CoverWait.WAIT_MS, and never into the next minute (the picture's clock would be wrong)
+                boolean live = CoverWait.done(page.getAlpha() >= 1f, android.os.SystemClock.elapsedRealtime() - since, shownAt, System.currentTimeMillis());
                 if (!live) { cover.postDelayed(this, 100); return; }
                 android.util.Log.i("UrTVSaver", "snapshot: the page is live at " + (android.os.SystemClock.elapsedRealtime() - t0) + " ms from the start; the picture fades");
                 cover.animate().alpha(0f).setDuration(SaverSnapshot.FADE_MS).withEndAction(() -> box.removeView(cover)).start();
