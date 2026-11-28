@@ -13,6 +13,7 @@ python3 tests/hadith_number_test.py   # Sahih Muslim: the standard number, never
 python3 tests/prayer_math_test.py
 python3 tests/prayer_crosscheck_test.py
 python3 tests/prayer_crosscheck_world_test.py
+python3 tests/prayer_cache_zone_test.py   # 4.4 beta 4: the kept prayer times are the zone's
 python3 tests/hijri_crosscheck_test.py
 python3 tests/prayer_method_test.py
 python3 tests/place_choice_test.py

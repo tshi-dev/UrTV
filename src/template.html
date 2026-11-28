@@ -1728,7 +1728,10 @@ async function loadPrayers(){
   const url = `https://api.aladhan.com/v1/timings/${want}`
             + `?latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}`
             + `&method=${CONFIG.prayerMethod}&latitudeAdjustmentMethod=3&timezonestring=${encodeURIComponent(CONFIG.timezone)}`;
-  const PT = 'ptimes:' + CONFIG.latitude + ',' + CONFIG.longitude + ',' + CONFIG.prayerMethod;   // today's answer, kept: the next start shows the same minutes, not the computed ones
+  // today's answer, kept: the next start shows the same minutes, not the computed ones. 4.4 beta 4 (Maghrib about 2 h off for a place of one's
+  // own in another zone): Aladhan writes the times in the zone it was asked for, so the zone is in the key; a place whose zone was corrected
+  // (or saved before it had one) never takes the times of its old zone.
+  const PT = 'ptimes:' + CONFIG.latitude + ',' + CONFIG.longitude + ',' + CONFIG.prayerMethod + ',' + CONFIG.timezone;
   if(!PRAYERS.length) try{
     let kept = null; try{ kept = JSON.parse(localStorage.getItem(PT) || 'null'); }catch(_){}
     if(kept && kept.d === want){ buildPrayers(kept.t); PRAYERS_DAY = want + '|api'; } else { buildPrayers(computePrayers()); PRAYERS_DAY = want + '|calc'; }   // else computed: not «—»
