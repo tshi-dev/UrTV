@@ -50,8 +50,8 @@ check("the tag's three words", all(w in base for w in ('S.t("جوالات")', 'S
 lob = base[base.index("protected final void drawPhoneLobby"):]
 check("the room: no «أغلق الغرفة», no heading, no code box, the address is Latin and the code is inside it",
       "أغلق الغرفة" not in lob and "اللي دخلوا" not in lob and "codeBox" not in lob and "phones.code" not in lob and 'url = phones.url.replace("http://", "")' in lob and "TEXT_DIRECTION_LTR" in lob)
-check("the room (UI review at 720p, font 1.3): the address is never wider than the QR (360) and breaks before «/» when it must, «ناقص …» is in the middle column with a gap from the name tiles, the screen title has a taller line and a bottom padding so its tails clear the band",
-      "measure(url, us) > 360 - 32" in lob and 'url.substring(slash)' in lob and "at(552, 72, 504, 410)" in lob and "t.setIncludeFontPadding(true); t.setLineSpacing(0, 1.1f); t.setPadding(0, 0, 0, px(14));" in base)
+check("the room (UI review at 720p, font 1.3): the address is never wider than the QR (360) and breaks before «/» when it must, «ناقص …» is in the middle column with a gap from the name tiles, the screen title stands 14 px higher so its tails clear the band (no padded line box: it clipped the dots under ب and ج)",
+      "measure(url, us) > 360 - 32" in lob and 'url.substring(slash)' in lob and "at(552, 72, 504, 410)" in lob and "root.addView(text(big, 96, L.onDeep, true), at(1100, 130, 96, 40));" in base and "t.setPadding(0, 0, 0, px(14))" not in base)
 check("the room: the count only while short («ناقص لاعب» for one, «ناقص ٢» for more)",
       "if (!can) {" in lob and 'missing == 1 ? S.t("ناقص لاعب") : S.t("ناقص %s", num(missing))' in lob)
 check("the room: «ابدأ» has the focus even while it is grey; «نلعب بالريموت» only when the game has a remote way",

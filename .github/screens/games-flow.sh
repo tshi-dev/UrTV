@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Runs on the CI emulator (.github/workflows/games-flow-screens.yml): the AFTER of the owner's «phone or no phone» review (docs/research/GAMES-FLOW.md): the built flow, shot with screencap and the remote's keys: the list, the first row «كيف تلعبون؟», the room, the way out to the remote.
 # game's own setup page with the remote's keys (nothing is written behind the app's back).   games.sh SAVER_APK HOME_APK OUT_DIR
-# Best effort: every shot is taken whatever is on the screen; the log says what was pressed. (re-shot after the liar rounds' bar fix) (after the UI review: address, count line, titles)
+# Best effort: every shot is taken whatever is on the screen; the log says what was pressed. (re-shot after the liar rounds' bar fix) (after the UI review: address, count line, titles; word game from the list)
 set +e
 SAVER_APK=$1; HOME_APK=$2; OUT=$3
 mkdir -p "$OUT"
@@ -85,7 +85,7 @@ shot after-11-quiz-room 2
 
 # ---- the word game: every letter in the middle of its tile (the owner's rule), measured on the real pixels
 dump() { adb shell uiautomator dump /sdcard/ui.xml > /dev/null 2>&1; adb pull /sdcard/ui.xml "$OUT/$1.xml" > /dev/null 2>&1; }
-leave
+list
 tile 6
 key DPAD_CENTER; sleep 3                                  # «ابدأ»: the board and the keyboard
 key DPAD_CENTER DPAD_LEFT DPAD_CENTER DPAD_LEFT DPAD_CENTER   # ا ب ت

@@ -352,9 +352,7 @@ public abstract class GameActivity extends Activity {
     /** a screen's title in a 200 px block: the big words, and a small saffron line at the end side (may be null) */
     protected final void title(String big, String small) {
         band(200);
-        TextView t = text(big, 96, L.onDeep, true);   // a taller line and a bottom padding: the tails of ب ع و ي never touch the band's edge, at any system font size
-        t.setIncludeFontPadding(true); t.setLineSpacing(0, 1.1f); t.setPadding(0, 0, 0, px(14));
-        root.addView(t, at(1100, 136, 96, 36));
+        root.addView(text(big, 96, L.onDeep, true), at(1100, 130, 96, 40));   // 14 px higher than before: the tails and the dots under ب ج ع clear the band's edge (a taller or padded line box CLIPPED the dots: shot of 24b2b06c)
         if (small != null) { TextView s = text(small, 40, L.saff, false); s.setGravity(Gravity.END); s.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END); root.addView(s, atEnd(700, 56, 96 + titleInset, 84)); }
     }
     /** the bottom line: pairs of (key, what it does), so every screen says its next key in words */
