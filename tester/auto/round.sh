@@ -144,8 +144,12 @@ restore() {
   # what the export does not hold (review F102): the home's layout and card, the adhan of each prayer
   if [ -n "$LAYOUT_BEFORE" ]; then $SAVER homelayout "$LAYOUT_BEFORE" > /dev/null 2>&1; fi
   if [ -n "$PANEL_BEFORE" ]; then $SAVER home-card "$PANEL_BEFORE" > /dev/null 2>&1; fi
-  if [ -s "$OUT/raw/adhan-before.txt" ]; then
-    while read -r pk pst; do [ -n "$pk" ] && $MUSIC adhan state "$pk" "$pst" > /dev/null 2>&1; done < <($LIB adhan-all "$OUT/raw/adhan-before.txt")
+  if [ -s "$OUT/raw/adhan-before.txt" ]; then   # each prayer's own sound (a recording of its own, silent, general) and its screen exactly as they were, never through the state words
+    while read -r pk psnd pscr; do
+      [ -n "$pk" ] || continue
+      case "$psnd" in v[0-9]*) psnd=${psnd#v} ;; esac
+      $MUSIC adhan prayer "$pk" "$psnd" > /dev/null 2>&1; $MUSIC adhan screen "$pk" "$pscr" > /dev/null 2>&1
+    done < <($LIB adhan-exact "$OUT/raw/adhan-before.txt")
   fi
   if [ -n "$SAVED_IDLE" ]; then tv "settings put system screen_off_timeout $SAVED_IDLE" > /dev/null 2>&1; fi   # the owner's idle (45 s, say), not the round's 10 minutes
   if [ -n "$SAVED_VOL" ]; then tv "cmd media_session volume --stream 3 --set $SAVED_VOL" > /dev/null 2>&1; fi
@@ -248,6 +252,9 @@ fi
 if want settings; then
   echo "settings…"
   key KEYCODE_HOME; nap 2   # every part starts from the home (tester b654)
+  if [ -z "$STYLE_BEFORE" ]; then   # an older build does not say its settings style in `saver.sh show`: walking the three styles would leave the TV in the last one (review F102, second pass)
+    step "settings" SKIP "this build's saver.sh show does not say the settings style, so the three styles are not walked (they could not be put back): update the TV to this build and run again"
+  else
   while IFS=$'\t' read -r _ stkey stname stcmd _ <&3; do
     tv "am broadcast -n $SAVER_PKG/.SaverReceiver -a $SAVER_PKG.SET --es settingsstyle $stcmd" > "$OUT/raw/style-$stkey.txt" 2>&1 || { step "settings-$stkey" FAIL "the settings style $stcmd was not accepted"; continue; }
     nap 2
@@ -262,6 +269,7 @@ if want settings; then
       fi
     done 4< <(rows section)
   done 3< <(rows style)
+  fi
   if [ -n "$STYLE_BEFORE" ]; then tv "am broadcast -n $SAVER_PKG/.SaverReceiver -a $SAVER_PKG.SET --es settingsstyle $STYLE_BEFORE" > /dev/null 2>&1; fi   # back to the style the TV had
   key KEYCODE_HOME
 fi

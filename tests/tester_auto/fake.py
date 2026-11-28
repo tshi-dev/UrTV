@@ -77,6 +77,9 @@ def tv(cmd):
     if cmd.startswith("wm size;") and os.environ.get("FAKE_WM_START"):
         print("Physical size: 1920x1080\nOverride size: 1600x900\nPhysical density: 320\nOverride density: 280")
         return
+    ms = re.search(r"am broadcast .*--es settingsstyle (\w+)", cmd)
+    if ms:
+        put("sstyle", ms.group(1))
     for part in re.split(r";\s*", cmd):
         m = re.match(r"am start .*-n (\S+)", part)
         if m:
@@ -172,7 +175,9 @@ def saver(a):
     if a[:1] == ["export"]:
         print('{"city":"الرياض"}')
     elif a[:1] == ["show"]:
-        print("version=4.4\ncity=الرياض\nhomelayout=" + st("layout", os.environ.get("FAKE_LAYOUT_START", "classic")) + "\nsettingsstyle=couch")
+        # as the real `saver.sh show` prints it: the first line «version=…», then «key: value» lines (SaverReceiver.describe)
+        print("version=4.4\ncity: الرياض\nhome_panel: " + st("card", os.environ.get("FAKE_PANEL_START", "stocks")) + "\nhomelayout: " + st("layout", os.environ.get("FAKE_LAYOUT_START", "classic"))
+              + "\nsettingsstyle: " + st("sstyle", os.environ.get("FAKE_STYLE_START", "couch")))
     elif a[:1] == ["homelayout"] and a[1:2] and a[1] not in ("classic", "couch", "football"):
         sys.exit(1)
     elif a[:1] == ["homelayout"] and a[1:2]:
@@ -181,20 +186,45 @@ def saver(a):
         put("card", a[1])
 
 
+def adhan_load():
+    """per prayer [sound token, screen on|off]: «» general, «silent», «own», «vN» a recording; FAKE_ADHAN_START: «fajr:screen,dhuhr:sound:v7,…» (state, then an optional own sound)"""
+    raw = st("adhan_tokens")
+    if raw:
+        return {k: v.split("/") for k, v in (x.split("=") for x in raw.split(","))}
+    out = {}
+    for x in os.environ.get("FAKE_ADHAN_START", "fajr:both,dhuhr:both,asr:both,maghrib:both,isha:both").split(","):
+        parts = x.split(":")
+        state, tok = parts[1], parts[2] if len(parts) > 2 else ""
+        out[parts[0]] = [tok if state in ("both", "sound") else "silent", "on" if state in ("both", "screen") else "off"]
+    return out
+
+
+def adhan_save(d):
+    put("adhan_tokens", ",".join(f"{k}={v[0]}/{v[1]}" for k, v in d.items()))
+
+
 def music(a):
     log("music " + " ".join(a))
-    states = {k.split(":")[0]: k.split(":")[1] for k in st("adhan", os.environ.get("FAKE_ADHAN_START", "fajr:both,dhuhr:both,asr:both,maghrib:both,isha:both")).split(",")}
+    d = adhan_load()
     if a[:1] == ["stations"]:
         for i, n in enumerate(STATIONS):
             print(f"{i}  {n}")
     elif a[:1] == ["status"]:
         print("source=radio" if st("playing") == "1" else "source=none")
-    elif a[:2] == ["adhan", "state"]:
-        states[a[2]] = a[3]
-        put("adhan", ",".join(f"{k}:{v}" for k, v in states.items()))
+    elif a[:2] == ["adhan", "state"]:   # the state words set the general sound or silence: a prayer's own recording is lost (as the real PRAYER_STATE does)
+        sound = a[3] in ("both", "sound")
+        d[a[2]] = ["" if sound else "silent", "on" if a[3] in ("both", "screen") else "off"]
+        adhan_save(d)
+    elif a[:2] == ["adhan", "prayer"]:
+        tok = {"general": ""}.get(a[3], a[3] if a[3] in ("silent", "own", "own_fajr") else "v" + a[3])
+        d[a[2]][0] = tok
+        adhan_save(d)
+    elif a[:2] == ["adhan", "screen"]:
+        d[a[2]][1] = a[3]
+        adhan_save(d)
     elif a[:1] == ["adhan"]:
-        snd = ",".join(f"{k}:{'silent' if v in ('screen', 'none') else ''}" for k, v in states.items())
-        scr = ",".join(f"{k}:{'off' if v in ('sound', 'none') else 'on'}" for k, v in states.items())
+        snd = ",".join(f"{k}:{v[0]}" for k, v in d.items())
+        scr = ",".join(f"{k}:{v[1]}" for k, v in d.items())
         print(f"saved|adhan_on=1|prayer_sound={snd}|prayer_screen={scr}")
     elif a[:1] == ["stop"]:
         put("playing", "0")

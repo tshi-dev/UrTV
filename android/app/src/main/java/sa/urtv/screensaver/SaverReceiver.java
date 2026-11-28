@@ -767,7 +767,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\naccent: " + (p.accent().isEmpty() ? "default" : p.accent()) + "\nbaropacity: " + p.barPercent() + "\nwalldim: " + p.wallDim() + "\nfocusstyle: " + p.focusStyle()
             + "\nlooksync: " + (p.lookSync() ? "on" : "off") + "\nsurface quick: " + p.surfacePercent(0) + " " + p.surfaceFill(0) + "\nsurface cards: " + p.surfacePercent(1) + " " + p.surfaceFill(1) + "\nsurface tray: " + p.surfacePercent(2) + " " + p.surfaceFill(2)
             + "\npreset: " + p.presetShow()
-            + "\ncouch: " + (!p.couchOn() ? "off" : "couch".equals(p.look3()) ? "on" : "on (custom)") + "\nhomelayout: " + p.homeLayout() + "\nbackground: " + p.homeBg() + "\nclock: " + p.homeClock() + "\nappsstyle: " + p.appsStyle()
+            + "\ncouch: " + (!p.couchOn() ? "off" : "couch".equals(p.look3()) ? "on" : "on (custom)") + "\nhomelayout: " + p.homeLayout() + "\nsettingsstyle: " + p.settingsStyle() + "\nbackground: " + p.homeBg() + "\nclock: " + p.homeClock() + "\nappsstyle: " + p.appsStyle()
             + "\nscenepacks: " + Prefs.join(p.scenePacks(), ",") + "\nscenestay: " + p.sceneStay()
             + "\nscenetime: " + (p.sceneByTime() ? "on" : "off") + "\nsceneweather: " + (p.sceneByWeather() ? "on" : "off")
             + "\nfavbar: " + p.favBar()

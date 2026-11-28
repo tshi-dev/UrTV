@@ -204,9 +204,28 @@ def adhan_all(text):
     return out
 
 
+def adhan_exact(text):
+    """From `music.sh adhan`'s status: «prayer sound screen» per prayer, exactly as the TV keeps them: the sound token («» is the general adhan, «silent», «own», «own_fajr»,
+    «v7» a recording of its own) and the screen (on or off); round.sh puts each back with `adhan prayer` and `adhan screen` (the state words «sound» etc. would turn an own voice
+    into the general one). The token's empty value is written as «general»"""
+    snd = re.search(r"prayer_sound=([^|\n]*)", text)
+    scr = re.search(r"prayer_screen=([^|\n]*)", text)
+    if not snd or not scr:
+        return []
+    screens = dict(x.split(":", 1) for x in scr.group(1).split(",") if ":" in x)
+    out = []
+    for x in snd.group(1).split(","):
+        if ":" not in x:
+            continue
+        p, tok = x.split(":", 1)
+        if p in screens:
+            out.append(f"{p} {tok or 'general'} {screens[p]}")
+    return out
+
+
 def kv(text, key):
-    """a «key=value» line of `saver.sh show` (empty when it is not there)"""
-    m = re.search(rf"^{re.escape(key)}[ \t]*=[ \t]*(\S+)", text, re.M)
+    """a «key: value» (or «key=value») line of `saver.sh show` (empty when it is not there)"""
+    m = re.search(rf"^{re.escape(key)}[ \t]*[=:][ \t]*(\S+)", text, re.M)   # `saver.sh show` prints «homelayout: couch» (the first line only is «version=…»): both are read
     return m.group(1) if m else ""
 
 
@@ -425,6 +444,9 @@ def main(a):
         print(adhan_state(_read(a[2]), a[3]))
     elif cmd == "front-app":
         print(front_app(sys.stdin.read()))
+    elif cmd == "adhan-exact":
+        for x in adhan_exact(_read(a[2])):
+            print(x)
     elif cmd == "adhan-all":
         for x in adhan_all(_read(a[2])):
             print(x)

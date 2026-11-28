@@ -70,6 +70,8 @@ def run(extra_env=None, args=()):
     env.update(extra_env or {})
     r = subprocess.run(["bash", str(ROOT / "tester/auto/round.sh"), "--build", "t1", *args], cwd=ROOT, env=env, capture_output=True, text=True, timeout=300)
     out = Path(tmp, "out", "t1")
+    global LAST_STATE
+    LAST_STATE = Path(tmp, "state")
     return r, out, Path(tmp, "state", "log.txt").read_text(encoding="utf-8") if Path(tmp, "state", "log.txt").exists() else ""
 
 r, out, cmds = run()
@@ -167,13 +169,19 @@ check("the emulator shim sends the Home key as the Home intent to our home (run 
       and _m.rewrite("input keyevent KEYCODE_BACK") == "input keyevent KEYCODE_BACK" and _m.rewrite("dumpsys window") == "dumpsys window")
 
 # a TV that was not on the defaults is put back as it was (review F102): the adhan of a prayer, the home layout, the screen's size and density
-r2, out2, cmds2 = run({"FAKE_ADHAN_START": "fajr:screen,dhuhr:sound,asr:none,maghrib:both,isha:both", "FAKE_LAYOUT_START": "couch", "FAKE_WM_START": "1"})
+r2, out2, cmds2 = run({"FAKE_ADHAN_START": "fajr:screen,dhuhr:sound:v7,asr:none,maghrib:both:own,isha:both", "FAKE_LAYOUT_START": "couch", "FAKE_PANEL_START": "matches", "FAKE_STYLE_START": "tvos", "FAKE_WM_START": "1"})
+st2 = {f.name: f.read_text(encoding="utf-8") for f in LAST_STATE.iterdir() if f.is_file()}
 last = lambda pre: [l for l in cmds2.splitlines() if l.startswith(pre)][-1:]
-check("the round puts back the adhan of each prayer, the home layout and the screen's size and density it found",
-      ["music adhan state fajr screen"] == last("music adhan state fajr") and ["music adhan state dhuhr sound"] == last("music adhan state dhuhr") and ["music adhan state asr none"] == last("music adhan state asr")
-      and ["saver homelayout couch"] == last("saver homelayout") and ["tv wm size 1600x900; wm density 280"] == last("tv wm size 1"), (last("music adhan state fajr"), last("saver homelayout"), last("tv wm size 1")))
+check("the round puts back, exactly as the TV kept them (the fake prints what the real saver.sh prints: «homelayout: couch»): the home layout, the home card, the settings style, each prayer's own sound (a recording of its own stays its own) and screen, the screen's size and density",
+      st2.get("layout") == "couch" and st2.get("card") == "matches" and st2.get("sstyle") == "tvos"
+      and st2.get("adhan_tokens") == "fajr=silent/on,dhuhr=v7/off,asr=silent/off,maghrib=own/on,isha=/on"
+      and ["tv wm size 1600x900; wm density 280"] == last("tv wm size 1"), (st2.get("layout"), st2.get("card"), st2.get("sstyle"), st2.get("adhan_tokens"), last("tv wm size 1")))
+r3, out3, cmds3 = run({"FAKE_STYLE_START": ""})
+steps3 = (out3 / "steps.tsv").read_text(encoding="utf-8") if (out3 / "steps.tsv").exists() else ""
+check("a build whose `saver.sh show` does not say the settings style gets no style walk (SKIP, said), so nothing is left in the last style",
+      "settings\tSKIP" in steps3 and "settings-tvos-" not in steps3 and "settingsstyle" not in "\n".join(l for l in cmds3.splitlines() if "am broadcast" in l), steps3[:300])
 check("lib: the adhan of all prayers, a show line and the wm override",
-      lib.adhan_all("prayer_sound=fajr:silent,dhuhr:|prayer_screen=fajr:on,dhuhr:off") == ["fajr screen", "dhuhr sound"] and lib.kv("a=1\nhomelayout=couch\n", "homelayout") == "couch"
+      lib.adhan_all("prayer_sound=fajr:silent,dhuhr:|prayer_screen=fajr:on,dhuhr:off") == ["fajr screen", "dhuhr sound"] and lib.kv("a=1\nhomelayout=couch\n", "homelayout") == "couch" and lib.kv("version=4.4\nhomelayout: couch\nhome_panel: stocks,hourly\nsettingsstyle: tvos\n", "homelayout") == "couch" and lib.kv("homelayout: couch\nhome_panel: stocks,hourly\n", "home_panel") == "stocks,hourly" and lib.kv("homelayout: couch\n", "settingsstyle") == "" and lib.adhan_exact("prayer_sound=fajr:silent,dhuhr:v7,asr:|prayer_screen=fajr:on,dhuhr:off,asr:on") == ["fajr silent on", "dhuhr v7 off", "asr general on"]
       and lib.wm_back("Physical size: 1920x1080\nOverride size: 1280x720\nPhysical density: 320\n") == "wm size 1280x720; wm density reset" and lib.wm_back("Physical size: 1920x1080") == "wm size reset; wm density reset")
 
 # the tester's first real-TV round (b654): what it found in the round itself
