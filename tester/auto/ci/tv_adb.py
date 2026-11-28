@@ -21,8 +21,8 @@ HOME_START = "am start -a android.intent.action.MAIN -c android.intent.category.
 
 def rewrite(cmd):
     """The Home key on the emulator brings the emulator's own launcher when it could not be told to prefer ours (run 2 of the round: tvlauncher in front at every
-    layout step): there the key is sent as the Home intent to our home, which is what the key does on a TV whose Home it is."""
-    return HOME_START if cmd.strip() in ("input keyevent KEYCODE_HOME", "input keyevent 3") else cmd
+    layout step): there the key is sent (it wakes a dream, as on a TV: the emulator's own backdrop dream stayed in front through run 4) and then as the Home intent to our home, which is what the key does on a TV whose Home it is."""
+    return ("input keyevent KEYCODE_HOME; " + HOME_START) if cmd.strip() in ("input keyevent KEYCODE_HOME", "input keyevent 3") else cmd
 
 
 def shell(cmd):

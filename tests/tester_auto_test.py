@@ -144,7 +144,7 @@ check("run.sh on the emulator: the TV client is the adb shim, the emulator's lim
 import importlib.util
 _sp = importlib.util.spec_from_file_location("tv_adb_shim", ROOT / "tester/auto/ci/tv_adb.py"); _m = importlib.util.module_from_spec(_sp); _sp.loader.exec_module(_m)
 check("the emulator shim sends the Home key as the Home intent to our home (run 2: the emulator's launcher answered every Home key), and nothing else is changed",
-      _m.rewrite("input keyevent KEYCODE_HOME") == _m.HOME_START and _m.rewrite("input keyevent 3") == _m.HOME_START and "sa.urtv.home/.MainActivity" in _m.HOME_START
+      _m.rewrite("input keyevent KEYCODE_HOME") == "input keyevent KEYCODE_HOME; " + _m.HOME_START and _m.rewrite("input keyevent 3").endswith(_m.HOME_START) and "sa.urtv.home/.MainActivity" in _m.HOME_START
       and _m.rewrite("input keyevent KEYCODE_BACK") == "input keyevent KEYCODE_BACK" and _m.rewrite("dumpsys window") == "dumpsys window")
 
 # a TV that was not on the defaults is put back as it was (review F102): the adhan of a prayer, the home layout, the screen's size and density

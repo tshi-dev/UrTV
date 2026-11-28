@@ -20,6 +20,9 @@ adb root > /dev/null 2>&1; adb wait-for-device
 adb push assets/backgrounds/9hWJs7iblh8.jpg /sdcard/Download/urtv-ci-photo.jpg
 adb shell pm grant sa.urtv.home android.permission.READ_EXTERNAL_STORAGE || echo "(the permission could not be granted)"
 adb shell am start -n sa.urtv.home/.PhotoAddActivity 2>&1 | tee "$OUT/start.txt"
+if grep -qi "permission denial\|not exported" "$OUT/start.txt"; then   # adb root was refused: the debug build lets the shell act as the app, which may start its own screens
+  adb shell run-as sa.urtv.home am start -n sa.urtv.home/.PhotoAddActivity 2>&1 | tee "$OUT/start.txt"
+fi
 sleep 12
 adb shell uiautomator dump /sdcard/photos.xml > /dev/null 2>&1
 adb pull /sdcard/photos.xml "$OUT/photos.xml" > /dev/null 2>&1
