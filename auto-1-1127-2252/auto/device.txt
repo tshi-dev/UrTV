@@ -1,3 +1,0 @@
-emulator: AOSP TV on x86 android 11
-sa.urtv.home versionName=4.4
-sa.urtv.screensaver versionName=4.4
