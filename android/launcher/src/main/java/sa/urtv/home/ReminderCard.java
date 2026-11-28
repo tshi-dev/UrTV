@@ -84,6 +84,24 @@ final class ReminderCard {
         root.addView(card, p);
     }
 
+    /** where the home's clock column ends (window px; -1: not known): the card stands under it (ReminderCard.place) */
+    interface Under { int bottom(); }
+    private Under under;
+    void under(Under u) { under = u; }
+
+    /**
+     * 4.4 beta 4 (the tester, step 37: in «رملي» the card lay over the clock): the card's top is 16 dp under the clock column (the greeting, the
+     * weather, the clock, the date and its lines), never above 60 dp; when that would take its bottom off the screen it goes up as far as needed
+     */
+    private void place() {
+        FrameLayout.LayoutParams p = (FrameLayout.LayoutParams) card.getLayoutParams();
+        int top = dp(60), y = under == null ? -1 : under.bottom();
+        if (y > 0) top = Math.max(top, y + dp(16));
+        int room = (card.getParent() instanceof View ? ((View) card.getParent()).getHeight() : 0) - card.getHeight() - dp(16);
+        if (card.getHeight() > 0 && room > 0) top = Math.min(top, room);
+        if (p.topMargin != top) { p.topMargin = top; card.setLayoutParams(p); }
+    }
+
     boolean showing() { return card.getVisibility() == View.VISIBLE; }
 
     /** the card for what is due now, if there is one (called when the alarm says so and when the home comes back to the front) */
@@ -140,6 +158,8 @@ final class ReminderCard {
             if (row.sound && chimed.add(ReminderPlan.key(row))) chime();   // once for a card, not again when the home comes back
         }
         sub.setText(ReminderText.when(row, now, zone, Digits.clock24(), Digits.latin()));
+        place();
+        card.post(this::place);   // again once the card has its height (the bottom of a small screen)
     }
 
     void hide() {

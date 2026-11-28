@@ -1027,6 +1027,7 @@ public class MainActivity extends Activity {
         tray.setClipToOutline(true);
         tray.setBackground(band);
         tray.addView(dockRow, new FrameLayout.LayoutParams(-2, -1));
+        dockRow.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> { if (!trayFitQueued) { trayFitQueued = true; handler.post(this::fitTray); } });   // the bar follows its tiles
         tray.setOnScrollChangeListener((v, x, y, ox, oy) -> placeName());
         tray.getViewTreeObserver().addOnGlobalFocusChangeListener((oldFocus, newFocus) -> tray.wholeOnly());   // the focused tile is the one that may stand partly out
         bottom.addView(tray, new LinearLayout.LayoutParams(-1, bar(FavBar.TRAY_H)));
@@ -1052,6 +1053,12 @@ public class MainActivity extends Activity {
         grid.setClipToPadding(false);
         content.addView(grid, llp(-1, -2, dp(68), 0, dp(68), dp(160)));
         reminder = new ReminderCard(this, root);   // «المهام» with a time: its card is the topmost view
+        reminder.under(() -> {   // under the clock column, never over it (the tester, step 37)
+            if (clockBlock == null || clockBlock.getHeight() == 0 || !clockBlock.isShown()) return -1;
+            int[] at = new int[2];
+            clockBlock.getLocationInWindow(at);
+            return at[1] + clockBlock.getHeight();
+        });
         return root;
     }
 
@@ -2438,6 +2445,7 @@ public class MainActivity extends Activity {
         wireFocus();
         if (had && !tvCards.isEmpty()) tvCards.get(0).get(Math.min(hadAt, tvCards.get(0).size() - 1)).requestFocus();   // the same card
         else if (had && !dockCards.isEmpty()) dockCards.get(0).requestFocus();   // the row went: back to the favourites
+        fitTray();   // the bar is the screen's width while the row is under it, its tiles' width without it
     }
 
     private boolean isInTvRows(View v) {
@@ -2530,7 +2538,9 @@ public class MainActivity extends Activity {
         int max = Math.max(0, content.getHeight() - scroll.getHeight());
         if (at == 0 && tvCards.isEmpty()) {   // the first grid row: the dock band slides up to the top edge (the tray, then the row under it)
             gridFirst = 0;
-            glideTo(Math.max(0, Math.min(hero.getTop() + bottomBlock.getTop() + tray.getTop(), max)));
+            // 4.4 beta 4 (the tester, step 71: the iqama bar over the apps page's first row): the bar keeps the top edge, the tray stops under it
+            int barH = adhanBar.getVisibility() == View.VISIBLE ? Math.max(adhanBar.getHeight(), dp(26)) : 0;
+            glideTo(Math.max(0, Math.min(hero.getTop() + bottomBlock.getTop() + tray.getTop() - barH, max)));
             return;
         }
         // 4.4 beta 2 (the owner's test of 525: the first row cut at the top, the focused one partly off): whole rows only, the focused one always
@@ -3755,6 +3765,7 @@ public class MainActivity extends Activity {
             dockRow.setPadding(side, bar(FavBar.PAD_TOP), side, bar(FavBar.PAD_TOP));
         }
         applyTrayHeight();
+        fitTray();
     }
 
     // ---- 4.5 «زجاجي»: the bar's size and rows, its glass, and its last tile «كل التطبيقات»
@@ -3769,6 +3780,34 @@ public class MainActivity extends Activity {
         if (dockRow == null || align == null || align.equals(appsAlignNow)) return;
         appsAlignNow = align;
         dockRow.setGravity(FavBar.alignGravity(align));
+        fitTray();
+    }
+
+    private boolean trayFitQueued;
+
+    /**
+     * 4.4 beta 4 (the tester, step 76: a dock of three apps left a wide empty bar): in «بطاقات», the one way with a bar, the bar is as wide as its
+     * tiles and its own padding, placed where the apps are (the centre, the right or the left); a row wider than the screen keeps the full width and
+     * scrolls as before. With «كمّل المشاهدة» under it the bar keeps the full width: those cards sit exactly under its cells.
+     */
+    private void fitTray() {
+        trayFitQueued = false;
+        if (tray == null || dockRow == null || !(tray.getLayoutParams() instanceof LinearLayout.LayoutParams) || !(tray.getParent() instanceof View)) return;
+        LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) tray.getLayoutParams();
+        View parent = (View) tray.getParent();
+        int want = -1;
+        if (FavBar.TILES.equals(appsLook) && tvCards.isEmpty() && parent.getWidth() > 0) {
+            int w = dockRow.getPaddingLeft() + dockRow.getPaddingRight();
+            for (int i = 0; i < dockRow.getChildCount(); i++) {
+                View c = dockRow.getChildAt(i);
+                ViewGroup.MarginLayoutParams m = (ViewGroup.MarginLayoutParams) c.getLayoutParams();
+                w += c.getMeasuredWidth() + m.leftMargin + m.rightMargin;
+            }
+            int room = parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight();
+            if (w > dockRow.getPaddingLeft() + dockRow.getPaddingRight() && w < room) want = w;
+        }
+        int g = FavBar.alignGravity(appsAlignNow) & Gravity.HORIZONTAL_GRAVITY_MASK;
+        if (lp.width != want || lp.gravity != g) { lp.width = want; lp.gravity = g; tray.setLayoutParams(lp); }
     }
 
     private volatile float glassK = 1f;
@@ -4575,7 +4614,10 @@ public class MainActivity extends Activity {
     /** Once a minute with the clock: the bar before the adhan shows in the last 10 minutes, and until the iqama. */
     private void updateAdhanBar(ConfigSnapshot cfg) {
         String words = AdhanBar.text(this, cfg);
-        adhanBar.setVisibility(words == null ? View.GONE : View.VISIBLE);
+        int was = adhanBar.getVisibility(), now = words == null ? View.GONE : View.VISIBLE;
+        adhanBar.setVisibility(now);
+        View f = getCurrentFocus();   // the bar came (or went) while the apps page's first row is up: the page makes room under it (or takes it back)
+        if (was != now && f != null && gridCards.contains(f) && f.getParent() instanceof View && gridFirst == 0) scrollToRow((View) f.getParent());
         if (words != null) adhanBar.setText(words);
         // any key stops the adhan (AdhanKeys) and the focus stays where it was; with «إيقاف الأذان بأي زر» off the bar is focusable (UP reaches it) and OK on it stops it
         adhanBar.setFocusable(words != null && AdhanBar.playing(cfg));
