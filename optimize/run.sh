@@ -62,7 +62,7 @@ trap 'exit 130' INT
 trap 'exit 143' TERM
 fi
 
-STEPS=(precheck probe backup keep before before-saver safe mine community tweaks screensaver launcher extras autostart after after-saver report)
+STEPS=(precheck probe backup keep before before-saver safe mine community tweaks screensaver launcher extras autostart after after-saver keep-again report)
 title() {
   case "$1" in
     precheck)    echo "Check it is an Android TV with a WebView the screensaver can run on" ;;
@@ -81,6 +81,7 @@ title() {
     autostart)   echo "Let TCL start our apps at boot (auto-start)" ;;
     after)       echo "Measure after (restart + 3 min)" ;;
     after-saver) echo "Measure our screensaver (1 min)" ;;
+    keep-again)  echo "Protected features once more, after the last restart" ;;
     report)      echo "Write the report" ;;
   esac
 }
@@ -219,6 +220,8 @@ do_step() {
     autostart)   optimize/autostart.sh ;;
     after)       optimize/measure.sh after ;;
     after-saver) optimize/measure.sh after-screensaver --screensaver ;;
+    # 4.4: the restarts of the measures can lose a pm enable Android had not written yet: keep.sh once more after the last one
+    keep-again)  optimize/keep.sh | tee -a "$RUN/keep.txt" ;;
     report)      report > "$RUN/report.md"; cat "$RUN/report.md" ;;
   esac
 }
