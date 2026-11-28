@@ -66,8 +66,8 @@ check("install_versions_test feeds a name with a build too", 'code="151"' in tex
 # the workflow
 wf = text(".github/workflows/android.yml")
 check("version.txt is written exactly as before: \"3.<run>\" (an installed 3.142 reads the newest build from it)", 'echo "3.${{ github.run_number }}" > version.txt' in wf and wf.count("> version.txt") == 1)
-check("version.txt goes to apk-latest and apk-next as before, and not to the numbered release",
-      wf.count("            version.txt\n") == 2)
+check("version.txt goes to apk-latest and apk-next as before, and (4.3.7) to the release candidate apk-437rc, and not to the numbered release",
+      wf.count("            version.txt\n") == 3 and "tag_name: apk-437rc" in wf)
 check("the Version step validates VERSION (major.minor, or with a patch: 4.3.2); the numbered release is tagged v<major.minor>.<run> (the tag keeps its two-part shape) and titled «UrTV <name> (build <run>)», so no two titles match; apk-latest is «UrTV <name> (latest)»",
       "id: ver" in wf and "grep -Eq '^[0-9]+\\.[0-9]+(\\.[0-9]+)?$'" in wf and "tag_name: v${{ steps.ver.outputs.tag }}.${{ github.run_number }}" in wf and 'echo "tag=$(echo "$name" | cut -d. -f1-2)"' in wf
       and "name: UrTV ${{ steps.ver.outputs.name }} (build ${{ github.run_number }})\n" in wf and "name: UrTV ${{ steps.ver.outputs.name }} (latest)\n" in wf

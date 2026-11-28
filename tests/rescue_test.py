@@ -52,8 +52,8 @@ check("the home answers its ledger (disabled-by-us.txt and community-applied.txt
       and "disabled-by-us.txt" in prov and "community-applied.txt" in prov and "ledgerNames" in prov and "return null; }" in prov)
 wf = text(ROOT / ".github/workflows/android.yml")
 check("CI builds it and publishes urtv-rescue.apk with the others in the artifact and the apk-latest and numbered releases (not apk-next), never urtv-extras.apk",
-      "cp android/rescue/build/outputs/apk/release/rescue-release.apk urtv-rescue.apk" in wf and wf.count("            urtv-rescue.apk") == 3 and "urtv-extras.apk" not in wf
-      and "urtv-rescue.apk" not in wf.split("tag_name: apk-next")[1])
+      "cp android/rescue/build/outputs/apk/release/rescue-release.apk urtv-rescue.apk" in wf and wf.count("            urtv-rescue.apk") == 4 and "urtv-extras.apk" not in wf
+      and "urtv-rescue.apk" not in wf.split("tag_name: apk-next")[1].split("tag_name: apk-437rc")[0])   # (4.3.7: the release candidate carries it too)
 check("tests/android_compile.sh compiles it", "the rescue module compiles" in text(ROOT / "tests/android_compile.sh"))
 doc = text(ROOT / "docs/RESCUE.md")
 check("docs/RESCUE.md names the fixed link apk-latest/urtv-rescue.apk", "releases/download/apk-latest/urtv-rescue.apk" in doc)
