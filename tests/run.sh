@@ -227,6 +227,7 @@ python3 tests/dream_hold_test.py   # R-452: the dream asks the launcher on a thr
 python3 tests/settings_copy_test.py   # R-453: the home keeps a copy of the screensaver's settings and a fresh install takes it back, once, from our own signed home
 python3 tests/soak_test.py   # R-454: the soak's judge (growth, a restart, an ANR) on made-up series, the manual workflow, and the session sends only what changed
 python3 tests/app_switch_test.py   # R-455: the card's still at half size into a kept picture (onPause), StrictMode in debug builds only, the app-switch numbers' parser
+python3 tests/usb_lists_test.py   # R-456: no list turns off Android's storage, MTP or USB-host path (Google's media provider is core)
 python3 tests/community_test.py
 python3 tests/connectivity_keep_test.py
 python3 tests/input_guard_test.py

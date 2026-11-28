@@ -150,6 +150,7 @@ final class SetupLists {
         "android",
         "com\\.android\\.(systemui|settings|shell|phone|packageinstaller|permissioncontroller|externalstorage|inputdevices|keychain|certinstaller|defcontainer|mtp|storagemanager|location\\.fused|sdksandbox|bluetooth|nfc|server\\..*|networkstack.*|tethering|wifi\\..*|ext\\..*|modulemetadata|providers\\..*)",
         "com\\.google\\.android\\.(permissioncontroller|packageinstaller|ext\\.services|ext\\.shared|modulemetadata|overlay\\..*|networkstack.*|gms|gsf|tv\\.settings|tvsettings|sdksandbox)",
+        "com\\.google\\.android\\.providers\\..*",
         ".*webview.*",
         "com\\.cltv\\.mal",
         "com\\.mediatek\\.(tis|tv\\.service|tv\\.agent)",
