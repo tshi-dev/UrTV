@@ -40,10 +40,12 @@ check("only the screensaver may ask (READ_NOW_PLAYING, signature)", 'android:rea
 check("the screensaver asks it, false when the launcher does not say (older one, missing, refused)",
       "content://sa.urtv.home.nowplaying/setup_hold" in bridge and 'cur.getColumnIndex("held") < 0' in bridge and "return false;" in bridge.split("static boolean setupWaiting")[1].split("\n    }\n")[0])
 att = dream.split("public void onAttachedToWindow() {")[1].split("\n    }\n")[0]
-check("the dream ends at once while it is held, before anything is shown or counted", "if (NowPlayingBridge.setupWaiting(this)) {" in att and "finish();" in att
-      and att.index("setupWaiting") < att.index("Showing.enter()") < att.index("show(true)"))
+ans = dream.split("private void holdAnswer(boolean answered, boolean held) {")[1].split("\n    }\n")[0]
+check("the dream ends at once while it is held, before anything is shown or counted (asked on a thread since R-452: tests/dream_hold_test.py)",
+      "NowPlayingBridge.setupWaiting(app)" in att and "Showing.enter()" not in att and "show(true)" not in att
+      and ans.index("DreamHold.END") < ans.index("finish();") < ans.index("Showing.enter()") < ans.index("show(true)"))
 check("the screen-on flag of a run stays as it was", "addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)" in act and "clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)" in act)
-check("the whole run's hold stays too (SetupHold, .../setup)", '"setup".equals(uri.getLastPathSegment())' in prov and "if (!NowPlayingBridge.setupRunning(this)) return;" in dream)
+check("the whole run's hold stays too (SetupHold, .../setup)", '"setup".equals(uri.getLastPathSegment())' in prov and "if (!NowPlayingBridge.setupRunning(app)) return;" in dream)
 upd = (ROOT / "android/launcher/src/main/java/sa/urtv/home/phone/PhoneUpdater.java").read_text(encoding="utf-8")
 inst = upd.split("public static Map<String, Object> install(")[1].split("\n    }\n")[0]
 check("the update holds the screensaver from «اضغط للتحديث» (install) for SaverHoldRule.UPDATE_MS, once the checks and the permission passed", "SaverHold.begin(app, sa.urtv.home.setup.SaverHoldRule.UPDATE_MS, HOLD);" in inst

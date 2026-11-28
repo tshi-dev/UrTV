@@ -2150,5 +2150,4 @@ K com.tcl.overseasappshow
 K com.tcl.repairguide
 K com.tcl.t_solo
 K com.tcl.useragreement
-K com.tcl.usercenter
 K com.tcl.waterfall.overseas

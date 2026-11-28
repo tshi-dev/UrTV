@@ -5,6 +5,9 @@
 android
 com\.android\.(systemui|settings|shell|phone|packageinstaller|permissioncontroller|externalstorage|inputdevices|keychain|certinstaller|defcontainer|mtp|storagemanager|location\.fused|sdksandbox|bluetooth|nfc|server\..*|networkstack.*|tethering|wifi\..*|ext\..*|modulemetadata|providers\..*)
 com\.google\.android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata|overlay\..*|networkstack.*|gms|gsf|tv\.settings|tvsettings|sdksandbox)
+# 4.4 (a USB drive not seen after the setup, TCL Android 11 and Sony Android 12): Google's mainline build of the media and download providers (the
+# USB drive's files reach the apps through it); com.android.providers.* above is only AOSP's name
+com\.google\.android\.providers\..*
 .*webview.*
 # Added after a Haier boot loop: the MediaTek TV stack and the Android extension services (the names of Clean Your TV's CORE_RE,
 # github.com/Gathin23/cleanyourtv, MIT: optimize/lists/community/LICENSE-CleanYourTV.txt covers the lists)

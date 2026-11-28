@@ -426,6 +426,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
+        SaverSettingsCopy.refreshSoon(this);   // 4.4: the copy of the screensaver's settings kept fresh, at most every 30 min, on a thread
         shown = true;
         if (wallTrimmed) { wallTrimmed = false; nextWallpaper(); }
     }
@@ -1875,6 +1876,9 @@ public class MainActivity extends Activity {
         for (String p : wanted) if (byPkg.containsKey(p)) dock.add(byPkg.remove(p));
         long again = DockRetry.next(dockRetries, wanted.length, dock.size());   // some chosen favourites not in the system's list yet (a cold start): the row is built again soon
         if (again >= 0) { dockRetries++; handler.postDelayed(dockRetry, again); android.util.Log.i("UrTVHome", "favourites: " + dock.size() + " of " + wanted.length + " found, building the row again in " + again + " ms"); }
+        // 4.4 (a report: «the focus jumps and another app opens»): the app that has the focus is kept by its package, not by the view's id: every tile
+        // gets a new id here, so the old id was never found and the focus fell to the first favourite, where the next OK opened it (FocusKeep)
+        String keepPkg = FocusKeep.keep(keyedSinceHome, focusedPkg(), focusPkgAfter);
         cardByPkg.clear();
         List<App> rest = new ArrayList<>(byPkg.values());   // by name, then in the owner's order (inSavedOrder)
         Collections.sort(rest, (x, y) -> x.label.compareToIgnoreCase(y.label));
@@ -1903,9 +1907,10 @@ public class MainActivity extends Activity {
         appsLabel.setVisibility(rest.isEmpty() ? View.GONE : View.VISIBLE);
         wireFocus();
         if (!dock.isEmpty()) { title.setText(dock.get(0).label); setGlow(dock.get(0).color); }
+        focusPkgAfter = keepPkg;   // FocusKeep: the same app gets the focus back once its tile exists (a grid app comes with its row, addGridRows)
         View last = lastFocusedId == View.NO_ID || !keyedSinceHome ? null : findViewById(lastFocusedId);
         if (last != null) last.requestFocus();
-        else if (!dockCards.isEmpty()) dockCards.get(0).requestFocus();
+        else if (!dockCards.isEmpty() && (keepPkg == null || cardByPkg.containsKey(keepPkg))) dockCards.get(0).requestFocus();
         appsShown = true;
         appsShownGen = gen;   // 4.5 HomeLook: the row asked last is on the screen
         if (entranceDue) { entranceDue = false; playEntrance(); }
@@ -1940,6 +1945,7 @@ public class MainActivity extends Activity {
         if (row != null) for (int i = rest.size() % cols; i != 0 && i < cols; i++) row.addView(new View(this), rowCell(i, cols, 1));
         wireFocus();
         applyPendingFocus();
+        if (focusPkgAfter != null && getCurrentFocus() == null && !dockCards.isEmpty()) dockCards.get(0).requestFocus();   // FocusKeep: the kept app is gone, the first favourite as before
         focusPkgAfter = null;   // not found (the app is gone): never take the focus later
         gridDone = true;
         beginPendingAppsEdit();
