@@ -120,7 +120,6 @@ public class MainActivity extends Activity {
     private View gridShade;
     private String[] wallpapers = new String[0];
     private int wallIndex = -1;
-    private long wallChangedAt;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Runnable rotateWallpaper = this::nextWallpaper;
     static final long WALLPAPER_INTERVAL_MS = 10 * 60 * 1000;
@@ -156,6 +155,7 @@ public class MainActivity extends Activity {
     private HomeCard homeCard;
     private SideCards sideCards;   // 4.4 beta 4: «كنبة»'s small cards down the left (off by default: #sidecards=, the owner's pick)
     private NowCard nowCard;   // «يُتلى الآن»: at the right end of the pills row while a surah or a station is on
+    private long nowPausedSince;   // 4.4 beta 4: when the card was first seen paused (NowCardRule), 0 while it plays
     private Pill searchPill;   // 4.3.3 «بحث»: the TV's own search inside the apps (GlobalSearch), off until the settings turn it on
     private Pill marketsPill, matchesPill, phonePill, updatePill;   // «تحديث»: an update is worth opening the update screen for (UpdateNotice)   // «الجوال» (C14): the phone remote's page
     private ImageView netIcon;   // C15: the connection in the top row (Wi-Fi, none)   // «الأسواق» and «المباريات»: they take the look like the others («رملي»: they stayed grey, step 28)
@@ -428,7 +428,27 @@ public class MainActivity extends Activity {
         super.onStart();
         shown = true;
         SaverSettingsCopy.refreshSoon(this);   // 4.4: the copy of the screensaver's settings kept fresh, at most every 30 min, on a thread
-        if (wallTrimmed) { wallTrimmed = false; nextWallpaper(); }
+        if (wallTrimmed) { wallTrimmed = false; if (!showKept()) returnWallpaper(); }   // 4.4 beta 4: the photo kept through a light trim, back before the first frame (WallKeep)
+    }
+
+    /** the photo's own bitmap, kept through a light trim (WallKeep), and its key */
+    private Bitmap wallKept;
+    private String wallKeptKey;
+
+    /** 4.4 beta 4: puts the kept photo back as it was, at once (no stand-in, no fade); false when there is none or the return shows another */
+    private boolean showKept() {
+        long at = prefs().getLong("wallpaperAt", 0), now = System.currentTimeMillis();
+        Bitmap b = wallKept;
+        if (!WallKeep.reuse(b != null && !b.isRecycled() && wallKeptKey != null && wallFront != null, WallTurn.due(at, now, WALLPAPER_INTERVAL_MS), scenesOn)) return false;
+        wallFront.animate().cancel();
+        wallFront.setImageBitmap(b);
+        wallFront.setAlpha(1f);
+        wallShownKey = wallKeptKey;
+        fullPhotoShown = true;
+        if (photoGlass != null) photoGlass.show(b, wallKeptKey, NetGate.allowed(resumed, NetGateAndroid.displayOn(this)));
+        android.util.Log.i("UrTVHome", "trim: the kept photo is back at once");
+        scheduleWallpaper(WallTurn.left(at, now, WALLPAPER_INTERVAL_MS));
+        return true;
     }
 
     @Override
@@ -503,10 +523,11 @@ public class MainActivity extends Activity {
             firstShow = false;
             if (appsShown) playEntrance(); else entranceDue = true;
         }
-        // New photo on return if the current one has been up for the full interval.
-        if (wallTrimmed || wallIndex < 0 || SystemClock.elapsedRealtime() - wallChangedAt >= WALLPAPER_INTERVAL_MS) { wallTrimmed = false; nextWallpaper(); }
+        // New photo on return only if the current one has been up for the full interval (WallTurn: the wall clock kept in the prefs); a photo let go
+        // (a trim) or a home started again shows the one it left
+        if (wallTrimmed || wallIndex < 0 || WallTurn.due(prefs().getLong("wallpaperAt", 0), System.currentTimeMillis(), WALLPAPER_INTERVAL_MS)) { wallTrimmed = false; returnWallpaper(); }
         else {
-            scheduleWallpaper(WALLPAPER_INTERVAL_MS - (SystemClock.elapsedRealtime() - wallChangedAt));
+            scheduleWallpaper(WallTurn.left(prefs().getLong("wallpaperAt", 0), System.currentTimeMillis(), WALLPAPER_INTERVAL_MS));
             checkOwnChanged();   // the owner added or removed photos while another app was in front
         }
     }
@@ -553,6 +574,7 @@ public class MainActivity extends Activity {
         homeCard.destroy();
         if (sideCards != null) sideCards.drop();   // review F121: «كنبة»'s side cards are a second page in memory: let go with the first (onResume makes it again)
         if (sceneHome != null) sceneHome.trim();   // the scene not showing lets its pictures go
+        if (!WallKeep.keep(level)) { wallKept = null; wallKeptKey = null; }   // 4.4 beta 4: the photo's bitmap stays through a light trim (WallKeep), for an instant return
         thinWallpaper();   // the photos go, one tiny stand-in stays so the way back is not black until the next photo decodes
         wallTrimmed = true;
         firstWallpaper = true;   // the short fade when it comes back
@@ -1582,7 +1604,9 @@ public class MainActivity extends Activity {
         if (nowCard == null) return;
         if (cleanShown) { nowCard.setVisibility(View.GONE); return; }   // «UrTV النظيف»
         NowPlaying.State s = NowPlaying.read(this);
-        if (!s.show) {
+        long now = System.currentTimeMillis();
+        nowPausedSince = NowCardRule.pausedSince(s.show, s.playing, nowPausedSince, now);   // 4.4 beta 4: paused for 10 minutes, the card goes (the clock's tick looks again every minute)
+        if (!NowCardRule.visible(s.show, s.playing, nowPausedSince, now)) {
             if (nowCard.getVisibility() == View.VISIBLE && nowCard.hasFocus() && !pills.isEmpty()) pills.get(0).requestFocus();   // it went with the playback
             nowCard.setVisibility(View.GONE);
             return;
@@ -5062,11 +5086,28 @@ public class MainActivity extends Activity {
         }).start();
     }
 
-    /** Decode the next photo off the main thread, then crossfade it in over the current one. */
+    private boolean wallStay;   // 4.4 beta 4: the next nextWallpaper() shows the photo it showed (returnWallpaper), not the next one
+
+    /**
+     * 4.4 beta 4 (Xiaomi A14: a new photo at every return to the home): the return's photo. The next one only when the interval is up (WallTurn),
+     * else the one shown before (decoded again when it was let go), and the timer keeps the rest of its interval.
+     */
+    private void returnWallpaper() {
+        long at = prefs().getLong("wallpaperAt", 0), now = System.currentTimeMillis();
+        if (WallTurn.due(at, now, WALLPAPER_INTERVAL_MS)) { nextWallpaper(); return; }
+        wallStay = true;
+        nextWallpaper();
+        scheduleWallpaper(WallTurn.left(at, now, WALLPAPER_INTERVAL_MS));
+    }
+
+    /** Decode the next photo off the main thread, then crossfade it in over the current one (the same one again after returnWallpaper). */
     private void nextWallpaper() {
+        final boolean stay = wallStay;
+        wallStay = false;
         handler.removeCallbacks(rotateWallpaper);
         if (scenesOn) return;   // 4.3.3 «الآفاق»: no ordinary photo is decoded while the scene home shows
         if (wallpapers.length == 0) return;
+        if (!stay) prefs().edit().putLong("wallpaperAt", System.currentTimeMillis()).apply();   // the interval starts now (on this thread: the return's check sees it at once)
         final int gen = ++wallGen;   // a photo that arrives after a newer request is not shown
         new Thread(() -> {
             // 4.3.1 hotfix: what is on the device (the screensaver app's provider, the disk) is read HERE, off the main thread: a dead screensaver process cold-starts for the first query and used to block the home's return
@@ -5084,9 +5125,10 @@ public class MainActivity extends Activity {
             final int packBase = base + ownCount;
             final int total = only ? ownCount : packBase + packSum;
             if (wallIndex < 0) wallIndex = prefs().getInt("wallpaper", -1);
-            wallIndex = (wallIndex + 1) % (total * 4096);   // a counter: the position inside a round, and the round
-            prefs().edit().putInt("wallpaper", wallIndex).apply();
-            wallChangedAt = SystemClock.elapsedRealtime();
+            if (!stay || wallIndex < 0) {   // the next one; a return within the interval keeps its own (wallIndex % total below: the same photo)
+                wallIndex = (wallIndex + 1) % (total * 4096);   // a counter: the position inside a round, and the round
+                prefs().edit().putInt("wallpaper", wallIndex).apply();
+            } else wallIndex %= total * 4096;
             final int idx = only ? wallIndex % total : WallShuffle.of(total, wallIndex / total)[wallIndex % total];
             final String fallback = "wallpapers/" + wallpapers[idx % wallpapers.length];
             // 1. what is on the device now, at once: the owner's photo, the hosted one already kept, else the bundled one
@@ -5162,6 +5204,7 @@ public class MainActivity extends Activity {
     private void showWallpaper(Bitmap bm, String key) {
         if (bm == null || isDestroyed()) return;
         wallShownKey = key;
+        wallKept = bm; wallKeptKey = key;   // 4.4 beta 4: kept for the return after a light trim (WallKeep)
         // Swap roles: the old front becomes the back, the new photo fades in on top.
         final ImageView old = wallFront;
         wallFront = wallBack;
@@ -5204,10 +5247,11 @@ public class MainActivity extends Activity {
         int w = Math.round(getResources().getDisplayMetrics().widthPixels / (float) MIN_DOCK * 1.12f), h = w * 9 / 16;   // the focused tile grows 12%
         int iw = d.getIntrinsicWidth(), ih = d.getIntrinsicHeight();
         if (iw <= 0 || ih <= 0) return d;
-        float f = banner ? Math.max(w / (float) iw, h / (float) ih) : Math.min(h / (float) iw, h / (float) ih);
-        if (f >= 1f) return d;
+        boolean whole = banner && BannerFit.contain(iw, ih, w, h);   // 4.4 beta 4: a banner of another shape is shown whole, not cut by the tile's fill
+        float f = whole ? Math.min(w / (float) iw, h / (float) ih) : banner ? Math.max(w / (float) iw, h / (float) ih) : Math.min(h / (float) iw, h / (float) ih);
+        if (f >= 1f && !whole) return d;
         try {
-            int bw = banner ? w : Math.max(1, Math.round(iw * f)), bh = banner ? h : Math.max(1, Math.round(ih * f));
+            int bw = banner ? w : Math.max(1, Math.round(iw * f)), bh = banner ? h : Math.max(1, Math.round(ih * f));   // a whole banner: 16:9, the picture in its middle
             Bitmap bm = Bitmap.createBitmap(bw, bh, Bitmap.Config.ARGB_8888);
             Canvas c = new Canvas(bm);
             int dw = Math.round(iw * f), dh = Math.round(ih * f);
@@ -5647,6 +5691,15 @@ public class MainActivity extends Activity {
         }
         if (e.getKeyCode() == KeyEvent.KEYCODE_MENU && e.getAction() == KeyEvent.ACTION_UP && Parental.state(this).kids) {
             openParental();   // 4.3.3: kids mode has no pills, and maybe no app left to hold OK on: the Menu key is always a way out (the PIN first)
+            return true;
+        }
+        // 4.4 beta 4: Back on the «يُتلى الآن» card closes it: what it holds stops (paused or playing), the focus goes to the pills; the press and its release are both taken here
+        if (e.getKeyCode() == KeyEvent.KEYCODE_BACK && nowCard != null && getCurrentFocus() == nowCard && nowCard.getVisibility() == View.VISIBLE) {
+            if (e.getAction() == KeyEvent.ACTION_UP && !e.isCanceled()) {
+                NowPlaying.close(this);
+                if (!pills.isEmpty()) pills.get(0).requestFocus();
+                nowCard.setVisibility(View.GONE);   // at once; the service's word (CHANGED) follows
+            }
             return true;
         }
         // On the «يُتلى الآن» card the back key (Dir: ▶ in Arabic, ◀ in English) is the previous surah and the forward key the next (a station has none: ◀ goes back to the pills as on any pill)

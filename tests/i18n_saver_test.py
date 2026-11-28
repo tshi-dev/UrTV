@@ -59,9 +59,9 @@ check("the dialogs: title, message, buttons and lists through Words.of (Dlg), bu
       and "return own || t == null ? t : Words.of(t.toString());" in dlg and "return own ? t : Words.of(t);" in dlg
       and "private static final class Dlg extends WordsBuilder {" in st)
 attach = fn(st, "protected void attachBaseContext(android.content.Context base)")
-check("attachBaseContext: English gets S.wrap's context; Arabic the very Arabic locale and direction it always had",
-      "if (S.en()) { super.attachBaseContext(en); return; }" in attach and 'c.setLocale(new java.util.Locale("ar"));' in attach
-      and 'c.setLayoutDirection(new java.util.Locale("ar"));' in attach and "super.attachBaseContext(base.createConfigurationContext(c));" in attach)
+check("attachBaseContext: English gets S.wrap's context; Arabic the very Arabic locale and direction it always had (each with its words scaled to the screen, TextScale, 4.4 beta 4)",
+      "if (S.en()) { super.attachBaseContext(TextScale.fit(en)); return; }" in attach and 'c.setLocale(new java.util.Locale("ar"));' in attach
+      and 'c.setLayoutDirection(new java.util.Locale("ar"));' in attach and "super.attachBaseContext(TextScale.fit(base.createConfigurationContext(c)));" in attach)
 check("the settings' direction comes from Dir: no hard-coded right-to-left left", "LAYOUT_DIRECTION_RTL" not in st and "TEXT_DIRECTION_RTL" not in st
       and st.count("setLayoutDirection(Dir.layout());") >= 10 and st.count("setTextDirection(Dir.text())") >= 4)
 sidefn = fn(st, "    private View sideItem(final String cat) {")

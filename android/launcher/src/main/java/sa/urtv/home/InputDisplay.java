@@ -37,4 +37,29 @@ final class InputDisplay {
         String n = name(custom, cecRaw, own);
         return standby ? n + S.tv(STANDBY) : n;
     }
+
+    /**
+     * 4.4 beta 4 (a user: «المصادر» listed the same HDMI device twice): which of the reported inputs stay, by index, in their order. Two inputs are
+     * the same socket when they are kept under the same key (InputLabels.key: an HDMI port and the CEC device the TV lists behind it), or when
+     * they are of the same type with the same own name (a TV that reports one socket both as a passthrough input and as an input of its own,
+     * which 4.4 beta 3 began to list). Of the same socket the one shown is the port itself (no parent), then the passthrough one, then the first.
+     * The arrays are parallel; `same` is the type and the TV's own name, `port` no parent, `pass` the passthrough mark.
+     */
+    static java.util.List<Integer> distinct(String[] key, String[] same, boolean[] port, boolean[] pass) {
+        java.util.List<Integer> kept = new java.util.ArrayList<>();
+        for (int i = 0; i < key.length; i++) {
+            int at = -1;
+            for (int k = 0; k < kept.size() && at < 0; k++) {
+                int j = kept.get(k);
+                if (key[i].equals(key[j]) || norm(same[i]).equals(norm(same[j]))) at = k;
+            }
+            if (at < 0) kept.add(i);
+            else if (rank(port[i], pass[i]) > rank(port[kept.get(at)], pass[kept.get(at)])) kept.set(at, i);
+        }
+        return kept;
+    }
+
+    private static int rank(boolean port, boolean pass) { return (port ? 2 : 0) + (pass ? 1 : 0); }
+
+    private static String norm(String s) { return s == null ? "" : s.trim().toLowerCase(java.util.Locale.ROOT); }
 }

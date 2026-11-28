@@ -51,7 +51,7 @@ android {
 }
 
 // the launcher's files the add-on shares with the home (copied, not compiled from the launcher's folder: the rest of it needs the home's R)
-def shared = ['ExtrasWords.java', 'HomeWatch.java', 'TypeInto.java', 'RemoteNav.java', 'RemoteTrace.java', 'AppSearch.java', 'SettingsKey.java', 'Ram.java', 'LiteAuto.java', 'KeyApps.java', 'RemoteButtons.java', 'KeyButton.java', 'PairGuard.java', 'PairCommandShapes.java', 'SignDigest.java', 'VoiceKeys.java', 'KeyFilterSwitch.java']
+def shared = ['ExtrasWords.java', 'HomeWatch.java', 'TypeInto.java', 'RemoteNav.java', 'RemoteTrace.java', 'AppSearch.java', 'SettingsKey.java', 'Ram.java', 'LiteAuto.java', 'CpuClass.java', 'KeyApps.java', 'RemoteButtons.java', 'KeyButton.java', 'PairGuard.java', 'PairCommandShapes.java', 'SignDigest.java', 'VoiceKeys.java', 'KeyFilterSwitch.java']
 def copyShared = tasks.register('copyShared', Copy) {
     from('../launcher/src/main/java/sa/urtv/home') { include shared }
     into "$buildDir/generated/shared/sa/urtv/home"

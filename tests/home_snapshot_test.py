@@ -41,7 +41,7 @@ check("the screensaver page has the same rules: 24 h, 300 KB, half size WebP, pr
 check("…the picture shows the clock, so it is drawn only when made in the minute that is now (beta 1: an old time for 0.8 s at the start); otherwise the ground colour",
       "madeAt / SAME_MINUTE_MS == now / SAME_MINUTE_MS" in sv and "SAME_MINUTE_MS = 60_000" in sv and "!usable(madeKey, img.lastModified()" in sv)
 check("…drawn when the dream starts, held until the live page has painted (alpha 1, at most 3 s), then a 220 ms fade; captured only once painted, when the dream ends",
-      "SaverSnapshot.load(c, url" in ss and "SaverStart.begin(" in dream and "page.getAlpha() >= 1f" in ss and "LIVE_WAIT_MS = 3000" in sv and "FADE_MS = 220" in sv and "page.getAlpha() < 1f" in sv and "SaverSnapshot.capture(ScreenDream.this, getWindow(), shownUrl, web)" in dream)
+      "SaverSnapshot.load(c, url" in ss and "SaverStart.begin(" in dream and "CoverWait.done(page.getAlpha() >= 1f" in ss and "LIVE_WAIT_MS = (int) CoverWait.WAIT_MS" in sv and "FADE_MS = 220" in sv and "page.getAlpha() < 1f" in sv and "SaverSnapshot.capture(ScreenDream.this, getWindow(), shownUrl, web)" in dream)
 check("…the picture is taken from the dream's window while the page shows (PixelCopy: 10 s after it is live, then every 3 minutes, a flat or failed copy kept out), never from the detached view at the end (a blank)",
       "PixelCopy.request(win, null, b," in sv and "FIRST_MS = 10_000" in sv and "EVERY_MS = 3 * 60 * 1000" in sv and "static boolean flat(Bitmap b)" in sv and "page.draw(" not in sv
       and "SaverSnapshot.capture(this, web" not in dream and "snapHandler.removeCallbacks(snapTick)" in dream)

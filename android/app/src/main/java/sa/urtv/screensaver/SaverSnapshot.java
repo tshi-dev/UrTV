@@ -17,7 +17,7 @@ final class SaverSnapshot {
     private SaverSnapshot() {}
 
     static final long MAX_AGE_MS = 24L * 60 * 60 * 1000;
-    static final int MAX_BYTES = 300 * 1024, FADE_MS = 220, LIVE_WAIT_MS = 3000;
+    static final int MAX_BYTES = 300 * 1024, FADE_MS = 220, LIVE_WAIT_MS = (int) CoverWait.WAIT_MS;   // 4.4 beta 4: 1.5 s, was 3 s (CoverWait)
     /** the first picture 10 s after the page is live, then one every 3 minutes while it shows */
     static final long FIRST_MS = 10_000, EVERY_MS = 3 * 60 * 1000;
     static final long SAME_MINUTE_MS = 60_000;
