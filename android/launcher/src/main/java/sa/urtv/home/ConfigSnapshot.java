@@ -30,6 +30,15 @@ final class ConfigSnapshot {
     String glassSize = "100", glassRows = "1";
     /** 4.4 beta 2 «محاذاة التطبيقات»: center (the default; an older screensaver says nothing), right or left */
     String appsAlign = "center";
+    /** 4.4 «أجزاء UrTV»: a part is off (the screensaver's fragment carries «&off=a,b» only when one is) */
+    boolean partOff(String id) {
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("(?:^|&)off=([a-z,]*)").matcher(fragment == null ? "" : fragment);
+        if (!m.find()) return false;
+        for (String k : m.group(1).split(",")) if (k.equals(id)) return true;
+        return false;
+    }
+    /** 4.4 «ابدأ بـ» was answered on this TV: the fragment says «&ask=1» until it is (an older screensaver says nothing: no welcome then) */
+    boolean startSeen() { return fragment == null || !java.util.regex.Pattern.compile("(?:^|&)ask=1(?:&|$)").matcher(fragment).find(); }
     /** 4.4 beta 2 «تبديل الشكل بلا وميض» (the screensaver's switch, off by default; an older screensaver says nothing: off) */
     boolean uiSmooth;
     boolean sceneByTime, sceneByWeather;   // «الأفق يتبع الوقت», «الأفق يتبع الطقس»: off unless the screensaver says on
@@ -307,6 +316,8 @@ final class ConfigSnapshot {
             // the screensaver is missing or signed with another key: the defaults (Riyadh, on)
         }
         keep(c, fragment);   // a real answer: kept for a start when the screensaver cannot answer
+        if (PartsHome.offIn(fragment, "tilawah")) listenPill = false;   // 4.4 «أجزاء UrTV»: a part that is off takes its button and bar with it
+        if (PartsHome.offIn(fragment, "prayer")) bar = false;
         ConfigSnapshot made = new ConfigSnapshot(fragment, greeting, bar, listenPill, updateBell, appearance, watchNext, look, false, ticket);
         made.favBar = favBar;
         made.tweaks = tweaks;
@@ -343,7 +354,7 @@ final class ConfigSnapshot {
     String lang() { return Tr.fromFragment(fragment); }
 
     /** «زر المهام»: «&taskspill=0» is in the fragment only while the button is hidden; an older screensaver (or none) says nothing: shown */
-    boolean tasksPillOn() { return fragment == null || !(fragment.contains("&taskspill=0") || fragment.startsWith("taskspill=0")); }
+    boolean tasksPillOn() { return fragment == null || !(fragment.contains("&taskspill=0") || fragment.startsWith("taskspill=0") || partOff("tasks")); }   // 4.4 «أجزاء UrTV» too
 
     /**
      * «الرجوع يفتح شاشة التوقف» on the screensaver's settings: «&backsaver=1» only while on. null when there is no real answer (an old copy,

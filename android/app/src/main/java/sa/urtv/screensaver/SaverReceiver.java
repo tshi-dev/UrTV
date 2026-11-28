@@ -357,6 +357,12 @@ public class SaverReceiver extends BroadcastReceiver {
             return "error: surface is quick|cards|tray, a number from 30 to 100, and one of look glass graphite";
         String homeLayout = i.getStringExtra("homelayout");
         String preset = i.getStringExtra("preset");
+        // 4.4 «ابدأ بـ» and «أجزاء UrTV»: start KEY (Parts.STARTS), part ID:off|on
+        String start = i.getStringExtra("start"), part = i.getStringExtra("part");
+        if (start != null && Parts.start(start) == null) return "error: start is one of clean, full, couch, prayer, sport, kids, simple, same";
+        String[] partP = part == null ? null : part.split(":", -1);
+        if (partP != null && !(partP.length == 2 && Parts.known(partP[0]) && ("off".equals(partP[1]) || "on".equals(partP[1]))))
+            return "error: part is one of prayer, tilawah, matches, markets, weather, cards, saver, games, tasks, duas, then :off or :on";
         String lookback = i.getStringExtra("lookback");
         for (String k : new String[] {"lookpanelrow", "lookundo", "smoothlook"}) {   // 4.4 beta 2: the new look items' switches
             String v = i.getStringExtra(k);
@@ -549,6 +555,8 @@ public class SaverReceiver extends BroadcastReceiver {
         if (i.getStringExtra("lookundo") != null) p.setUiUndo("on".equals(i.getStringExtra("lookundo")));
         if (i.getStringExtra("smoothlook") != null) p.setUiSmooth("on".equals(i.getStringExtra("smoothlook")));
         if ("restore".equals(i.getStringExtra("lookback"))) p.restorePreviousLook();   // 4.5 «رجّع الشكل السابق» (optimize/saver.sh lookback)
+        if (start != null) p.applyStart(start);   // a start sets a look and the parts; a row given beside it then changes only that row
+        if (partP != null) { p.setPartOff(partP[0], "off".equals(partP[1])); p.lookChanged(); }
         if (preset != null) p.setPreset(preset);   // «أشكال جاهزة» before any one row given beside it (that row then makes it «مخصّص»)
         if (couch != null) p.setCouch("on".equals(couch));   // «شكل كنبة» first (it keeps or puts back the four), then any one choice given beside it
         if (homeLayout != null) p.setHomeLayout(homeLayout);
@@ -800,7 +808,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nlang: " + p.lang()
             + "\nnational: " + p.national()
             + "\ncardstyle: " + p.cardStyle()
-            + "\ncardsize: " + p.cardSize() + "\ncardcorner: " + p.cardCorner() + "\nsidecards: " + p.sideCards()
+            + "\ncardsize: " + p.cardSize() + "\ncardcorner: " + p.cardCorner() + "\nsidecards: " + p.sideCards() + "\nparts off: " + (p.partsOff().isEmpty() ? "none" : p.partsOff()) + "\nstart: " + (p.startSeen() ? (p.start().isEmpty() ? "same" : p.start()) : "not asked yet")
             + "\ndesign: " + p.design() + "\nbar: " + p.bar() + "\nbarat: " + p.barAt() + "\nwx: " + p.wxAt()
             + "\nmarkets: " + (p.marketsOn() ? "" : "off ") + Prefs.join(p.markets(), ",") + "\nclocksize: " + p.clockSize() + "\nmkstyle: " + p.mkStyle()
             + "\nstocks: " + Prefs.join(p.stocks(), ",") + "\nstkchg: " + p.stkChg()

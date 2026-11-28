@@ -56,6 +56,11 @@ the whole task, and to say «تم».
 > • المفضلة: أول ٦ تطبيقات من واجهتك الحالية، بنفس الترتيب
 > • بركّب TV Bro (متصفح للتلفزيون) و SmartTube (يوتيوب بدون إعلانات)، مجانيين من GitHub
 > • ما فيه بطاقة في الواجهة الرئيسية، ووقت شاشة التوقف يبقى مثل ما هو، وما أعطّل إضافات TCL الاختيارية
+> • البداية: «خلّه مثل ما هو» (أو: نظيف، كامل، كنبة، مصلّي، رياضة، للصغار، بسيط)
+
+The start («البداية», 4.4 «ابدأ بـ»): once the screensaver is installed, `optimize/saver.sh start KEY` with my answer (`clean`, `full`, `couch`,
+`prayer`, `sport`, `kids`, `simple`), or `same` when I kept it; `install.sh launcher` answers `same` by itself if nothing was said, so the TV
+never shows the chooser over a check.
 
 After my answer to message 3, start steps 0 and 1 at once, in the same turn: don't end your turn to wait for me
 again. The only other thing I do is press Allow on the TV, and step 1 tells me when, without stopping.

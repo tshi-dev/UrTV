@@ -62,6 +62,10 @@ final class Greeting {
         SharedPreferences sp = prefs();
         long at = sp.getLong("at", 0);
         boolean sameCity = s.lat.equals(sp.getString("lat", "")) && s.lon.equals(sp.getString("lon", ""));
+        if (snap.partOff("weather")) {   // 4.4 «أجزاء UrTV»: «الطقس» off, the greeting alone (nothing asked of the network either)
+            weather.setVisibility(android.view.View.GONE);
+            return;
+        }
         if (sameCity && sp.contains("code") && System.currentTimeMillis() - at < STALE_MS && d != null) {
             String line = GreetingText.weather(sp.getInt("code", -1), GreetingText.seenDust(sp.getFloat("dust", 0), sp.getFloat("vis", -1)), s.city, sp.getFloat("temp", 0), s.latin)
                     + "\n" + GreetingText.sun(S.tv(d.sunLabel), d.sunClock, s.latin, s.clock24);   // «الشروق» / «الغروب»: DayParts keeps the Arabic (MainActivity compares it)

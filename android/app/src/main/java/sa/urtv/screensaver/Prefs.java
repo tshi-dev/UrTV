@@ -554,6 +554,32 @@ final class Prefs {
      */
     static final String SIDE_CARDS_DEFAULT = "off";
     static final String[] SIDE_CARDS = {"off", "a", "b"};
+    /** 4.4 «أجزاء UrTV» (Parts): the parts that are off, "" = all on (the default: an update changes nothing) */
+    String partsOff() { return Parts.clean(sp.getString("partsOff", "")); }
+    boolean partOff(String id) { return Parts.off(partsOff(), id); }
+    /** one part off or on; its own settings are never touched, so on brings it back as it was */
+    void setPartOff(String id, boolean off) { sp.edit().putString("partsOff", Parts.with(partsOff(), id, off)).apply(); }
+    void setPartsOff(String list) { sp.edit().putString("partsOff", Parts.clean(list)).apply(); }
+    /** «ابدأ بـ» was answered (or skipped with «خلّه مثل ما هو»): it never shows by itself again, it stays in «الشكل ← ابدأ من جديد» */
+    boolean startSeen() { return sp.getBoolean("startSeen", false); }
+    void setStartSeen() { sp.edit().putBoolean("startSeen", true).apply(); }
+    /** the start chosen last ("" before any, or after «خلّه مثل ما هو» on a TV that had its own) */
+    String start() { return sp.getString("start", ""); }
+    /**
+     * «ابدأ بـ»: the start's look (Prefs.setPreset, which keeps the person's own values once for «شكلك المعتاد») and its parts; «same» changes
+     * nothing. The city, the teams, the locks and every part's own settings are never touched.
+     */
+    void applyStart(String key) {
+        String[] st = Parts.start(key);
+        if (st == null) return;
+        setStartSeen();
+        if (st[4] == null) return;   // «خلّه مثل ما هو»
+        if (!st[3].isEmpty()) setPreset(st[3]);
+        // «بسيط»: the owner's «never fewer than five apps» holds by itself: the apps bar's smallest choice is five (FAV_BARS)
+        sp.edit().putString("partsOff", Parts.clean(st[4])).putString("start", key).apply();
+        lookChanged();
+    }
+
     String sideCards() { String v = sp.getString("sideCards", SIDE_CARDS_DEFAULT); return java.util.Arrays.asList(SIDE_CARDS).contains(v) ? v : "off"; }
     void setSideCards(String v) { if (java.util.Arrays.asList(SIDE_CARDS).contains(v)) sp.edit().putString("sideCards", v).apply(); }
 
@@ -956,6 +982,8 @@ final class Prefs {
             + "&cardstyle=" + cardStyle()
             + ("m".equals(cardSize()) ? "" : "&csize=" + cardSize()) + ("style".equals(cardCorner()) ? "" : "&ccorner=" + cardCorner())
             + ("off".equals(sideCards()) ? "" : "&sidecards=" + sideCards())
+            + (partsOff().isEmpty() ? "" : "&off=" + partsOff())   // 4.4 «أجزاء UrTV»: the pages leave out what is off (only when one is)
+            + (startSeen() ? "" : "&ask=1")   // 4.4 «ابدأ بـ» not answered yet: the home opens it once
             + "&design=" + design() + "&bar=" + bar() + "&barat=" + barAt() + "&wx=" + wxAt()
             + "&adhanbar=" + (adhanBar() ? "1" : "0") + (adhanLead() == 15 ? "&adhanlead=15" : "")
             + "&yearstrip=" + (yearStrip() ? "1" : "0")
