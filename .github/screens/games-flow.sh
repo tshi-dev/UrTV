@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Runs on the CI emulator (.github/workflows/games-flow-screens.yml): the AFTER of the owner's «phone or no phone» review (docs/research/GAMES-FLOW.md): the built flow, shot with screencap and the remote's keys: the list, the first row «كيف تلعبون؟», the room, the way out to the remote.
 # game's own setup page with the remote's keys (nothing is written behind the app's back).   games.sh SAVER_APK HOME_APK OUT_DIR
-# Best effort: every shot is taken whatever is on the screen; the log says what was pressed. (re-shot after the liar rounds' bar fix) (after the UI review: address, count line, titles; word game from the list)
+# Best effort: every shot is taken whatever is on the screen; the log says what was pressed. (re-shot after the liar rounds' bar fix) (after the UI review; the list keys follow the game played last)
 set +e
 SAVER_APK=$1; HOME_APK=$2; OUT=$3
 mkdir -p "$OUT"
@@ -33,7 +33,7 @@ shot() { sleep "${2:-1.5}"; adb exec-out screencap -p > "$OUT/$1.png"; echo "sho
 # 0 quiz 1 khanat 2 missing-word 3 odd-one 4 charades 5 letter-hive 6 word5 7 domino 8 forehead 9 author 10 closest 11 liar 12 emoji ...
 # the focus starts on the first game with no phones (khanat, 1); after a game it is on that game
 CUR=1
-list() { adb shell am start -W --activity-clear-task -n sa.urtv.screensaver/.YourTvHubActivity --es open games > /dev/null; sleep 6; CUR=1; }
+list() { adb shell am start -W --activity-clear-task -n sa.urtv.screensaver/.YourTvHubActivity --es open games > /dev/null; sleep 6; CUR=${LAST:-1}; }   # the focus starts on the game played last (else on the first with no phones, 1)
 tile() {   # go to tile $1 from $CUR, then open it
   local to=$1 dr dc
   dr=$(( to / 4 - CUR / 4 )); dc=$(( to % 4 - CUR % 4 ))
@@ -41,7 +41,7 @@ tile() {   # go to tile $1 from $CUR, then open it
   while [ $dr -lt 0 ]; do key DPAD_UP; dr=$((dr+1)); done
   while [ $dc -gt 0 ]; do key DPAD_LEFT; dc=$((dc-1)); done
   while [ $dc -lt 0 ]; do key DPAD_RIGHT; dc=$((dc+1)); done
-  CUR=$to
+  CUR=$to; LAST=$to
   key DPAD_CENTER; sleep 2
 }
 leave() { key BACK DPAD_DOWN DPAD_DOWN DPAD_CENTER; sleep 2; }   # the pause card: «الرئيسية»
