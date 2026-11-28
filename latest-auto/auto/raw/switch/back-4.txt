@@ -4,5 +4,5 @@ Status: ok
 LaunchState: HOT
 Activity: com.google.android.tvlauncher/.MainActivity
 TotalTime: 0
-WaitTime: 6
+WaitTime: 9
 Complete

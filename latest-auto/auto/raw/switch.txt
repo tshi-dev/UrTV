@@ -1,10 +1,10 @@
 round	leave_ms	back_ms	frames	jank_pct	p90_ms	p99_ms
-1	437	0	0	0.0	4950	4950
-2	164	0	0	0.0	4950	4950
-3	162	0	0	0.0	4950	4950
-4	163	0	0	0.0	4950	4950
-5	201	0	0	0.0	4950	4950
-INFO leave_ms: median 164
+1	431	0	0	0.0	4950	4950
+2	155	0	0	0.0	4950	4950
+3	193	0	0	0.0	4950	4950
+4	215	0	0	0.0	4950	4950
+5	212	0	0	0.0	4950	4950
+INFO leave_ms: median 212
 INFO back_ms: median 0
 INFO jank_pct: median 0
 INFO p99_ms: median 4950

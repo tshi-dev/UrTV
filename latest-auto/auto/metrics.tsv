@@ -1,15 +1,15 @@
-switch_leave_ms	164	ms
+switch_leave_ms	212	ms
 switch_back_ms	0	ms
 switch_jank_pct	0	%
 switch_p99_ms	4950	ms
-cold_start_home_ms	1157	ms
-cold_start_saver_ms	712	ms
-jank_home_frames	37	
+cold_start_home_ms	1197	ms
+cold_start_saver_ms	884	ms
+jank_home_frames	38	
 jank_home_pct	100.0	%
-jank_home_p90_ms	40	ms
-jank_home_p99_ms	46	ms
-pss_home_kb	60368	KB
-pss_saver_kb	38999	KB
+jank_home_p90_ms	73	ms
+jank_home_p99_ms	85	ms
+pss_home_kb	58679	KB
+pss_saver_kb	39698	KB
 crashes	0	
 anrs	0	
 frozen_lines	0	

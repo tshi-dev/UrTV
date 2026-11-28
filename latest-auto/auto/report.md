@@ -1,21 +1,21 @@
-# Automatic round: emulator-25
+# Automatic round: emulator-26
 
 ## Health metrics
 
 | metric | now | limit | previous | change | verdict |
 |---|---|---|---|---|---|
-| switch_leave_ms | 164ms |  |  |  | no limit |
+| switch_leave_ms | 212ms |  |  |  | no limit |
 | switch_back_ms | 0ms |  |  |  | no limit |
 | switch_jank_pct | 0% |  |  |  | no limit |
 | switch_p99_ms | 4950ms |  |  |  | no limit |
-| cold_start_home_ms | 1157ms | max 20000 |  |  | ok |
-| cold_start_saver_ms | 712ms | max 20000 |  |  | ok |
-| jank_home_frames | 37 |  |  |  | no limit |
+| cold_start_home_ms | 1197ms | max 20000 |  |  | ok |
+| cold_start_saver_ms | 884ms | max 20000 |  |  | ok |
+| jank_home_frames | 38 |  |  |  | no limit |
 | jank_home_pct | 100.0% | max 100 |  |  | ok |
-| jank_home_p90_ms | 40ms |  |  |  | no limit |
-| jank_home_p99_ms | 46ms |  |  |  | no limit |
-| pss_home_kb | 60368KB | max 350000 |  |  | ok |
-| pss_saver_kb | 38999KB | max 350000 |  |  | ok |
+| jank_home_p90_ms | 73ms |  |  |  | no limit |
+| jank_home_p99_ms | 85ms |  |  |  | no limit |
+| pss_home_kb | 58679KB | max 350000 |  |  | ok |
+| pss_saver_kb | 39698KB | max 350000 |  |  | ok |
 | crashes | 0 | zero 0 |  |  | ok |
 | anrs | 0 | zero 0 |  |  | ok |
 | frozen_lines | 0 | zero 0 |  |  | ok |
@@ -24,7 +24,6 @@
 
 | step | result | what |
 |---|---|---|
-| radio | SKIP | left out of this round (--skip / ROUND_SKIP) |
 | layout-classic-none | PASS | كلاسيكي، بلا بطاقة: the home is in front (look at shots/layout-classic-none.png) |
 | layout-classic-stocks | PASS | كلاسيكي، الأسهم: the home is in front (look at shots/layout-classic-stocks.png) |
 | layout-classic-matches | PASS | كلاسيكي، المباريات: the home is in front (look at shots/layout-classic-matches.png) |
@@ -74,6 +73,19 @@
 | settings-tvos-update | PASS | tvOS ← حول والتحديث: «تحديث تلفزيوني» is on the screen |
 | settings-tvos-search | PASS | tvOS ← بحث في الإعدادات: «بحث في الإعدادات» is on the screen |
 | saver-start | PASS | a dream runs |
+| radio-0 | PASS | إذاعة القرآن الكريم - السعودية: playing |
+| radio-1 | PASS | إذاعة القرآن الكريم - مصر: playing |
+| radio-2 | PASS | الشيخ أبو بكر الشاطري: playing |
+| radio-3 | PASS | عبدالرحمن السديس: playing |
+| radio-4 | PASS | سعود الشريم: playing |
+| radio-5 | PASS | ماهر المعيقلي: playing |
+| radio-6 | PASS | مشاري العفاسي: playing |
+| radio-7 | PASS | سعد الغامدي: playing |
+| radio-8 | PASS | ياسر الدوسري: playing |
+| radio-9 | PASS | عبدالباسط عبدالصمد: playing |
+| radio-10 | PASS | محمد صديق المنشاوي: playing |
+| radio-11 | PASS | أحمد العجمي: playing |
+| radio-12 | PASS | الشيخ عبدالله خياط: playing |
 | display-720p-home | PASS | the home at 1280x720, density 213 |
 | display-720p-settings | PASS | the settings at 720p |
 | font-large-home | PASS | the home at font scale 1.3 |
@@ -99,7 +111,7 @@
 | adhan-isha-screen | PASS | العشاء: screen |
 | adhan-isha-none | PASS | العشاء: none |
 | games-list | PASS | the games list is on the screen (the badges: look at shots/games-list.png) |
-| switch | PASS | the home out to Settings and back, 5 times: leave_ms: median 164;back_ms: median 0;jank_pct: median 0;p99_ms: median 4950; |
+| switch | PASS | the home out to Settings and back, 5 times: leave_ms: median 212;back_ms: median 0;jank_pct: median 0;p99_ms: median 4950; |
 
 ## Verdict
 

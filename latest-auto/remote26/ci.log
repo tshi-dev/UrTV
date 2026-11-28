@@ -5,5 +5,5 @@ home: 30 keys, 0 slow, 3 different focused places, the focus changed 7 times (4 
 Performing Streamed Install
 Success
 services: sa.urtv.extras/sa.urtv.home.ExtrasA11yService
-addon: 30 keys, 0 slow, 2 different focused places, the focus changed 7 times (4 after the 10th key)
+addon: 30 keys, 0 slow, 2 different focused places, the focus changed 8 times (4 after the 10th key)
 PASS: on Android 8 the D-pad moves the focus in the home, alone and with the add-on's service on (30 keys each, none held)

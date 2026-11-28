@@ -3,6 +3,6 @@ Warning: Activity not started, its current task has been brought to the front
 Status: ok
 LaunchState: HOT
 Activity: com.android.tv.settings/.MainSettings
-TotalTime: 154
-WaitTime: 163
+TotalTime: 201
+WaitTime: 215
 Complete
