@@ -2,24 +2,24 @@ Performing Streamed Install
 Success
 Performing Streamed Install
 Success
-shot home-00-idle 1867616
-shot home-01-top 1870335
-shot home-pill-1 1870335
-shot home-pill-2 1867783
-shot home-pill-3 1866665
-shot home-pill-4 1866703
-shot home-pill-5 1864805
-shot home-pill-6 1865618
-shot home-pill-7 1865317
-shot home-pill-8 1865317
-shot home-pill-left-1 1867115
-shot home-pill-left-2 1867115
-shot home-pill-left-3 1867115
-shot home-pill-left-4 1867115
-shot home-tasks-card-focused 1651859
+shot home-00-idle 1902782
+shot home-01-top 1904988
+shot home-pill-1 1902160
+shot home-pill-2 1900973
+shot home-pill-3 1901010
+shot home-pill-4 1899940
+shot home-pill-5 1900678
+shot home-pill-6 1900341
+shot home-pill-7 1900341
+shot home-pill-8 1900341
+shot home-pill-left-1 1902196
+shot home-pill-left-2 1902196
+shot home-pill-left-3 1902196
+shot home-pill-left-4 1902196
+shot home-tasks-card-focused 1655063
 
 Exception occurred while executing 'start':
-java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000 cmp=sa.urtv.home/.tilawah.MainActivity } from null (pid=4984, uid=2000) not exported from uid 10077
+java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000 cmp=sa.urtv.home/.tilawah.MainActivity } from null (pid=5077, uid=2000) not exported from uid 10077
 	at com.android.server.wm.ActivityStackSupervisor.checkStartAnyActivityPermission(ActivityStackSupervisor.java:1032)
 	at com.android.server.wm.ActivityStarter.executeRequest(ActivityStarter.java:1001)
 	at com.android.server.wm.ActivityStarter.execute(ActivityStarter.java:671)
@@ -36,14 +36,14 @@ java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000
 	at com.android.server.am.ActivityManagerService.onTransact(ActivityManagerService.java:2883)
 	at android.os.Binder.execTransactInternal(Binder.java:1159)
 	at android.os.Binder.execTransact(Binder.java:1123)
-shot tilawah-01-readers 1651859
-shot tilawah-02-readers-down 1513493
-shot tilawah-03-surah-grid 1513493
-shot tilawah-04-surah-grid-focus 1513493
-shot tilawah-05-player 1513493
+shot tilawah-01-readers 1656081
+shot tilawah-02-readers-down 1512917
+shot tilawah-03-surah-grid 1512917
+shot tilawah-04-surah-grid-focus 1512917
+shot tilawah-05-player 1512917
 
 Exception occurred while executing 'start':
-java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000 cmp=sa.urtv.home/.tilawah.MainActivity } from null (pid=5193, uid=2000) not exported from uid 10077
+java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000 cmp=sa.urtv.home/.tilawah.MainActivity } from null (pid=5226, uid=2000) not exported from uid 10077
 	at com.android.server.wm.ActivityStackSupervisor.checkStartAnyActivityPermission(ActivityStackSupervisor.java:1032)
 	at com.android.server.wm.ActivityStarter.executeRequest(ActivityStarter.java:1001)
 	at com.android.server.wm.ActivityStarter.execute(ActivityStarter.java:671)
@@ -60,12 +60,12 @@ java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000
 	at com.android.server.am.ActivityManagerService.onTransact(ActivityManagerService.java:2883)
 	at android.os.Binder.execTransactInternal(Binder.java:1159)
 	at android.os.Binder.execTransact(Binder.java:1123)
-shot tilawah-06-stations-or-adhan-tab 1225761
-shot tilawah-07-adhan-tab 1226018
-shot tilawah-08-adhan-volume-row 1394212
+shot tilawah-06-stations-or-adhan-tab 1197316
+shot tilawah-07-adhan-tab 1197498
+shot tilawah-08-adhan-volume-row 1342400
 
 Exception occurred while executing 'start':
-java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000 cmp=sa.urtv.home/.tilawah.AdhanActivity } from null (pid=5367, uid=2000) not exported from uid 10077
+java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000 cmp=sa.urtv.home/.tilawah.AdhanActivity } from null (pid=5457, uid=2000) not exported from uid 10077
 	at com.android.server.wm.ActivityStackSupervisor.checkStartAnyActivityPermission(ActivityStackSupervisor.java:1032)
 	at com.android.server.wm.ActivityStarter.executeRequest(ActivityStarter.java:1001)
 	at com.android.server.wm.ActivityStarter.execute(ActivityStarter.java:671)
@@ -82,15 +82,15 @@ java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000
 	at com.android.server.am.ActivityManagerService.onTransact(ActivityManagerService.java:2883)
 	at android.os.Binder.execTransactInternal(Binder.java:1159)
 	at android.os.Binder.execTransact(Binder.java:1123)
-shot tilawah-09-adhan-voices 1845493
-shot tilawah-10-adhan-voices-focus 1287593
-shot home-now-playing 1542344
-shot home-now-playing-card-focused 1551093
-shot saver-now-playing 2438486
-shot settings-a-buttons-hub 322239
-shot settings-a-buttons-prayer 471040
-shot settings-a-buttons-photos 442344
-shot settings-a-buttons-look-cards 433415
+shot tilawah-09-adhan-voices 1770193
+shot tilawah-10-adhan-voices-focus 1205676
+shot home-now-playing 1555531
+shot home-now-playing-card-focused 1564696
+shot saver-now-playing 2106624
+shot settings-a-buttons-hub 322054
+shot settings-a-buttons-prayer 470948
+shot settings-a-buttons-photos 442467
+shot settings-a-buttons-look-cards 433386
 shot settings-b-couch-prayer 501213
 shot settings-b-couch-photos 499533
 shot settings-b-couch-look 480637
@@ -104,14 +104,14 @@ shot settings-b-couch-about 526689
 shot settings-b-couch-search 372062
 shot settings-c-tvos-hub 327901
 shot settings-c-tvos-prayer 461246
-shot couch-none-date 1262299
-shot couch-row-gear 1286396
-shot couch-header 1774656
-shot couch-panel 1407368
-shot couch-panel-settings 1406477
+shot couch-none-date 1795965
+shot couch-row-gear 1747904
+shot couch-header 1799266
+shot couch-panel 1416523
+shot couch-panel-settings 1415724
 shot couch-panel-settings-open 505262
-shot home-side-cards-a 1740585
-shot home-side-cards-b 1738857
+shot home-side-cards-a 1760560
+shot home-side-cards-b 1764504
 buttons	احذف صورة	6	6	OK	احذف صورة ما فيه صور بعد، الرئيسية وشاشة التوقف ›
 buttons	أذاني من ملف	5	6	OK	أضف من فلاشة أو التنزيلات يُنسخ الملف إلى التلفزيون ولا يُشغَّل من الفلاشة من ال
 buttons	الأدعية والتذكيرات	6	7	OK	إضافة دعاء أو تذكير صوت من «صوتياتي» سورة الكهف يوم الجمعة جاهز: قارئ من «تلاوة»
@@ -121,17 +121,17 @@ buttons	بحث في الإعدادات	1	2	OK	اكتب كلمة، مثل: صوت
 couch	احذف صورة	5	6	OK	احذف صورة ما فيه صور بعد، الرئيسية وشاشة التوقف
 couch	أذاني من ملف	4	6	OK	أضف من فلاشة أو التنزيلات يُنسخ الملف إلى التلفزيون ولا يُشغَّل من الفلاشة من ال
 couch	الأدعية والتذكيرات	5	7	OK	إضافة دعاء أو تذكير صوت من «صوتياتي» سورة الكهف يوم الجمعة جاهز: قارئ من «تلاوة»
-couch	التطبيقات المخفية	11	12	OK	شاشة تلفزيونك مباريات فرقك الاتفاق × الهلال اليوم ٥:٢٠ م بعد ٦ ساعات الظهر بعد ٣
+couch	التطبيقات المخفية	11	12	OK	شاشة تلفزيونك مباريات فرقك الاتفاق × الهلال اليوم ٥:٢٠ م بعد ٥ ساعات الظهر بعد ٣
 couch	حجم البطاقات	9	12	OK	عادي
 couch	بحث في الإعدادات	2	2	OK	
 tvos	احذف صورة	6	6	OK	احذف صورة ما فيه صور بعد، الرئيسية وشاشة التوقف ›
 tvos	أذاني من ملف	5	6	OK	أضف من فلاشة أو التنزيلات يُنسخ الملف إلى التلفزيون ولا يُشغَّل من الفلاشة من ال
 tvos	الأدعية والتذكيرات	6	7	OK	إضافة دعاء أو تذكير صوت من «صوتياتي» سورة الكهف يوم الجمعة جاهز: قارئ من «تلاوة»
-tvos	التطبيقات المخفية	12	12	OK	شاشة تلفزيونك مباريات فرقك الاتفاق × الهلال اليوم ٥:٢٠ م بعد ٦ ساعات الظهر بعد ٣
+tvos	التطبيقات المخفية	12	12	OK	شاشة تلفزيونك مباريات فرقك الاتفاق × الهلال اليوم ٥:٢٠ م بعد ٥ ساعات الظهر بعد ١
 tvos	حجم البطاقات	10	12	OK	أصغر عادي أكبر
 tvos	بحث في الإعدادات	1	2	OK	اكتب كلمة، مثل: صوت، لون، مدينة
-shot bug-a-dock-few-apps 1791423
-shot bug-h-sand-reminder 1606993
+shot bug-a-dock-few-apps 1815194
+shot bug-h-sand-reminder 1611383
 shot bug-h-sand-letters 195447
 bug-a-dock-few-apps.png
 bug-h-sand-letters.png
