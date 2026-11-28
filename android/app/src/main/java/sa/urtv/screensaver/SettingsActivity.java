@@ -338,7 +338,7 @@ public class SettingsActivity extends Activity {
         final int wasIndex = had == null ? 0 : before.indexOf(had), scrollY = entering ? 0 : scroll.getScrollY();
         entering = false;
         groupCat = null;
-        hint.setText(Words.of("اختيار يفتح، ورجوع يرجّعك خطوة"));   // 4.3.3: no «•» between the words (the owner)
+        hint.setVisibility(View.GONE);   // the audit: «اختيار يفتح، ورجوع يرجّعك خطوة» on every screen, over the first row (the remote's keys say it)
         list.removeAllViews();
         if (classic) classicHead(tiles); else {
         sidePane();
@@ -781,7 +781,7 @@ public class SettingsActivity extends Activity {
         // 4.4 beta 4 (the findability review: deleting a photo took ~41 presses, adding one was never said): «صوري والخلفيات» opens with them
         row("أضف صوري من الجوال", "من صفحة الجوال: «صوري»، تضيف وتحذف", R.drawable.ic_phone,
             new Runnable() { public void run() { openPhoneControl(); } });
-        row("احذف صورة", Own.count(this) == 0 ? "ما فيه صور بعد" : "اختر من صورك", R.drawable.ic_eye,
+        row("احذف صورة", Own.count(this) == 0 ? null : "اختر من صورك", R.drawable.ic_eye,
             new Runnable() { public void run() { if (Own.count(SettingsActivity.this) == 0) toast("ما فيه صور بعد: أضفها من الجوال"); else pickOwnToDelete(); } });
         row("صوري (" + arabicNum(Own.count(this)) + "/" + arabicNum(Own.max(this)) + ")", ownLabel(), R.drawable.ic_eye,
             new Runnable() { public void run() { pickOwn(); } });
@@ -912,19 +912,11 @@ public class SettingsActivity extends Activity {
         head.setGravity(Gravity.CENTER_VERTICAL);
         head.setPadding(0, 0, 0, dp(16));
         TextView title = new TextView(this);
-        title.setText(Words.of("تلفزيونك"));
+        title.setText(Words.of(screen == null ? "الإعدادات" : SettingsHub.name(screen)));   // the audit: one title (it was «تلفزيونك» over «الإعدادات»)
         title.setTextColor(look.text);
         title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 44);
         title.setTypeface(font("ThmanyahDisplay-Bold"));
         head.addView(title);
-        TextView sub = new TextView(this);
-        sub.setText(Words.of(screen == null ? "الإعدادات" : SettingsHub.name(screen)));
-        sub.setTextColor(look.sub);
-        sub.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-        sub.setTypeface(font("Thmanyah-Regular"));
-        LinearLayout.LayoutParams sp0 = new LinearLayout.LayoutParams(-2, -2);
-        sp0.setMarginStart(dp(20));
-        head.addView(sub, sp0);
         list.addView(head);
     }
 
@@ -4658,8 +4650,11 @@ public class SettingsActivity extends Activity {
         name.setTextSize(TypedValue.COMPLEX_UNIT_SP, ROW_SP);
         name.setTypeface(font("Thmanyah-Medium"));
         name.setSingleLine(true);
-        name.setEllipsize(android.text.TextUtils.TruncateAt.END);
-        texts.addView(name, new LinearLayout.LayoutParams(0, -2, 1f));
+        name.setEllipsize(android.text.TextUtils.TruncateAt.END);   // only past 60 % of the pane, which no row's name reaches
+        name.setMaxWidth(Math.round((pageWidth - sideWidth) * 0.6f));
+        // the audit (the owner: «ما تخلي شيء صعب»): the name kept its weight and the value up to half the pane, so names were cut («الفرق المتابع…»,
+        // «تحديث تلفزي…»); now the name is whole and the value wraps beside it in what is left
+        texts.addView(name, new LinearLayout.LayoutParams(-2, -2));
         String where = SettingsHub.scopeWords(FocusKey.key(label));   // 4.4 the owner: where the row shows (the home, the screensaver, both, the whole TV)
         String full = value == null ? (where.isEmpty() ? null : where) : where.isEmpty() ? value : value + "، " + where;
         final TextView val = new TextView(this);
@@ -4671,9 +4666,8 @@ public class SettingsActivity extends Activity {
             val.setTypeface(font("Thmanyah-Regular"));
             val.setMaxLines(2);   // a long line wraps to a second one instead of being cut with «..» (tester S7); only a third is cut
             val.setEllipsize(android.text.TextUtils.TruncateAt.END);
-            val.setMaxWidth(Math.round((pageWidth - sideWidth) * 0.5f));
             val.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
-            LinearLayout.LayoutParams vp = new LinearLayout.LayoutParams(-2, -2);
+            LinearLayout.LayoutParams vp = new LinearLayout.LayoutParams(0, -2, 1f);
             vp.setMarginStart(dp(16));
             texts.addView(val, vp);
         }

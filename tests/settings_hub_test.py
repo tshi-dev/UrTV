@@ -151,9 +151,9 @@ check("a row's key toward the list goes to its own section's item, never to the 
       "View item = sideItems.get(screen);" in st and "if (Dir.rtl()) card.setNextFocusRightId(item.getId()); else card.setNextFocusLeftId(item.getId());" in st)
 check("the settings open on the first section with the focus on its item (a link or the city's way in opens its own section and row)",
       "if (screen == null && !classic) { screen = SettingsHub.PRAY; sideFocus = true; }" in st and st.index("if (askCity) cityRow();") < st.index("if (screen == null && !classic) { screen = SettingsHub.PRAY; sideFocus = true; }"))
-check("the pane's head: the section's name, its line, and what is set in it now; no «•» in the hint",
+check("the pane's head: the section's name, its line, and what is set in it now; no hint over the rows (the audit: it covered the first row on every screen)",
       "title.setText(conv(SettingsHub.name(screen)));" in render and "line(SettingsHub.about(screen), look.sub, 0);" in render and "String now = hubSummary(screen);" in render
-      and 'hint.setText(Words.of("اختيار يفتح، ورجوع يرجّعك خطوة"));' in render)
+      and "hint.setVisibility(View.GONE);" in render)
 
 # ---- the screens: Back to the tile, the focus kept on a row, nothing drawn outside its category
 back = st[st.index("public void onBackPressed()"):].split("\n    }\n")[0]

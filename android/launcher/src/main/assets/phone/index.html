@@ -86,7 +86,6 @@ header.top .ttl{flex:1;min-width:0;font-weight:700}
 header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 .con{color:var(--on);font-weight:400;margin-inline-start:6px}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--on);margin-inline-end:5px}
-#hSet{background:var(--tile);color:var(--text);width:52px;height:52px}
 #bar{position:fixed;bottom:0;inset-inline:0;z-index:5;background:var(--bar);border-top:1px solid var(--line);display:flex;padding:6px 8px calc(8px + env(safe-area-inset-bottom));gap:4px;max-width:560px;margin:0 auto}
 #bar button{flex:1 1 0;flex-direction:column;gap:3px;min-height:58px;border:0;background:none;font-size:14px;padding:4px 2px;border-radius:16px;color:var(--dim);line-height:1.3}
 #bar button svg { width:26px; height:26px; stroke-width:1.7; }
@@ -160,7 +159,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 <div class="card lg">
 <span class="ic" data-i="tv"></span>
 <h1>تحكم من الجوال</h1>
-<p id="loginInfo">افتح هذه الصفحة بمسح الرمز الظاهر على التلفزيون، أو اكتب الرمز المكوّن من ٦ أرقام الظاهر تحت العنوان.</p>
+<p id="loginInfo">اكتب الرمز الظاهر على التلفزيون.</p>
 <input id="code" inputmode="numeric" autocomplete="off" maxlength="7" placeholder="الرمز (٦ أرقام)" dir="ltr" aria-label="الرمز">
 <button id="codeGo" class="gold wide">اتصال</button>
 <p id="loginState" role="status"></p>
@@ -171,7 +170,6 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 <header class="top">
 <span class="ic" data-i="tv"></span>
 <div class="ttl">التلفزيون<span class="con"><span class="dot"></span>متصل</span><span class="sub" id="left"></span></div>
-<button id="hSet" class="ic" data-i="settings" aria-label="الإعدادات"></button>
 </header>
 
 <div id="t-remote">
@@ -226,7 +224,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 <p>مؤقت النوم للتلاوة</p><select id="qSleep" aria-label="مؤقت النوم للتلاوة"><option value="0">بدون</option><option value="15">١٥ دقيقة</option><option value="30">٣٠ دقيقة</option><option value="60">٦٠ دقيقة</option><option value="90">٩٠ دقيقة</option></select>
 </div>
 <div class="card">
-<div class="ad"><div><h2 class="k">الأذان القادم</h2><div id="nextA"></div></div><label class="tg"><input type="checkbox" id="aOn2">الأذان يعمل</label></div>
+<div class="ad"><div><h2 class="k">الأذان القادم</h2><div id="nextA"></div></div></div>
 <button id="adhanStop2" class="gold wide hidden" data-i="bell">أوقف الأذان الآن</button>
 </div>
 <div class="card hidden" id="saverCard">
@@ -524,7 +522,6 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 		return s;
 	}
 	document.querySelectorAll('[data-i]').forEach(function (e) { e.insertBefore(icon(e.getAttribute('data-i')), e.firstChild); });
-	$('hSet').onclick = function () { tab('settings'); };
 	var TABS = [['remote', 'الريموت'], ['apps', 'التطبيقات'], ['now', 'يعمل الآن'], ['settings', 'الإعدادات']];
 	function tab(name) {
 		curTab = name;
@@ -623,7 +620,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 		$('lang').classList.toggle('hidden', !s.lang);
 		cards(s);
 		var a = s.adhan || {};
-		$('aOn').checked = !!a.on; $('aOn2').checked = !!a.on; $('aShort').checked = !!a.short; $('aStop').checked = !!a.stopkey;
+		$('aOn').checked = !!a.on; $('aShort').checked = !!a.short; $('aStop').checked = !!a.stopkey;
 		$('aVol').value = a.volume || 50; $('aVolN').textContent = (a.volume || 50) + '٪';
 		var vs = s.voices || [];
 		fill($('aVoice'), vs.filter(function (v) { return !v.fajr; }), a.voice);
@@ -694,7 +691,6 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 		set({ home_cards: out }).then(function () { if (chosenCards().join() === out.join()) cardsDirty = false; refresh(); });
 	};
 	$('aOn').onchange = function () { set({ adhan_on: this.checked }); };
-	$('aOn2').onchange = function () { set({ adhan_on: this.checked }); };
 	$('aShort').onchange = function () { set({ adhan_short: this.checked }); };
 	$('aStop').onchange = function () { set({ adhan_stopkey: this.checked }); };
 	$('aVoice').onchange = function () { set({ adhan_voice: parseInt(this.value, 10) }); };
