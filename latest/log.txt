@@ -2,24 +2,24 @@ Performing Streamed Install
 Success
 Performing Streamed Install
 Success
-shot home-00-idle 1896323
-shot home-01-top 1898849
-shot home-pill-1 1898849
-shot home-pill-2 1898849
-shot home-pill-3 1896799
-shot home-pill-4 1896785
-shot home-pill-5 1894896
-shot home-pill-6 1895697
-shot home-pill-7 1895448
-shot home-pill-8 1895448
-shot home-pill-left-1 1897431
-shot home-pill-left-2 1897431
-shot home-pill-left-3 1897431
-shot home-pill-left-4 1897431
-shot home-tasks-card-focused 1640023
+shot home-00-idle 1895489
+shot home-01-top 1895071
+shot home-pill-1 1894046
+shot home-pill-2 1894103
+shot home-pill-3 1892467
+shot home-pill-4 1893161
+shot home-pill-5 1892781
+shot home-pill-6 1892781
+shot home-pill-7 1892781
+shot home-pill-8 1892882
+shot home-pill-left-1 1894217
+shot home-pill-left-2 1894217
+shot home-pill-left-3 1894217
+shot home-pill-left-4 1894217
+shot home-tasks-card-focused 1638369
 
 Exception occurred while executing 'start':
-java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000 cmp=sa.urtv.home/.tilawah.MainActivity } from null (pid=5272, uid=2000) not exported from uid 10077
+java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000 cmp=sa.urtv.home/.tilawah.MainActivity } from null (pid=5058, uid=2000) not exported from uid 10077
 	at com.android.server.wm.ActivityStackSupervisor.checkStartAnyActivityPermission(ActivityStackSupervisor.java:1032)
 	at com.android.server.wm.ActivityStarter.executeRequest(ActivityStarter.java:1001)
 	at com.android.server.wm.ActivityStarter.execute(ActivityStarter.java:671)
@@ -36,14 +36,14 @@ java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000
 	at com.android.server.am.ActivityManagerService.onTransact(ActivityManagerService.java:2883)
 	at android.os.Binder.execTransactInternal(Binder.java:1159)
 	at android.os.Binder.execTransact(Binder.java:1123)
-shot tilawah-01-readers 1639579
-shot tilawah-02-readers-down 1646991
+shot tilawah-01-readers 1638369
+shot tilawah-02-readers-down 1645854
 shot tilawah-03-surah-grid 158871
 shot tilawah-04-surah-grid-focus 158871
-shot tilawah-05-player 109218
+shot tilawah-05-player 109232
 
 Exception occurred while executing 'start':
-java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000 cmp=sa.urtv.home/.tilawah.MainActivity } from null (pid=5580, uid=2000) not exported from uid 10077
+java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000 cmp=sa.urtv.home/.tilawah.MainActivity } from null (pid=5347, uid=2000) not exported from uid 10077
 	at com.android.server.wm.ActivityStackSupervisor.checkStartAnyActivityPermission(ActivityStackSupervisor.java:1032)
 	at com.android.server.wm.ActivityStarter.executeRequest(ActivityStarter.java:1001)
 	at com.android.server.wm.ActivityStarter.execute(ActivityStarter.java:671)
@@ -65,7 +65,7 @@ shot tilawah-07-adhan-tab 158871
 shot tilawah-08-adhan-volume-row 158871
 
 Exception occurred while executing 'start':
-java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000 cmp=sa.urtv.home/.tilawah.AdhanActivity } from null (pid=5745, uid=2000) not exported from uid 10077
+java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000 cmp=sa.urtv.home/.tilawah.AdhanActivity } from null (pid=5575, uid=2000) not exported from uid 10077
 	at com.android.server.wm.ActivityStackSupervisor.checkStartAnyActivityPermission(ActivityStackSupervisor.java:1032)
 	at com.android.server.wm.ActivityStarter.executeRequest(ActivityStarter.java:1001)
 	at com.android.server.wm.ActivityStarter.execute(ActivityStarter.java:671)
@@ -84,9 +84,9 @@ java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000
 	at android.os.Binder.execTransact(Binder.java:1123)
 shot tilawah-09-adhan-voices 158871
 shot tilawah-10-adhan-voices-focus 158871
-shot home-now-playing 1538132
-shot home-now-playing-card-focused 1549899
-shot saver-now-playing 2267318
+shot home-now-playing 1545626
+shot home-now-playing-card-focused 1549594
+shot saver-now-playing 2329977
 shot settings-a-buttons-hub 322239
 shot settings-a-buttons-prayer 471040
 shot settings-a-buttons-photos 442344
@@ -99,13 +99,13 @@ shot settings-b-couch-saver 474894
 shot settings-b-couch-apps 499429
 shot settings-b-couch-matches 487497
 shot settings-b-couch-family 429114
-shot settings-b-couch-lang 473561
+shot settings-b-couch-lang 473497
 shot settings-b-couch-about 526689
 shot settings-b-couch-search 372062
 shot settings-c-tvos-hub 327901
 shot settings-c-tvos-prayer 461246
-shot home-side-cards-a 1977055
-shot home-side-cards-b 764946
+shot home-side-cards-a 1971047
+shot home-side-cards-b 755146
 buttons	احذف صورة	6	6	OK	احذف صورة ما فيه صور بعد، الرئيسية وشاشة التوقف ›
 buttons	أذاني من ملف	5	6	OK	أضف من فلاشة أو التنزيلات يُنسخ الملف إلى التلفزيون ولا يُشغَّل من الفلاشة من ال
 buttons	الأدعية والتذكيرات	6	7	OK	إضافة دعاء أو تذكير صوت من «صوتياتي» سورة الكهف يوم الجمعة جاهز: قارئ من «تلاوة»
@@ -115,13 +115,13 @@ buttons	بحث في الإعدادات	1	2	OK	اكتب كلمة، مثل: صوت
 couch	احذف صورة	5	6	OK	احذف صورة ما فيه صور بعد، الرئيسية وشاشة التوقف
 couch	أذاني من ملف	4	6	OK	أضف من فلاشة أو التنزيلات يُنسخ الملف إلى التلفزيون ولا يُشغَّل من الفلاشة من ال
 couch	الأدعية والتذكيرات	5	7	OK	إضافة دعاء أو تذكير صوت من «صوتياتي» سورة الكهف يوم الجمعة جاهز: قارئ من «تلاوة»
-couch	التطبيقات المخفية	11	12	OK	شاشة تلفزيونك مباريات فرقك الاتفاق × الهلال اليوم ٥:٢٠ م بعد ٩ ساعات الظهر بعد ٣
+couch	التطبيقات المخفية	11	12	OK	
 couch	حجم البطاقات	9	12	OK	عادي
 couch	بحث في الإعدادات	2	2	OK	
 tvos	احذف صورة	6	6	OK	احذف صورة ما فيه صور بعد، الرئيسية وشاشة التوقف ›
 tvos	أذاني من ملف	5	6	OK	أضف من فلاشة أو التنزيلات يُنسخ الملف إلى التلفزيون ولا يُشغَّل من الفلاشة من ال
 tvos	الأدعية والتذكيرات	6	7	OK	إضافة دعاء أو تذكير صوت من «صوتياتي» سورة الكهف يوم الجمعة جاهز: قارئ من «تلاوة»
-tvos	التطبيقات المخفية	12	12	OK	شاشة تلفزيونك مباريات فرقك الاتفاق × الهلال اليوم ٥:٢٠ م بعد ٩ ساعات الظهر بعد ٣
+tvos	التطبيقات المخفية	12	12	OK	شاشة تلفزيونك مباريات فرقك الاتفاق × الهلال اليوم ٥:٢٠ م بعد ٨ ساعات الظهر بعد ٣
 tvos	حجم البطاقات	10	12	OK	أصغر عادي أكبر
 tvos	بحث في الإعدادات	1	2	OK	اكتب كلمة، مثل: صوت، لون، مدينة
 crashes.txt
