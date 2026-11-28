@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261128161343">
+<meta name="urtv-build" content="20261128182259">
 <title>شاشة تلفزيونك</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -727,6 +727,7 @@
   .fnone{display:flex;height:100%;align-items:center;justify-content:center;color:var(--fs);text-align:center}
   
   #fb-wx-c{display:flex;flex-direction:column;justify-content:space-between}
+  html.off-prayer .p-prayer{display:none}   
   .fwc{display:flex;align-items:center;gap:calc(var(--u)*8);font-size:calc(var(--u)*28*var(--k));color:var(--fs)}
   .fwm{display:flex;align-items:center;justify-content:space-between;gap:calc(var(--u)*16)}
   .fwi{font-size:calc(var(--u)*84*var(--k));color:var(--fam);display:flex}
@@ -1210,6 +1211,21 @@ CONFIG.panel2 = (p => CARD_KINDS.includes(p) && p !== 'nextprayer' && p !== CONF
 const PAIR = !CONFIG.widget && CONFIG.clockSize === 'small' && CONFIG.panel !== 'none' && CONFIG.panel2 !== 'none';
 CONFIG.cards = (CONFIG.widget && _Q.has('home_panel') ? _list('home_panel') : PAIR ? [CONFIG.panel, CONFIG.panel2] : [CONFIG.panel])
   .filter((k, i, a) => CARD_KINDS.includes(k) && a.indexOf(k) === i).slice(0, 3);
+const PARTS_OFF = new Set((_Q.get('off') || '').split(',').filter(Boolean));
+const CARD_PART = {prayers: 'prayer', prayerrow: 'prayer', nextprayer: 'prayer', forecast: 'weather', hourly: 'weather', matches: 'matches',
+  nextmatch: 'matches', matchday: 'matches', livenow: 'matches', minitable: 'matches', nextmatches: 'matches', yesterday: 'matches', weekend: 'matches',
+  cuppath: 'matches', formula: 'matches', stocks: 'markets', tasks: 'tasks', adhkar: 'duas'};
+const partGone = k => PARTS_OFF.has('cards') || PARTS_OFF.has(CARD_PART[k]);
+if (PARTS_OFF.size) {
+  if (partGone(CONFIG.panel)) CONFIG.panel = 'none';
+  if (partGone(CONFIG.panel2)) CONFIG.panel2 = 'none';
+  CONFIG.cards = CONFIG.cards.filter(k => !partGone(k));
+  if (PARTS_OFF.has('prayer')) { CONFIG.adhanBar = false; CONFIG.prayerBar = false; CONFIG.sunrise = false; if (CONFIG.bar === 'prayers') CONFIG.bar = 'none'; }
+  if (PARTS_OFF.has('weather')) { CONFIG.wxAt = 'off'; CONFIG.wxMore = false; if (CONFIG.bar === 'weather') CONFIG.bar = 'none'; if (CONFIG.slot === 'weather') CONFIG.slot = 'none'; }
+  if (PARTS_OFF.has('matches')) { CONFIG.football = false; if (CONFIG.slot === 'matches') CONFIG.slot = 'none'; }
+  if (PARTS_OFF.has('markets')) { CONFIG.mkBar = false; if (CONFIG.slot === 'markets') CONFIG.slot = 'none'; }
+  for (const k of PARTS_OFF) document.documentElement.classList.add('off-' + k);
+}
 CONFIG.panel = CONFIG.cards[0] || 'none';
 const USES_OF = {smart:['matches','adhkar','prayers','prayerrow','hourly'], today:['prayers','matches','tasks'], nextprayer:['prayers'], nextmatch:['matches']};
 const SPORT_KINDS = ['matchday','livenow','minitable','nextmatches','yesterday','weekend','cuppath','formula','national'];
