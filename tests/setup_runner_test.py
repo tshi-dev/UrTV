@@ -54,7 +54,7 @@ dream = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/ScreenDream.java"
 bridge = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/NowPlayingBridge.java").read_text(encoding="utf-8")
 check("our screensaver steps aside while a run goes: the launcher says so (same-key provider, memory only), the dream wakes up (Android 10+) or ends",
       "return SetupRunner.get().running();" in hold and '"setup".equals(uri.getLastPathSegment())' in npp and "SetupHold.on()" in npp
-      and "content://sa.urtv.home.nowplaying/setup" in bridge and "if (!NowPlayingBridge.setupRunning(this)) return;" in dream and "wakeUp(); else finish();" in dream)
+      and "content://sa.urtv.home.nowplaying/setup" in bridge and "if (!NowPlayingBridge.setupRunning(app)) return;" in dream and "wakeUp(); else finish();" in dream)
 check("…and the service holds the screen on while a run goes (a TCL ignored the window's flag), let go at the end",
       "SCREEN_BRIGHT_WAKE_LOCK" in service and "hold(true);" in service and "hold(false);" in service)
 check("the step pointer is written BEFORE a step runs", runner.index('writeState(host.store(), o, d.id, "started")') < runner.index("r = d.body.run(c);"))

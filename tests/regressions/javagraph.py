@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parents[2]
 SRC = {("saver" if d.name == "app" else d.name): d / "src/main/java" for d in sorted((ROOT / "android").iterdir())
        if (d / "src/main/java").is_dir()}
 
-ENTRY = ("onCreate", "onResume", "onStart", "onRestart", "onWindowFocusChanged", "onKeyDown", "onKeyUp", "onKeyLongPress", "dispatchKeyEvent",
+ENTRY = ("onCreate","onAttachedToWindow","onDreamingStarted", "onResume", "onStart", "onRestart", "onWindowFocusChanged", "onKeyDown", "onKeyUp", "onKeyLongPress", "dispatchKeyEvent",
          "onKey", "onClick", "onFocusChange", "onReceive")
 
 # name -> regex on blanked code. IPC: a call into another app's process (the screensaver's provider, the home's, Android's TV provider).

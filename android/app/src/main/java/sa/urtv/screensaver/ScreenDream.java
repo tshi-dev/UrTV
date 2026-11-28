@@ -41,15 +41,39 @@ public class ScreenDream extends DreamService {
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
-        if (NowPlayingBridge.setupWaiting(this)) {   // «إعداد تلفزيوني» waits for «السماح بتصحيح USB؟»: never cover it (it would stay stuck)
-            android.util.Log.i("UrTVSaver", "not started: the setup is waiting for the debugging prompt");
-            finish();
-            return;
-        }
         setInteractive(false);
         setFullscreen(true);
         setScreenBright(true);
         attached = true;
+        started = false;
+        if (getWindow() != null) getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(0xFF040E09));   // the page's ground while the launcher answers
+        // «إعداد تلفزيوني» waits for «السماح بتصحيح USB؟»: never cover it (it would stay stuck). Asked on a thread (DreamHold): with the launcher not running the
+        // query waits for its process to start, and on the main thread that was an ANR
+        final Context app = getApplicationContext();
+        snapHandler.postDelayed(holdWait, DreamHold.WAIT_MS);
+        Thread t = new Thread(() -> {
+            final boolean held = NowPlayingBridge.setupWaiting(app);
+            snapHandler.post(() -> holdAnswer(true, held));
+        }, "dream-hold");
+        t.setDaemon(true);
+        t.start();
+    }
+
+    private boolean started, entered;
+    private final Runnable holdWait = () -> holdAnswer(false, false);
+
+    /** the launcher's answer (or the wait's end, DreamHold.WAIT_MS): start the page once, or end the dream while the setup holds it */
+    private void holdAnswer(boolean answered, boolean held) {
+        int d = DreamHold.decide(attached, started, answered, held);
+        if (answered) snapHandler.removeCallbacks(holdWait);
+        if (d == DreamHold.END) {
+            android.util.Log.i("UrTVSaver", "not started: the setup is waiting for the debugging prompt");
+            finish();
+            return;
+        }
+        if (d != DreamHold.START) return;
+        started = true;
+        entered = true;
         Showing.enter();
         snapHandler.post(adhanWatch);
         show(true);
@@ -85,8 +109,16 @@ public class ScreenDream extends DreamService {
     @Override
     public void onDreamingStarted() {
         super.onDreamingStarted();
-        if (!NowPlayingBridge.setupRunning(this)) return;
-        if (android.os.Build.VERSION.SDK_INT >= 29) wakeUp(); else finish();
+        final Context app = getApplicationContext();
+        Thread t = new Thread(() -> {   // on a thread, as setupWaiting (DreamHold): the launcher may have to start first
+            if (!NowPlayingBridge.setupRunning(app)) return;
+            snapHandler.post(() -> {
+                if (!attached) return;
+                if (android.os.Build.VERSION.SDK_INT >= 29) wakeUp(); else finish();
+            });
+        }, "dream-setup");
+        t.setDaemon(true);
+        t.start();
     }
 
     /** with the adhan bar off the page does not ask the launcher about the adhan: the dream does, every 3 s, so «إيقاف الأذان بأي زر» still finds it playing (on a thread, never on the UI thread) */
@@ -141,8 +173,10 @@ public class ScreenDream extends DreamService {
     @Override
     public void onDetachedFromWindow() {
         NowPlayingBridge.clearCard();
-        if (attached) Showing.leave();
+        if (entered) Showing.leave();
+        entered = false;
         attached = false;
+        snapHandler.removeCallbacks(holdWait);
         gate.cancel();
         try { unregisterReceiver(changed); } catch (IllegalArgumentException ignored) { }
         snapHandler.removeCallbacks(adhanWatch);
