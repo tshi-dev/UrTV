@@ -169,7 +169,7 @@ def live_props():
     """The TV's getprop as {name: value}; {} when it does not answer."""
     try:
         out = subprocess.run([sys.executable, "-I", str(Path(__file__).resolve().parent / "tv.py"), "getprop"],
-                             capture_output=True, text=True, timeout=60, env={**os.environ, "TV_TRIES": "1"})
+                             capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60, env={**os.environ, "TV_TRIES": "1"})
     except Exception:  # noqa: BLE001
         return {}
     return dict(re.findall(r"^\[(ro\.[^\]]+)\]: \[(.*)\]$", out.stdout, re.M)) if out.returncode == 0 else {}
@@ -178,7 +178,7 @@ def live_props():
 def urtv_version():   # this copy of the repo: its last commit
     try:
         out = subprocess.run(["git", "-C", str(RUN.parent.parent), "log", "-1", "--format=%h %cs"],
-                             capture_output=True, text=True, timeout=20).stdout.strip()
+                             capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=20).stdout.strip()
         return out or "?"
     except Exception:  # noqa: BLE001
         return "?"
@@ -225,7 +225,7 @@ def live_versions():
     for package in ("sa.urtv.screensaver", "sa.urtv.home"):
         try:
             out = subprocess.run([sys.executable, "-I", str(tv_py), f"dumpsys package {package} 2> /dev/null | grep -e versionName -e versionCode= | sed -n 1,2p"],
-                                 capture_output=True, text=True, timeout=60, env={**os.environ, "TV_TRIES": "1"})
+                                 capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60, env={**os.environ, "TV_TRIES": "1"})
         except Exception:  # noqa: BLE001
             return None
         m = re.search(r"versionName=(\S+)", out.stdout) if out.returncode == 0 else None
@@ -259,7 +259,7 @@ def live_radio():
     tv_py = Path(__file__).resolve().parent / "tv.py"
     try:
         out = subprocess.run([sys.executable, "-I", str(tv_py), "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.GET_PLAYER"],
-                             capture_output=True, text=True, timeout=60, env={**os.environ, "TV_TRIES": "1"})
+                             capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60, env={**os.environ, "TV_TRIES": "1"})
     except Exception:  # noqa: BLE001
         return []
     return [x for x in (radio_line(out.stdout), radio_week_line(out.stdout)) if x] if out.returncode == 0 else []
@@ -297,7 +297,7 @@ def live_screen():
 
     def ask(cmd):
         try:
-            r = subprocess.run([sys.executable, "-I", str(tv_py), cmd], capture_output=True, text=True, timeout=60, env={**os.environ, "TV_TRIES": "1"})
+            r = subprocess.run([sys.executable, "-I", str(tv_py), cmd], capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60, env={**os.environ, "TV_TRIES": "1"})
         except Exception:  # noqa: BLE001
             return None
         return r.stdout if r.returncode == 0 else None
@@ -319,7 +319,7 @@ def screen_picture():
     with tempfile.TemporaryDirectory() as d:
         shot = Path(d) / "shot.png"
         try:
-            r = subprocess.run([sys.executable, "-I", str(tv_py), "--shot", str(shot)], capture_output=True, text=True, timeout=90, env={**os.environ, "TV_TRIES": "1"})
+            r = subprocess.run([sys.executable, "-I", str(tv_py), "--shot", str(shot)], capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=90, env={**os.environ, "TV_TRIES": "1"})
             if r.returncode != 0 or not shot.is_file():
                 return None
             from PIL import Image
