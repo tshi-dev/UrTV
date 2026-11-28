@@ -9,6 +9,8 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+// P7 (the owner): the page shows its numbers in Arabic-Indic digits, as the TV does; the checks read them back as Latin to compare
+const L = s => String(s).replace(/[٠-٩]/g, d => String(d.charCodeAt(0) - 0x660));
 const HTML = readFileSync(path.join(ROOT, 'android/launcher/src/main/assets/phone/index.html'), 'utf8');
 const ORIGIN = 'http://tv.test';
 const PAGE = ORIGIN + '/phone/';
@@ -151,7 +153,7 @@ for (const [label, st] of [['new state', NEW()], ['old state', OLD()]]) await T(
   const S = await boot({ state: st });
   const { p } = S;
   const head = await p.textContent('header.top');
-  check(`[${label}] header: «التلفزيون» · «متصل» · time left`, head.includes('التلفزيون') && head.includes('متصل') && /بقي \d+ دقيقة/.test(head), head);
+  check(`[${label}] header: «التلفزيون» · «متصل» · time left`, head.includes('التلفزيون') && head.includes('متصل') && /بقي \d+ دقيقة/.test(L(head)) && !/[0-9]/.test(head), head);
   const names = await p.$$eval('#bar button', bs => bs.map(b => b.textContent));
   check(`[${label}] four tabs`, names.length === 4 && ['الريموت', 'التطبيقات', 'يعمل الآن', 'الإعدادات'].every((n, i) => names[i].includes(n)), names.join('|'));
   for (const [t, sel] of [['remote', '#pad'], ['apps', '#grid'], ['now', '#qPlay'], ['settings', '#cityQ']]) {
@@ -166,9 +168,9 @@ for (const [label, st] of [['new state', NEW()], ['old state', OLD()]]) await T(
   check(`[${label}] family card only with the new field, never a button in it`, (await p.isVisible('#famCard')) === (label === 'new state') && (await p.locator('#famCard button, #famCard input, #famCard select').count()) === 0);
   if (label === 'new state') {
     check('the settings tab reads GET /api/family', S.reqs.some(r => r.method === 'GET' && r.path === '/api/family'));
-    const f = await p.textContent('#famCard');
+    const f = L(await p.textContent('#famCard'));
     check('family card is read-only and says: مفعّلة / يعمل / locked count', f.includes('الرقابة الأبوية: مفعّلة') && f.includes('وضع الأطفال: متوقف') && f.includes('تطبيقين و') && f.includes('1 من أزرار'), f);
-    check('connected phones count', (await p.textContent('#phones')).includes('2'));
+    check('connected phones count', L(await p.textContent('#phones')).includes('2'));
   }
   const text = (await p.evaluate(() => document.body.innerText + document.body.innerHTML.replace(/<script[\s\S]*<\/script>/, ''))).toLowerCase();
   // 4.4 beta 3 (as 4.3.1): the one ADB-related element is the row to the pairing code page, hidden unless the TV's own factory page armed the pairing (state.adb_pair)
@@ -360,11 +362,11 @@ await T('now', async () => {
 
   const N = await boot();
   await tab(N, 'now');
-  check('next adhan is shown', (await N.p.textContent('#nextA')).includes('العصر') && (await N.p.textContent('#nextA')).includes('20 دقيقة'), await N.p.textContent('#nextA'));
+  check('next adhan is shown', (await N.p.textContent('#nextA')).includes('العصر') && L(await N.p.textContent('#nextA')).includes('20 دقيقة'), await N.p.textContent('#nextA'));
   check('no adhan live: no stop button', !(await N.p.isVisible('#adhanStop2')));
-  await N.p.locator('#sleepOpts button', { hasText: '30' }).click(); await until(() => posts(N, '/api/set').length);
+  await N.p.locator('#sleepOpts button', { hasText: '٣٠' }).click(); await until(() => posts(N, '/api/set').length);
   check('the sleep card posts /api/set {sleep_minutes: 30}', JSON.stringify(posts(N, '/api/set')[0].body) === '{"sleep_minutes":30}', JSON.stringify(posts(N, '/api/set')[0].body));
-  const opts = await N.p.$$eval('#sleepOpts button', bs => bs.map(b => b.textContent.trim()));
+  const opts = await N.p.$$eval('#sleepOpts button', bs => bs.map(b => b.textContent.trim())).then(a => a.map(L));
   check('sleep options 15/30/60/90', opts.length === 4 && ['15', '30', '60', '90'].every((m, i) => opts[i].startsWith(m)), opts.join());
   await N.p.click('#sleepCancel'); await until(() => posts(N, '/api/do').length);
   check('«إلغاء» posts /api/do {op: sleep_cancel}', JSON.stringify(posts(N, '/api/do')[0].body) === '{"op":"sleep_cancel"}');
@@ -411,7 +413,7 @@ await T('settings', async () => {
   await q.selectOption('#aVoice', '1'); await q.locator('#aOn').click(); await until(() => posts(N, '/api/set').length >= 4);
   check('adhan voice and on/off post their keys', posts(N, '/api/set').slice(2).some(r => r.body.adhan_voice === 1) && posts(N, '/api/set').slice(2).some(r => r.body.adhan_on === false));
   await q.click('#upCheck'); await q.waitForSelector('#upGo:not(.hidden)');
-  check('update: check, then «ثبّت» appears with the status word', posts(N, '/api/update')[0].body.op === 'check' && (await q.textContent('#upState')).includes('يوجد تحديث جديد') && (await q.textContent('#upState')).includes('42'));
+  check('update: check, then «ثبّت» appears with the status word', posts(N, '/api/update')[0].body.op === 'check' && (await q.textContent('#upState')).includes('يوجد تحديث جديد') && L(await q.textContent('#upState')).includes('42'));
   await q.click('#upGo'); await until(() => posts(N, '/api/update').length === 2);
   check('update install posts op install', posts(N, '/api/update')[1].body.op === 'install');
   N.cfg.update = { ok: true, status: 'error', reason: 'offline' }; await q.click('#upCheck'); await sleep(300);
@@ -640,8 +642,7 @@ for (const scheme of ['dark', 'light']) await T(`switches ${scheme}`, async () =
   check(`switches ${theme}: a keyboard focus ring`, ring === 'aStop solid 3px', ring);
   check(`switches ${theme}: a disabled one is dimmed`, await p.evaluate(() => { const e = document.getElementById('aStop'); e.disabled = true; const o = getComputedStyle(e).opacity; e.disabled = false; return o === '0.45'; }));
   await tab(S, 'now'); await sleep(300);
-  const N = await look('aOn2');
-  check(`switches ${theme}: the «الأذان يعمل» one is the same`, N.h >= 48 && N.mark === 'visible' && N.word === '"مفعّل"' && N.wc === green, JSON.stringify(N));
+  check(`switches ${theme}: «الأذان يعمل» is in the settings only, not a second time on «يعمل الآن» (said once, docs/ui/SIMPLE.md)`, !(await p.$('#aOn2')));
   check(`switches ${theme}: no console errors`, S.errors.filter(e => !/status of 403/.test(e)).length === 0, S.errors.join(' | '));
   await S.ctx.close();
 });
@@ -689,7 +690,7 @@ await T('cards: picker open during a refresh', async () => {
   await until(() => S.reqs.filter(r => r.path === '/api/state').length > n + 1); await sleep(150);
   const picker = await p.$('#cards select');   // the person opens the first card's picker…
   await picker.focus();
-  await p.evaluate(() => document.getElementById('hSet').onclick());   // …and a full answer from the TV arrives meanwhile
+  await p.evaluate(() => document.querySelectorAll('#bar button')[3].click());   // …and a full answer from the TV arrives meanwhile (the settings tab, without moving the focus)
   await sleep(300);
   await picker.selectOption('');   // «بدون» chosen in that picker
   check('the select under the open picker is still the one on the page', await picker.evaluate(e => e.isConnected));
@@ -704,13 +705,13 @@ await T('counting and the delay', async () => {
   const S = await boot({ state: NEW({ next_adhan: { prayer: 'العصر', in_seconds: 8 * 3600 + 56 * 60 + 5 }, saver_idle: '0', saver_idle_s: '45', seconds_left: 120 }) });
   const { p } = S;
   await tab(S, 'now');
-  const na = await p.textContent('#nextA');
+  const na = L(await p.textContent('#nextA'));
   check('the next adhan: «بعد 8 ساعات و 56 دقيقة»', na.includes('بعد 8 ساعات و 56 دقيقة'), na);
   check('the session left: «بقي دقيقتين»', (await p.textContent('#left')) === 'بقي دقيقتين', await p.textContent('#left'));
-  const sel = await p.$$eval('#saverIdle option', os => os.map(o => [o.value, o.textContent, o.selected]));
+  const sel = (await p.$$eval('#saverIdle option', os => os.map(o => [o.value, o.textContent, o.selected]))).map(([v, t, on]) => [v, L(t), on]);
   check('a 45 s delay is shown as the current choice «45 ثانية», the minutes after it', JSON.stringify(sel[0]) === '["","45 ثانية",true]' && sel.length === 7, JSON.stringify(sel));
   check('the minutes counted right: دقيقة, دقيقتين, 5 دقائق, 10 دقائق, 15 دقيقة', sel.slice(1).map(o => o[1]).join('|') === 'دقيقة|دقيقتين|5 دقائق|10 دقائق|15 دقيقة|30 دقيقة', sel.map(o => o[1]).join('|'));
-  check('the sleep timer chips: 15 دقيقة … 90 دقيقة', (await p.textContent('#sleepOpts')).includes('15 دقيقة'));
+  check('the sleep timer chips: 15 دقيقة … 90 دقيقة', L(await p.textContent('#sleepOpts')).includes('15 دقيقة'));
   const before = posts(S, '/api/set').length;
   await p.selectOption('#saverIdle', '2'); await until(() => posts(S, '/api/set').length > before);
   check('choosing a minute still saves it', JSON.stringify(posts(S, '/api/set').pop().body) === '{"saver_idle":2}');
