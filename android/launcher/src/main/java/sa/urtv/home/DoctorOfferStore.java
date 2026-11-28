@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 
 /**
- * 4.3.7 / 4.4: the Android side of DoctorOfferRule. urtv-data's content/doctor.json (branch data; "v": 1 like every hand-edited file) is kept by ContentFile (read
+ * 4.3.7 / 4.4: the Android side of DoctorOfferRule. urtv-data's release/doctor.json (its main keeps it as content/doctor.json) (branch data; "v": 1 like every hand-edited file) is kept by ContentFile (read
  * from the kept copy at once, fetched again in the background at most every 6 hours; a bad answer leaves the last good one). To turn it off publish "on": false.
  * «لاحقاً» is kept as the build it was pressed for (the same preference file as 4.3.7's: a 4.3.7 answer is for 4.3.7's build, and 4.4 asks again). Nothing here
  * asks for a permission, installs anything or shows anything: the home's top bar does, from the rule's answer.
@@ -13,7 +13,7 @@ import android.content.pm.PackageInfo;
 final class DoctorOfferStore {
     private DoctorOfferStore() { }
 
-    static final String PATH = "content/doctor.json", NAME = "doctor.json";
+    static final String PATH = "release/doctor.json", NAME = "doctor.json";
     private static final String PREFS = "doctor_offer";
 
     private static SharedPreferences prefs(Context c) { return c.getSharedPreferences(PREFS, Context.MODE_PRIVATE); }

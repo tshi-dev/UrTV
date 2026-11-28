@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""4.3.7: after an update, once, the home's top bar offers the diagnostic app «فحص تلفزيونك» (sa.urtv.doctor), gated by urtv-data's content/doctor.json
+"""4.3.7: after an update, once, the home's top bar offers the diagnostic app «فحص تلفزيونك» (sa.urtv.doctor), gated by urtv-data's release/doctor.json (its main keeps it as content/doctor.json)
 (DoctorOfferRule, DoctorOfferStore). The rules run in Java (tests/DoctorOfferRun.java): no flag, flag off, doctor installed, fresh install, kids mode and
 «لاحقاً» for this build each mean no card. The wiring is pinned: the one bar, after the build, city and home questions; «لاحقاً» keeps the build; «ثبّته» says
 Downloader's code; no permission is added (only a package visibility entry).
@@ -50,8 +50,8 @@ check("the bar asks the rule with: the kept flag (ContentFile.Kept, off the UI t
       and "new ContentFile.Kept(DoctorOfferStore.NAME)" in main and main.count("doctorFlag.load(app)") == 2)
 check("«لاحقاً» keeps the build (never again for it); «ثبّته» says Downloader's code and installs nothing",
       "DoctorOfferStore.dismiss(this, BuildConfig.VERSION_CODE)" in main and "doctorCodeShown = true" in main and "PackageInstaller" not in store and "REQUEST_INSTALL" not in store)
-check("the flag is urtv-data's content/doctor.json through ContentFile (kept copy, a background fetch at most every 6 hours, a bad answer keeps the last good one)",
-      'PATH = "content/doctor.json"' in store and "ContentFile.refresh(" in store and "6 * 3600_000L" in store and "DoctorOfferStore.keep(app, DoctorOfferRule.fromDoc(doctorFlag.value()))" in main and "static boolean listed(Context c) { return !listedCode(c).isEmpty(); }" in store and "ContentFile.read" not in store)   # (the list reads a preference the home's tick keeps: no disk work on a UI thread, regressions/ui_thread_ipc_test)
+check("the flag is urtv-data's release/doctor.json (its main keeps it as content/doctor.json) through ContentFile (kept copy, a background fetch at most every 6 hours, a bad answer keeps the last good one)",
+      'PATH = "release/doctor.json"' in store and "ContentFile.refresh(" in store and "6 * 3600_000L" in store and "DoctorOfferStore.keep(app, DoctorOfferRule.fromDoc(doctorFlag.value()))" in main and "static boolean listed(Context c) { return !listedCode(c).isEmpty(); }" in store and "ContentFile.read" not in store)   # (the list reads a preference the home's tick keeps: no disk work on a UI thread, regressions/ui_thread_ipc_test)
 check("the words: «ساعدنا نحسّن UrTV، ثبّت فحص تلفزيونك، مجاني» (7 words), «ثبّته», «لاحقاً»; each has its English",
       all(w in main for w in ("ساعدنا نحسّن UrTV، ثبّت فحص تلفزيونك، مجاني", "ثبّته", "افتح Downloader واكتب الرمز")) and len("ساعدنا نحسّن UrTV، ثبّت فحص تلفزيونك، مجاني".split()) <= 8
       and all(w in (ROOT / "i18n/en/home.tsv").read_text(encoding="utf-8") for w in ("ثبّته\tInstall it", "ساعدنا نحسّن UrTV، ثبّت فحص تلفزيونك، مجاني\t")))
