@@ -1,5 +1,12 @@
 # Design backlog
 
+## Roadmap: the owner's decision (28 Nov 2026)
+
+- **5.0 = one app:** the home, the screensaver, the settings and the doctor («فحص تلفزيونك») inside it. The rescue («إنقاذ تلفزيونك») stays a tiny separate app, and the extras add-on
+  («إضافات تلفزيونك») stays optional. A data migration from the two packages (the home's and the screensaver's) comes with it: nothing a person set is lost.
+- **4.5 = a small update** with small additions, as planned.
+- **4.4 = no package merge.** The doctor stays a standalone app; the home can open it when it is installed (and offers it after an update while urtv-data's `release/doctor.json` is on: R-382).
+
 Looks and ideas the owner chose to do later. Each says what it is, where its mockups are, and what it needs.
 
 ## Themes: done in 3.148
