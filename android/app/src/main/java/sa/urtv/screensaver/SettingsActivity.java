@@ -423,7 +423,7 @@ public class SettingsActivity extends Activity {
         row("التاريخ بالأرقام", prefs.dateNum() ? "مفعّل" : "متوقف", R.drawable.ic_language,
             new Runnable() { public void run() { prefs.setDateNum(!prefs.dateNum()); render(); } });
         // GitHub #15 «التاريخ الهجري»: off = the Gregorian date alone (the screensaver, the home's cards and the home's date line)
-        row("التاريخ الهجري", prefs.hijriShown() ? "يظهر" : "ما يظهر", R.drawable.ic_language,
+        row("التاريخ الهجري", prefs.hijriShown() ? "مفعّل" : "متوقف", R.drawable.ic_language,
             new Runnable() { public void run() { prefs.setHijriShown(!prefs.hijriShown()); render(); } });
         // OK goes round: on with 10 minutes, on with 15 minutes (4.4 beta 4), off
         row("تنبيه قبل الأذان", prefs.adhanBar() ? (prefs.adhanLead() == 15 ? "يعمل، شريط في أعلى الشاشة آخر ١٥ دقيقة، ثم حتى الإقامة" : "مفعّل، شريط أعلى الشاشة آخر ١٠ دقائق، ويبقى لين الإقامة") : "متوقف", R.drawable.ic_eye,

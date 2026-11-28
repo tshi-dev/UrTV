@@ -15,8 +15,8 @@ check("on by default (the Hijri date shows as before); off puts &nohijri=1 in th
       'boolean hijriShown() { return sp.getBoolean("hijriShown", true); }' in prefs and '(hijriShown() ? "" : "&nohijri=1")' in prefs)
 check("`saver.sh hijri on|off` reaches the receiver (extra hijriline: on or off, nothing else), sets the preference and is in the status",
       "hijri)    set1 hijriline" in rd("optimize/saver.sh") and '{"hijriline", hijriLine}' in rec and 'p.setHijriShown("on".equals(hijriLine))' in rec and '"\\nhijriline: "' in rec)
-check("the settings row «التاريخ الهجري» (shown / hidden) next to «التاريخ بالأرقام», and the hub knows it in «اللغة والموقع» on both screens",
-      'row("التاريخ الهجري", prefs.hijriShown() ? "يظهر" : "ما يظهر"' in setx and '{"التاريخ الهجري", LANG}' in hub and '{"التاريخ الهجري", "both"}' in hub)
+check("the settings row «التاريخ الهجري» (مفعّل / متوقف) next to «التاريخ بالأرقام», and the hub knows it in «اللغة والموقع» on both screens",
+      'row("التاريخ الهجري", prefs.hijriShown() ? "مفعّل" : "متوقف"' in setx and '{"التاريخ الهجري", LANG}' in hub and '{"التاريخ الهجري", "both"}' in hub)
 tpl = rd("src/template.html")
 check("the page reads #nohijri=1, hides the Hijri line and gives the Gregorian one its place, and the screensaver designs' day line is the Gregorian alone",
       "noHijri: _Q.get('nohijri') === '1'" in tpl and "html.nohijri .hijri{display:none}" in tpl and "html.nohijri .greg{" in tpl and "classList.toggle('nohijri', !!CONFIG.noHijri)" in tpl
