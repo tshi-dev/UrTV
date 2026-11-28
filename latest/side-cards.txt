@@ -1,6 +1,6 @@
 --------- beginning of main
 --------- beginning of system
-11-28 06:55:01.903  3344  3344 I UrTVSide: cards=nextprayer,hourly
-11-28 06:55:10.279  3344  3344 I UrTVSide: cards=nextprayer,hourly
-11-28 06:55:19.752  3344  3344 I UrTVSide: cards=nextprayer,hourly,nextmatch
-11-28 06:55:28.262  3344  3344 I UrTVSide: cards=nextprayer,hourly,nextmatch
+11-28 07:17:37.668  3232  3232 I UrTVSide: cards=nextprayer,hourly
+11-28 07:17:45.847  3232  3232 I UrTVSide: cards=nextprayer,hourly
+11-28 07:17:55.303  3232  3232 I UrTVSide: cards=nextprayer,hourly,nextmatch
+11-28 07:18:03.538  3232  3232 I UrTVSide: cards=nextprayer,hourly,nextmatch
