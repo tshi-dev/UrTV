@@ -369,6 +369,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         adhanVolumeBack();
         createChannel();
         session = new MediaSession(this, "urtv-tilawah");
+        push.reset();
         session.setFlags(MediaSession.FLAG_HANDLES_MEDIA_BUTTONS | MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS);
         session.setCallback(new MediaSession.Callback() {
             @Override public void onPlay() { resume(); }
@@ -1487,6 +1488,8 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         sendBroadcast(new Intent(NowPlaying.CHANGED).setPackage(getPackageName()));
     }
 
+    private final SessionPush push = new SessionPush();
+
     private void updateSession() {
         announce();
         if (session == null) return;
@@ -1504,15 +1507,17 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             title = Ui.str(this, R.string.adhan);
             artist = adhanName != null ? adhanName : "";
         }
+        String album = source == Prefs.SOURCE_ADHAN ? Ui.str(this, R.string.adhan) : sa.urtv.home.S.t("القرآن الكريم");
         MediaMetadata.Builder meta = new MediaMetadata.Builder()
                 .putString(MediaMetadata.METADATA_KEY_TITLE, title)
                 .putString(MediaMetadata.METADATA_KEY_ARTIST, artist)
-                .putString(MediaMetadata.METADATA_KEY_ALBUM,
-                        source == Prefs.SOURCE_ADHAN ? Ui.str(this, R.string.adhan) : sa.urtv.home.S.t("القرآن الكريم"));
-        if (source == Prefs.SOURCE_SURAH && duration > 0) {
-            meta.putLong(MediaMetadata.METADATA_KEY_DURATION, duration);
+                .putString(MediaMetadata.METADATA_KEY_ALBUM, album);
+        long metaDuration = source == Prefs.SOURCE_SURAH && duration > 0 ? duration : 0;
+        if (metaDuration > 0) {
+            meta.putLong(MediaMetadata.METADATA_KEY_DURATION, metaDuration);
         }
-        session.setMetadata(meta.build());
+        // SessionPush: only what changed goes to the system (it went every second of play, all day)
+        if (push.metaChanged(title, artist, album, metaDuration)) session.setMetadata(meta.build());
 
         int state = error != null ? PlaybackState.STATE_ERROR
                 : buffering ? PlaybackState.STATE_BUFFERING
@@ -1525,11 +1530,14 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             actions |= PlaybackState.ACTION_SKIP_TO_NEXT | PlaybackState.ACTION_SKIP_TO_PREVIOUS;
         }
         if (source == Prefs.SOURCE_SURAH) actions |= PlaybackState.ACTION_SEEK_TO;
-        session.setPlaybackState(new PlaybackState.Builder()
-                .setActions(actions)
-                .setState(state, source == Prefs.SOURCE_RADIO ? 0 : position, playing ? 1f : 0f)
-                .build());
-        session.setActive(true);
+        long shownPos = source == Prefs.SOURCE_RADIO ? 0 : position;
+        float speed = playing && source != Prefs.SOURCE_RADIO ? 1f : 0f;   // a station's position stays 0 (the controllers move nothing)
+        if (push.stateDue(state, actions, speed, shownPos, SystemClock.elapsedRealtime()))
+            session.setPlaybackState(new PlaybackState.Builder()
+                    .setActions(actions)
+                    .setState(state, shownPos, playing ? 1f : 0f)
+                    .build());
+        if (push.activate()) session.setActive(true);
     }
 
     private void createChannel() {

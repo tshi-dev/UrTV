@@ -72,6 +72,9 @@ public class BlackScreenActivity extends Activity {
     }
 
     private void keepOn(boolean on) {
+        // 4.4 (a report: «the screen froze after a day of Quran»): only when it changes; a window flag set every second is a relayout of the window every second, all day
+        boolean has = (getWindow().getAttributes().flags & WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) != 0;
+        if (has == on) return;
         if (on) getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         else getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }

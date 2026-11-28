@@ -225,6 +225,7 @@ python3 tests/accounts_keep_test.py   # R-450: no list turns off an account, sig
 python3 tests/home_focus_keep_test.py   # R-451: a rebuild of the favourites and the grid gives the focus back to the same app (by package), never to the first one
 python3 tests/dream_hold_test.py   # R-452: the dream asks the launcher on a thread (setupWaiting, setupRunning), never on its main thread
 python3 tests/settings_copy_test.py   # R-453: the home keeps a copy of the screensaver's settings and a fresh install takes it back, once, from our own signed home
+python3 tests/soak_test.py   # R-454: the soak's judge (growth, a restart, an ANR) on made-up series, the manual workflow, and the session sends only what changed
 python3 tests/community_test.py
 python3 tests/connectivity_keep_test.py
 python3 tests/input_guard_test.py
