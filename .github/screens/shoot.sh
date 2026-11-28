@@ -145,6 +145,7 @@ for opt in a b; do
   start sa.urtv.home/.MainActivity; sleep 8   # our home (the emulator's own launcher answers HOME)
   shot home-side-cards-$opt 2
 done
+adb logcat -d -s UrTVSide:I > "$OUT/side-cards.txt"   # which cards each column loaded (run 22-23: B's shot looked like A's)
 saver --es sidecards off
 # 4.4 beta 4 (the findability review §5): the presses to each target in every settings style, counted by moving the focus as a person would
 python3 .github/screens/presses.py "$OUT" || echo "presses: the walk stopped"

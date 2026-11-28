@@ -110,6 +110,8 @@ final class SideCards {
             parent.getViewTreeObserver().addOnGlobalLayoutListener(fitter);
         }
         shown = url;
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("[#&]home_panel=([a-z,]*)").matcher(url);
+        android.util.Log.i("UrTVSide", "cards=" + (m.find() ? m.group(1) : "?"));   // the cards only (never the address: it holds the city)
         web.loadUrl(url);
         run();
     }
