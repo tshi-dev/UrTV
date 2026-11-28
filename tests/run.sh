@@ -421,6 +421,7 @@ python3 tests/rescue_home_test.py   # 4.4 (R7): the rescue's fallback home: arme
 python3 tests/fragment_keep_test.py   # 4.3.2 (a user's adhan times and prayer card disappeared after 4.3.1): the home keeps the screensaver's last RE
 python3 tests/glow_mode_test.py   # «توهّج لون التطبيق» (4.3.1): the glow behind the focused app is OFF by default (new installs and old ones), ha
 python3 tests/home_snapshot_test.py   # The home's stand-in picture (HomeSnapshot): the rules pinned from the source: what the key is made of, the age
+python3 tests/page_push_test.py   # 4.4 beta 4: the markets line change is pushed into the running page
 python3 tests/cover_wait_test.py   # 4.4 beta 4: the start picture gives way in 1.5 s, never into the next minute
 python3 tests/install_saver_test.py   # 4.3.2 «ثبّت الجزء الثاني»: a TV with only the home (a Fire TV, or installed with Downloader) must never meet a
 python3 tests/league_groups_test.py   # 4.3.1 «البطولات الكبرى» and «اختر دورياتك»: the big tournaments' list is one data file that resolves against t
@@ -492,6 +493,7 @@ node tests/prayer_crosscheck_page.mjs
 node tests/prayer_crosscheck_world_page.mjs
 node tests/hijri_crosscheck_page.mjs
 node tests/page.test.mjs
+node tests/mkbar_push.test.mjs   # 4.4 beta 4: «شريط الأسواق» on or off reaches the running page
 node tests/pack_fallback.test.mjs   # 4.4 beta 3: a pack or «صوري» photo that does not load never leaves the screensaver black (a bundled photo shows)
 node tests/tafsir.test.mjs   # «التفسير الميسر» (#tafsir=1): every verse of the deck has its tafsir, whole, in pages of three lines at most, never «…»
 node tests/saver_designs.test.mjs   # 4.4 the screensaver's designs (the owner approved them): each shows what it should; a prayer's name and time never touch

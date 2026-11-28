@@ -3227,7 +3227,17 @@ function staleMark(v){
 }
 
 // One tick for the markets line and the stocks card
-const WITH_LINE = !CONFIG.widget && (CONFIG.mkBar || CONFIG.slot === 'markets');   // no line in the launcher's page; hidden = no requests (unless the slot shows them)
+let WITH_LINE = !CONFIG.widget && (CONFIG.mkBar || CONFIG.slot === 'markets');   // no line in the launcher's page; hidden = no requests (unless the slot shows them)
+// 4.4 beta 4 (a user: «شريط الأسواق» turned off, the screensaver on the screen kept it): the app pushes the change into the running page
+// (ScreenDream, PagePush) instead of waiting for the next start: the line hides or shows, and its requests stop or start with it. true: done here.
+window.urtvMkBar = on => {
+  CONFIG.mkBar = !!on;
+  WITH_LINE = !CONFIG.widget && (CONFIG.mkBar || CONFIG.slot === 'markets');
+  const mk = document.querySelector('.mk'); if(mk) mk.hidden = !CONFIG.mkBar;
+  const up = document.getElementById('mk-up'); if(up && !CONFIG.mkBar) up.hidden = true;
+  if(CONFIG.mkBar) try{ Promise.resolve(loadMarkets()).catch(() => {}); }catch(e){}   // its prices now (a run under way is not doubled: guarded)
+  return true;
+};
 const loadMarkets = guarded('markets', async function(){
   const jobs = new Map();   // Yahoo symbol -> {key, cg, intra, tk: its markets, sk: its stocks}
   const job = (key, cg, intra) => {

@@ -508,7 +508,7 @@ public class SettingsActivity extends Activity {
 
         header("الأسواق (أعلى اليسار)");
         row("شريط الأسواق", prefs.marketsOn() ? "يعمل" : "مخفي، يبقى طقس اليوم فقط", R.drawable.ic_eye,
-            new Runnable() { public void run() { prefs.setMarketsOn(!prefs.marketsOn()); render(); } });
+            new Runnable() { public void run() { prefs.setMarketsOn(!prefs.marketsOn()); render(); sendBroadcast(new android.content.Intent(Prefs.CHANGED).setPackage(getPackageName())); } });   // 4.4 beta 4: a screensaver that is up takes it at once (ScreenDream, PagePush)
         row("الأسواق (" + arabicNum(prefs.markets().size()) + "/" + arabicNum(Prefs.MAX_MARKETS) + ")", marketsLabel(),
             R.drawable.ic_trophy, new Runnable() { public void run() { pickMarkets(); } });
         row("عرض الأسواق", Prefs.mkStyleLabel(prefs.mkStyle()), R.drawable.ic_eye,

@@ -32,6 +32,19 @@ public class ScreenDream extends DreamService {
     private void rebuildIfChanged(Context c) {
         if (!attached || web == null) return;
         if (new Prefs(c).screenUrl(c, false).equals(shownUrl)) return;
+        final String now = new Prefs(c).screenUrl(c, false);
+        final String push = PagePush.script(shownUrl, now);   // 4.4 beta 4: the markets line on or off reaches the page as it runs
+        if (push != null) {
+            final WebView w = web;
+            shownUrl = now;
+            w.evaluateJavascript(push, r -> { if (!"true".equals(r) && w == web) rebuild(); });   // an older page without it: built again, as before
+            return;
+        }
+        rebuild();
+    }
+
+    private void rebuild() {
+        if (!attached || web == null) return;
         WebView old = web;
         web = null;
         ScreenView.release(old);
