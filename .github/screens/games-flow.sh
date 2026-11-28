@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Runs on the CI emulator (.github/workflows/games-flow-screens.yml): the AFTER of the owner's «phone or no phone» review (docs/research/GAMES-FLOW.md): the built flow, shot with screencap and the remote's keys: the list, the first row «كيف تلعبون؟», the room, the way out to the remote.
 # game's own setup page with the remote's keys (nothing is written behind the app's back).   games.sh SAVER_APK HOME_APK OUT_DIR
-# Best effort: every shot is taken whatever is on the screen; the log says what was pressed. (re-shot after the liar rounds' bar fix) (after the UI review; every game starts from a fresh list)
+# Best effort: every shot is taken whatever is on the screen; the log says what was pressed. (re-shot after the liar rounds' bar fix) (after the UI review; every game starts from a fresh list; two shots at 720p with the font at 1.3)
 set +e
 SAVER_APK=$1; HOME_APK=$2; OUT=$3
 mkdir -p "$OUT"
@@ -82,6 +82,18 @@ tile 0
 shot after-10-quiz-setup 1
 key DPAD_CENTER; sleep 3
 shot after-11-quiz-room 2
+
+# ---- 720p with the system font at 1.3 (the UI review's fit check): the setup with phones and the room, the two screens that clip first
+adb shell wm size 1280x720; adb shell wm density 213; adb shell settings put system font_scale 1.3
+list
+tile 3
+key DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_LEFT DPAD_CENTER
+shot built-02-oddone-setup-phones-720p-font1.3 1
+key DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_CENTER; sleep 3
+shot built-03-oddone-room-short-720p-font1.3 2
+adb shell settings put system font_scale 1.0; adb shell wm size 1920x1080; adb shell wm density 320
+sleep 2
+LAST=3
 
 # ---- the word game: every letter in the middle of its tile (the owner's rule), measured on the real pixels
 dump() { adb shell uiautomator dump /sdcard/ui.xml > /dev/null 2>&1; adb pull /sdcard/ui.xml "$OUT/$1.xml" > /dev/null 2>&1; }
