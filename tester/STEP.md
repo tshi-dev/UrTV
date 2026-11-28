@@ -1,3 +1,13 @@
+▶▶ DOCTOR BETA, FIRST REAL-TV RUN (28 Nov). After the 4.3.7 rc test and the icons check. TV muted. Change nothing on the TV beyond installing this app.
+APK: https://github.com/tshi-dev/urtv-doctor/releases/download/doctor-beta/urtv-doctor.apk  sha256 c799c1ebdfc4c671b11d9a509a0944d9b76f03844a702123ab743d3c0ca6b505 (verify it), version 1.0.0.1001, package sa.urtv.doctor. `adb install -r` it.
+1. Unattended run: `adb shell am start -n sa.urtv.doctor/.MainActivity --ez auto true --ez send false`, wait for it to finish, then `logcat -d -s UrTVDoctor:V` → raw/auto.txt. Time from start to the result.
+2. By the remote, every screen with a shot: the start (the thanks line), the checks, the key test (press each key it asks for, screenshot-checked; Home last), the results page, the consent screen (choose «لا» / do not send: sending isn't wired yet; if it says «ما قدرنا نرسل التقرير» that's expected).
+3. Compare its findings with what you know of this TV from the diagnostics (HOME holder, screensaver, disabled packages, network): any wrong verdict is a bug. Note any text that is technical, longer than 8 words a line, or mentions AI.
+4. Its icon and banner in the TV's app list (shot): clean rectangle, crisp.
+5. `dumpsys meminfo sa.urtv.doctor` during the checks; `logcat -b crash -d`.
+6. Uninstall it at the end (`pm uninstall sa.urtv.doctor`).
+Write tester/doctor/REPORT.md (PASS/FAIL per item with shots, timings, wrong verdicts listed) and push to work/tester-report.
+
 ▶▶ UPDATE (28 Nov): apk-437rc is now build 687 (version.txt 3.687; wait until the release page says 3.687, then use it; 686 is superseded). If you haven't finished the 4.3.7 test, use 687 for all of it (`APK_TAG=apk-437rc optimize/install.sh all` installs over 683 or 686). Add step 8: after the update the doctor card must NOT show (the flag file isn't published yet); write «no card» in the report. Results already taken on 683 stay valid; note which build each item ran on.
 
 ▶▶ ICONS CHECK, ALL OUR APPS (28 Nov, owner: «check all our icons; the rescue one isn't a rectangle and is all pixels»). Do it after the 4.3.7 rc test, before the diagnostics. Read-only: change nothing.
