@@ -25,7 +25,6 @@ final class SetupLists {
         "com.google.android.feedback",
         "com.google.android.partnersetup",
         "com.google.android.onetimeinitializer",
-        "com.google.android.play.games",
         "android.autoinstalls.config.google.gtvpai",
         "com.google.android.apps.tv.dreamx",
         "com.google.android.backdrop",

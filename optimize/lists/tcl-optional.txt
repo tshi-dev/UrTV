@@ -25,3 +25,6 @@ uk.co.freeview.bbc_sounds
 com.hungama.movies.tv
 tv.airtel.xstream.tvapp
 com.internet.tvbrowser
+
+# Games (4.4: off by default no more; a person who plays and saves games keeps them)
+com.google.android.play.games          # Google Play Games (games and their saves)
