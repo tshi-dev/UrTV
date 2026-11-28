@@ -57,6 +57,7 @@ final class ControlCenter {
         void openUpdate();
         void openCity();            // 4.3.1 «المدينة»: the screensaver app's city chooser
         void openOurSettings();     // «إعدادات تلفزيونك»: the screensaver app's settings screen, locked by «@urtv»
+        void openSettings();        // «الإعدادات»: our settings screen itself (not the hub before it), locked by «@urtv» too
         void openSleep(View anchor);   // «مؤقت النوم» popup, locked by «@sleep»
         boolean saverInstalled();
         Typeface font(String family);
@@ -252,6 +253,7 @@ final class ControlCenter {
             tile("city", S.t("المدينة"), S.t("للطقس والصلاة"), R.drawable.ic_place, () -> { dismiss(); host.openCity(); });
             tile("games", S.t("الألعاب"), S.t("العب مع العائلة"), R.drawable.ic_play, () -> { dismiss(); host.openGames(); });
             tile("ours", S.t("تلفزيونك"), S.t("الألعاب والمباريات والإعدادات"), R.drawable.ic_home, () -> { dismiss(); host.openOurSettings(); });
+            tile("settings", S.t("الإعدادات"), S.t("كل الخيارات"), R.drawable.ic_settings, () -> { dismiss(); host.openSettings(); });
         }
         String upd = host.updateLine();
         if (upd != null) tile("update", upd, "", R.drawable.ic_update, () -> { dismiss(); host.openUpdate(); });
@@ -438,11 +440,13 @@ final class ControlCenter {
         List<Cell> rowCells = new ArrayList<>();
         int shown = 0;
         List<Item> shownRows = new ArrayList<>(rowsInOrder());
-        Item updRow = find("update");
+        Item updRow = find("update"), setRow = find("settings");
+        if (setRow != null) shownRows.add(0, setRow);   // 4.4 beta 4 (the tester, build 654): «الإعدادات» always first, on every TV, never one of the person's rows
         if (updRow != null) shownRows.add(0, updRow);   // the build mismatch comes first and is not one of the person's rows
         for (Item it : shownRows) {
-            if (!it.key.equals("update") && (off.contains(it.key) || (shown >= MAX_ROWS && !it.key.equals("black")))) continue;   // «شاشة سوداء» is only here while something plays: never behind the cap
-            if (!it.key.equals("update") && !it.key.equals("black")) shown++;
+            boolean fixed = it.key.equals("update") || it.key.equals("settings");
+            if (!fixed && (off.contains(it.key) || (shown >= MAX_ROWS && !it.key.equals("black")))) continue;   // «شاشة سوداء» is only here while something plays: never behind the cap
+            if (!fixed && !it.key.equals("black")) shown++;
             Cell c = new Cell(Cell.ROW, it);
             if (wideNow) {   // two to a line, the first at the start side
                 if (rowCells.size() % 2 == 0) {

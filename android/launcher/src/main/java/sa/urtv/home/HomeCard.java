@@ -107,6 +107,8 @@ final class HomeCard {
     private volatile boolean football;
     /** 4.4 «التخطيط: كنبة»: the cards in one low strip above the apps tray, the screen's width (the page's #row=1); the big clock is then alone in the middle */
     private volatile boolean row;
+    /** «كنبة» (not the football home): the big clock is in its fixed box whether a card is shown or not */
+    private volatile boolean couch;
     /** 4.4 beta 2 the full look «tvOS» (layout tvos): the row above the tvOS bar, its cards as glass (the page's html.tvos), each slot's CardFit decision */
     private volatile boolean tvos;
     boolean tvos() { return tvos && cards > 0; }
@@ -118,6 +120,8 @@ final class HomeCard {
     }
     /** the cards are in the strip above the tray (not beside the clock) */
     boolean inRow() { return row && cards > 0; }
+    /** «كنبة», with cards or «بدون» */
+    boolean couch() { return couch; }
     /** the layout the home showed last, for the report (a word, nothing else) */
     static volatile boolean footballShown;
     private FootballFocus.Host footballHost;
@@ -355,8 +359,9 @@ final class HomeCard {
         String[] choice = HomeCardChoice.pick(frag, panel, sp.getString("frag", null), sp.getString("panel", null));
         football = HomeCardChoice.football(layout, choice) && footballHost != null;   // 4.3.4: «بدون» turns the football home's widgets off too
         footballShown = football;   // «أرسل تقرير» says which layout the home had
-        if (football) { cards = 0; tasks = false; stocks = false; stocksFirst = false; row = false; tvos = false; return withGlass(HomePage.fresh(activity, HomeCardChoice.footballUrl(choice))); }
+        if (football) { cards = 0; tasks = false; stocks = false; stocksFirst = false; row = false; couch = false; tvos = false; return withGlass(HomePage.fresh(activity, HomeCardChoice.footballUrl(choice))); }
         row = "couch".equals(layout);
+        couch = row;
         tvos = "tvos".equals(layout);
         if (tvos) row = true;   // «tvOS»: a row too, above the tvOS bar (CardBox.tvosRow)
         cards = HomeCardChoice.count(choice);

@@ -73,7 +73,7 @@ check("a clean round on the stand-in: exit 0, GREEN, report.md written", r.retur
 by = {}
 for s in steps:
     by[s[1]] = by.get(s[1], 0) + 1
-check("every step passed: install, 9 layouts, 30 settings screens (3 styles × 10 sections), saver, 2 stations, 2 displays, 2 font, 20 adhan states, games", by.get("FAIL", 0) == 0 and by.get("PASS", 0) == 1 + 9 + 30 + 1 + 2 + 2 + 2 + 20 + 1 and "SKIP" not in by,
+check("every step passed: install, 9 layouts, 9 ways from the home to the settings, 30 settings screens (3 styles × 10 sections), saver, 2 stations, 2 displays, 2 font, 20 adhan states, games", by.get("FAIL", 0) == 0 and by.get("PASS", 0) == 1 + 9 + 9 + 30 + 1 + 2 + 2 + 2 + 20 + 1 and "SKIP" not in by,
       (by, [s for s in steps if s[1] != "PASS"][:5]))
 metrics = {l.split("\t")[0] for l in (out / "metrics.tsv").read_text(encoding="utf-8").splitlines()}
 check("the health numbers are in: cold starts, memory, jank, crashes, ANRs, frozen lines", {"cold_start_home_ms", "cold_start_saver_ms", "pss_home_kb", "pss_saver_kb", "jank_home_pct", "jank_home_p99_ms", "crashes", "anrs", "frozen_lines"} <= metrics, metrics)
@@ -91,7 +91,7 @@ check("put back at the end: the settings imported, the display size, the volume 
       and max(i for i, l in enumerate(lines) if "KEYCODE_HOME" in l) < max(i for i, l in enumerate(lines) if l.startswith("tv dumpsys audio")), lines[-6:])
 check("the font was set to 1.3 and put back to what it was (1.0)", "settings put system font_scale 1.3" in cmds and "settings put system font_scale 1.0" in cmds)
 check("the build is installed over the installed one with the tag (apk-next)", "install saver tag=apk-next" in cmds and "install launcher tag=apk-next" in cmds)
-check("the تلاوة screen is opened from the home by its pill (OK on it, 2 stations: 4 OKs in all), the stations were found by their row's name before OK (the focus walk), and the saver start was asked", cmds.count("KEYCODE_DPAD_CENTER") == 4 and "startsaver" in cmds)
+check("the تلاوة screen is opened from the home by its pill (OK on it, 2 stations: 4 OKs, and the reach step's 9 × 2), the stations were found by their row's name before OK (the focus walk), and the saver start was asked", cmds.count("KEYCODE_DPAD_CENTER") == 4 + 9 * 2 and "startsaver" in cmds)
 # the second round shows the first one's column
 r1b, out1b, _ = run(args=("--prev", str(out)))
 rep1b = (out1b / "report.md").read_text(encoding="utf-8") if (out1b / "report.md").exists() else ""
@@ -106,6 +106,19 @@ r4, out4, cmds4 = run({"FAKE_FRONT": "none"})
 rep4 = (out4 / "report.md").read_text(encoding="utf-8") if (out4 / "report.md").exists() else ""
 check("NEVER PRESSES BLIND: when no app of ours comes to the front, no D-pad key is sent (not to the walk, a station list or a settings screen), and the round is red",
       r4.returncode == 1 and "DPAD" not in cmds4 and "no key was sent" in rep4 and "RED" in rep4, (r4.returncode, cmds4.count("DPAD"), rep4[-300:]))
+
+reach = {s[0]: s[2] for s in steps if s[0].startswith("reach-")}
+check("from the home to our settings in each layout × card (the tester, build 654: not found in «كنبة»): up to «مركز التحكم», OK, «الإعدادات», OK, the presses counted",
+      len(reach) == 9 and "the settings in 4 presses from the home" in reach.get("reach-classic-none", "") and "the settings in 5 presses from the home" in reach.get("reach-couch-stocks", "")
+      and "REACH_MAX=6" in (ROOT / "tester/auto/round.sh").read_text(encoding="utf-8"), reach)
+r6, out6, _ = run({"FAKE_NUDGE": "1"}, ("--only", "reach"))
+reach6 = {l.split("\t")[0]: l.split("\t")[2] for l in (out6 / "steps.tsv").read_text(encoding="utf-8").splitlines() if l.startswith("reach-")} if (out6 / "steps.tsv").exists() else {}
+check("a TV with no city («اختر المدينة» where UP lands): the UP that does not move is not counted, one LEFT to «مركز التحكم», still within the limit",
+      r6.returncode == 0 and len(reach6) == 9 and "the settings in 5 presses from the home" in reach6.get("reach-classic-none", "") and "the settings in 6 presses from the home" in reach6.get("reach-couch-stocks", ""), reach6)
+r5, out5, _ = run({"FAKE_NO_SETTINGS": "1"}, ("--only", "reach"))
+rep5 = (out5 / "report.md").read_text(encoding="utf-8") if (out5 / "report.md").exists() else ""
+check("a control centre without «الإعدادات» (build 654) is a FAIL of every layout × card and the round is red",
+      r5.returncode == 1 and "RED" in rep5 and rep5.count("has no «الإعدادات» row") >= 9, (r5.returncode, rep5[-400:]))
 
 
 # ---- the CI emulator: the shim for optimize/tv.py, the emulator's limits, the steps left out, the workflow
@@ -128,10 +141,10 @@ check("the emulator's limits are looser for what the machine decides and the sam
       lib.thresholds()["cold_start_home_ms"][0] > 4000 and lib.thresholds()["crashes"][:2] == (0.0, "zero") and lib.thresholds()["frozen_lines"][:2] == (0.0, "zero"))
 del os.environ["ROUND_THRESHOLDS"]
 check("without it the real TV's limits", lib.thresholds()["cold_start_home_ms"][0] == 4000)
-rs, outs, cmds_s = run(args=("--skip", "radio,display"))
+rs, outs, cmds_s = run(args=("--skip", "radio,display,reach"))
 steps_s = [l.split("\t") for l in (outs / "steps.tsv").read_text(encoding="utf-8").splitlines()]
 check("--skip: the steps left out say so in the report (SKIP), run nothing, and the round is still green",
-      rs.returncode == 0 and ["radio", "SKIP"] == steps_s[0][:2] and ["display", "SKIP"] == steps_s[1][:2] and not any(s[0].startswith(("radio-", "display-")) for s in steps_s)
+      rs.returncode == 0 and ["radio", "SKIP"] == steps_s[0][:2] and ["display", "SKIP"] == steps_s[1][:2] and not any(s[0].startswith(("radio-", "display-", "reach-")) for s in steps_s)
       and "wm size 1280x720" not in cmds_s and "KEYCODE_DPAD_CENTER" not in cmds_s, (rs.returncode, steps_s[:3]))
 wf = (ROOT / ".github/workflows/auto-round.yml").read_text(encoding="utf-8")
 check("the workflow: a push to work/auto-round or a dispatch, the apps built from the ref, an Android TV emulator, tester/auto/ci/run.sh, published to data-screens in <run>/auto, red when the round is RED",
