@@ -1062,6 +1062,7 @@ public class MainActivity extends Activity {
      * would reach into it. Before the screen is laid out the numbers come from the screen's size alone.
      */
     private int[] homeCardBox(int cards, boolean row) {
+        if (date != null) handler.post(this::applyLift);   // 4.4 beta 4 (run 28: the date beside the weather for the first minute): the cards placed, the date follows now, not at the next tick
         android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
         int clockLeft = 0, titleTop = 0, dockTop = 0, wide = 0;
         if (clockBlock != null && clockBlock.getWidth() > 0) clockLeft = ((View) clockBlock.getParent()).getLeft() + clockBlock.getLeft();
