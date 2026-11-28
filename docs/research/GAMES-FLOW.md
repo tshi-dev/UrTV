@@ -19,13 +19,15 @@ The owner finds the way to play with a phone or without one «not good». This p
 6. **The player count lives in the setup for the remote and nowhere for phones** (the joined phones are the players), but the row is shown either way.
 7. **Number of presses to start a round, no phones** (odd-one, 4 players): tile OK, «ابدأ», then 3 presses a player (ready, secret, hide). With phones: tile OK, up twice and left and OK to turn the switch on, «ابدأ», each phone scans and types and taps, the host presses again.
 
-## The proposal: ONE choice, in ONE place
+## The proposal: ONE choice, in ONE place (revised after the UI session's simplicity review, docs/ui/SIMPLE.md)
 
-1. **A single first row on every setup page: «كيف تلعبون؟» with «ريموت واحد» and «جوالات»** (after-01, after-02). It replaces «اللعب بالجوالات», «اللعب بالريموت بس» and the header button. A game that can only be played one way does not show the row. It is **remembered per game** (not «off every time»); the default is the way the game was designed (the older games «ريموت واحد», the party games «جوالات» unless they have a remote way).
-2. **The player count row only for «ريموت واحد»**; with «جوالات» a line says «الجوالات اللي تدخل هي اللاعبين (٣ إلى ١٠)», and the start button is «افتح الغرفة».
-3. **The list loses the header phone button** (after-04): the tiles already say «جوال» / «ريموت» / «ريموت أو جوال», and the moon (night) stays. Every tile opens the same way.
-4. **One block for the room, with a way out** (after-03): the QR, the address (the code only inside it), the phones that came as coloured name tiles with the count («٣ من ٣ على الأقل»), «ابدأ» (grey until enough) and, beside it, **«نلعب بالريموت بدلاً»** for a game that has a remote way: it closes the room and starts the same game on the remote (the choice is remembered). A phone-only game shows only «أغلق الغرفة».
-5. **Nothing else changes**: the hand-over (pass screen, count, secret, hide) stays as it is, the names stay optional, the how-to «!» stays; the only text changes are the new row, the room's line and the two buttons.
+1. **A single first row on every setup page: «كيف تلعبون؟» with «ريموت واحد» and «جوالات»** (after-01, after-02). It replaces «اللعب بالجوالات», «اللعب بالريموت بس» and the header button. A game that can only be played one way does not show the row. **Remembered per game**; the default is the way the game was designed (the older games «ريموت واحد», the party games «جوالات» unless they have a remote way); the focus starts on the current value.
+2. **«ابدأ» is the primary in both modes** (not «افتح الغرفة»: the room is just what comes next). With «جوالات» the player-count row goes, **«الأسماء» goes too** (the phones type their own names) and there is no explaining sentence: the room says the count once.
+3. **The list loses the header phone button** (after-04). Every tile opens the same way. The tags use the row's words, all in one quiet outlined style: «ريموت» / «جوالات» / «ريموت أو جوالات».
+4. **One block for the room, with a quiet way out** (after-03-room-short, after-03-room-enough): the QR, the address **in Latin digits** (it is typed into a phone's browser) with the code only inside it, the phones that came as coloured name tiles. While short, one line «ناقص لاعب» (or «ناقص ٢»); when enough have come the line is gone and «ابدأ» lights up in place (the focus is on «ابدأ» even while it is grey: OK on it only shows the «ناقص …» line, no focus jump). Beside it **«نلعب بالريموت»** for a game that has a remote way: it closes the room and starts the same game on the remote (the choice is remembered). A phone-only game shows «ابدأ» alone: **no «أغلق الغرفة» button** (Back is the key and the footer says so).
+5. **Nothing else changes**: the hand-over (pass screen, count, secret, hide) stays as it is, the names stay optional with the remote, the how-to «!» stays.
+
+At 720p with the system font at 1.3 (SIMPLE.md rule 5) the same screens: `after-01-setup-remote-720p-font1.3.png`, `after-02-setup-phones-720p-font1.3.png`, `after-03-room-short-720p-font1.3.png`, `after-03-room-enough-720p-font1.3.png` (the room, the screen most likely to clip, fits). They are mockups: the real layout fits text with the kit's `clip` and the lowering of sizes.
 
 ## What it changes in the code (small)
 
@@ -40,9 +42,9 @@ The owner finds the way to play with a phone or without one «not good». This p
 | Before (emulator, today) | After (mockup) |
 |---|---|
 | `before-01-list-header.png`: the header line and the tags | `after-04-list-no-phone-button.png` |
-| `before-02-oddone-setup.png`: «اللعب بالجوالات: لا» row | `after-01-setup-one-switch.png`, `after-02-setup-phones.png` |
+| `before-02-oddone-setup.png`: «اللعب بالجوالات: لا» row | `after-01-setup-remote.png`, `after-02-setup-phones.png` |
 | `before-03-oddone-remote-start.png`: the remote's first screen | unchanged |
-| `before-07-oddone-phones-lobby.png`, `before-09-liar-lobby.png`, `before-11-quiz-room.png`: the grey room | `after-03-room-one-block.png` |
+| `before-07-oddone-phones-lobby.png`, `before-09-liar-lobby.png`, `before-11-quiz-room.png`: the grey room | `after-03-room-short.png`, `after-03-room-enough.png` |
 | `before-08-liar-setup.png`: a party game with no remote way | the same page with the row «كيف تلعبون؟» |
 
-To be decided by the owner: whether the default for the party games is «جوالات» (as now) or «ريموت واحد»; whether the header button goes (the proposal) or stays as a shortcut.
+To be decided by the owner: whether the default for the party games is «جوالات» (as now) or «ريموت واحد».
