@@ -294,6 +294,8 @@ public class MainActivity extends Activity {
             if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 1) { longFav = true; toggleFavourite(); return true; }
             if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() > 1 && longFav) return true;
             if (event.getAction() == KeyEvent.ACTION_UP && longFav) { longFav = false; return true; }
+            // R-503: a remote that sends no repeats (or TCL Android 12 while a key filter is on): the hold time on the release says it
+            if (event.getAction() == KeyEvent.ACTION_UP && sa.urtv.home.LongPress.onRelease(event.getEventTime(), event.getDownTime(), false)) { toggleFavourite(); return true; }
         }
         // the list swallows «up» even on its first row, so the jump back to the tabs happens here
         if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0
