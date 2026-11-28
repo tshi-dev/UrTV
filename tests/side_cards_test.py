@@ -19,7 +19,7 @@ def check(name, ok, detail=""):
     print(("PASS " if ok else "FAIL ") + name + ("" if ok else f"  -> {detail}"))
     failed += not ok
 
-check("off by default, and the owner's pick is one word (Prefs.SIDE_CARDS_DEFAULT)", 'static final String SIDE_CARDS_DEFAULT = "off";' in prefs
+check("B by default (the owner, November 2026: the three cards in «كنبة»), the pick one word (Prefs.SIDE_CARDS_DEFAULT)", 'static final String SIDE_CARDS_DEFAULT = "b";' in prefs
       and 'sp.getString("sideCards", SIDE_CARDS_DEFAULT)' in prefs and 'static final String[] SIDE_CARDS = {"off", "a", "b"};' in prefs)
 check("off sends nothing to the page; a or b travels as #sidecards=", '("off".equals(sideCards()) ? "" : "&sidecards=" + sideCards())' in prefs)
 check("the agent's way: saver.sh sidecards off|a|b, checked, and `show` says it", 'sidecards)set1 sidecards' in sh and '"error: sidecards is one of off, a, b"' in recv

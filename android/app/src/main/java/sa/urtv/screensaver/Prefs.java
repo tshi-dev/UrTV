@@ -587,7 +587,7 @@ final class Prefs {
      * hours' weather) or "b" (and the followed club's next match). SIDE_CARDS_DEFAULT is the owner's pick: changing this one word turns it on for every TV
      * that never chose; one chosen with saver.sh sidecards stays. The home reads it from the page's fragment (#sidecards=), SideCards.
      */
-    static final String SIDE_CARDS_DEFAULT = "off";
+    static final String SIDE_CARDS_DEFAULT = "b";   // the owner (November 2026): B, the three cards, is «كنبة»'s default
     static final String[] SIDE_CARDS = {"off", "a", "b"};
     /** 4.4 «أجزاء UrTV» (Parts): the parts that are off, "" = all on (the default: an update changes nothing) */
     String partsOff() { return Parts.clean(sp.getString("partsOff", "")); }

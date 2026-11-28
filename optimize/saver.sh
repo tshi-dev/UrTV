@@ -108,7 +108,7 @@
 #                                                 not shown). A look and the parts; the city, the teams, the locks and each part's own settings are kept
 #   optimize/saver.sh part matches off            4.4 «أجزاء UrTV»: a part off disappears from the home, the screensaver, the settings and their search; on
 #                                                 brings it back as it was. prayer off silences the adhan too; saver off gives the TV its own screensaver
-#   optimize/saver.sh sidecards a                  «كنبة»'s small cards on the left: off (default) a (prayer, weather) b (and the next match)
+#   optimize/saver.sh sidecards a                  «كنبة»'s small cards on the left: off, a (prayer, weather) or b (and the next match, the default)
 #   optimize/saver.sh design clean                 the screensaver's design: info (default, as it always was) clean big frame dayline
 #   optimize/saver.sh bar prayers                  a centred bar: none (default) prayers slot (the left slot's item) weather
 #   optimize/saver.sh barat clock                  where the bar goes: bottom (default) clock (under the clock)

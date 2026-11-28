@@ -41,16 +41,16 @@ check("the sleep timer's tile and «أطفئ الآن» end the same way (SleepT
 check("«أطفئ الآن» without «إضافات تلفزيونك» (4.3.3): the tile says «يحتاج تفعيل، اضغط للتفعيل», OK opens its offer (install it, or turn it on) behind the sleep lock (ParentalPolicy.SLEEP_ACCESSIBILITY); no silent fallback to sound off and the screensaver, no notice and no delay; a long OK does the same",
       "Extras.enabled()" in center and "ParentalPolicy.SLEEP_ACCESSIBILITY" in center and 'S.t("يحتاج تفعيل، اضغط للتفعيل")' in center and center.count('Extras.intent(act, "sleep")') == 2
       and "SLEEP_OFF_NOTICE" not in center and "SLEEP_OFF_NOTICE" not in text and "offPending" not in center and "ui.postDelayed(" not in center.split("private void turnOffNow()")[1].split("// ------")[0] and "مو شغّالة" not in text)
-check("«إعدادات تلفزيونك» opens our settings (the screensaver app's SettingsActivity) through «قفل الإعدادات» (@urtv), the tile only when that app is there",
-      "host.openOurSettings()" in center and "ParentalPolicy.OUR_SETTINGS, null" in main and 'SAVER_PKG + ".SettingsActivity"' in main
+check("our settings (the screensaver app's SettingsActivity) open through «قفل الإعدادات» (@urtv); the panel's way is «الإعدادات», only when that app is there, and no «تلفزيونك» tile (the owner, H6: two ways to the settings, not three)",
+      'tile("settings", S.t("الإعدادات")' in center and 'S.t("الألعاب والمباريات والإعدادات")' not in center and "ParentalPolicy.OUR_SETTINGS, null" in main and 'SAVER_PKG + ".SettingsActivity"' in main
       and "case OUR_SETTINGS:" in policy and "t.add(OWN_SETTINGS)" in policy.split("case OUR_SETTINGS:")[1][:200]
-      and center.index("if (host.saverInstalled())") < center.index('"تلفزيونك"') < center.index('"tv", S.t("إعدادات الجهاز")'))   # 4.4 beta 4: the TV's own settings tile is «إعدادات الجهاز» (the findability review)
+      and center.index("if (host.saverInstalled())") < center.index('tile("settings", S.t("الإعدادات")') < center.index('"tv", S.t("إعدادات الجهاز")'))   # 4.4 beta 4: the TV's own settings tile is «إعدادات الجهاز» (the findability review)
 check("the side panel: 560 px of 1920 wide inside the 5 % safe area, a clear full-screen popup it slides across in the one motion (Motion: 200 ms, couch-tv's curve; a fade with «الوضع الخفيف»), a press outside closes it, what does not fit scrolls",
       "PANEL_W = 560f / 1920f, SAFE = 0.05f" in center and "SLIDE_MS = (int) Motion.MS" in center and "new PopupWindow(root, W, H, true)" in center and "root.setOnClickListener(v -> dismiss());" in center
       and "panel.animate().translationX(0).setDuration(SLIDE_MS).setInterpolator(Motion.ease())" in center and "final boolean fade = wideNow || Ram.low(anchor.getContext());" in center and "Dir.start() | Gravity.TOP" in center
       and "new ScrollView(act)" in center and "ControlLayout" not in center and not (HOME / "ControlLayout.java").exists())
 check("four round toggles on top (Bluetooth, mirroring, the sleep timer, «أطفئ الآن»), then rows with a short value each (network, sound, speed, the TV's settings, ours); ellipsized one-line values",
-      'TOGGLES = {"bluetooth", "mirror", "sleep", "off"}' in center and 'ROWS = {"net", "sound", "speed", "ours", "games", "city", "adhan", "tv", "apps", "saver", "black"}' in center and "GradientDrawable.OVAL" in center
+      'TOGGLES = {"bluetooth", "mirror", "sleep", "off"}' in center and 'ROWS = {"net", "sound", "speed", "games", "city", "adhan", "tv", "apps", "saver", "black"}' in center and "GradientDrawable.OVAL" in center
       and "t.setSingleLine(true);" in center and "TruncateAt.END" in center and "ControlText.networkDetail" not in center)
 check("the focus: a solid fill in the look's colours with its ink, coming in over the one motion (Motion: 200 ms, couch-tv's curve)",
       "FOCUS_MS = (int) Motion.MS" in center and "anim.setInterpolator(Motion.ease());" in center and "ValueAnimator.ofArgb(shown, target)" in center and "anim.setDuration(FOCUS_MS)" in center and "int target = f ? FOCUSED : " in center and "ON_SUB" in center)
@@ -138,8 +138,8 @@ check("PR #18 «إدارة التطبيقات»: the apps actions in order, each
 check("Wi-Fi and Bluetooth side by side, first (docs/UX-REVIEW.md): the network tile, then Bluetooth, then the rest",
       center.index('tile("net"') < center.index('tile("bluetooth"') < center.index('tile("sound"') < center.index('tile("speed"')
       < center.index('tile("sleep"') < center.index('tile("off"') < center.index('tile("mirror"') < center.index('tile("saver"'))
-check("at most seventeen tiles: «الإعدادات» (4.4 beta 4), «إدارة التطبيقات» (PR #18, unticked until asked for), sleep, off, network, speed, sound, «الأذان والإقامة» (4.3.3), mirroring, Bluetooth, screensaver, the city, the games, ours, the build line, the TV's settings, and (4.4 #62, only while something plays) the black screen",
-      len(re.findall(r'tile\("[a-z]+"', center)) == 17, re.findall(r'tile\("[a-z]+"', center))
+check("at most sixteen tiles: «الإعدادات» (4.4 beta 4), «إدارة التطبيقات» (PR #18, unticked until asked for), sleep, off, network, speed, sound, «الأذان والإقامة» (4.3.3), mirroring, Bluetooth, screensaver, the city, the games, the build line, the TV's settings, and (4.4 #62, only while something plays) the black screen",
+      len(re.findall(r'tile\("[a-z]+"', center)) == 16, re.findall(r'tile\("[a-z]+"', center))
 # ---- no traffic before OK
 check("the only network code is the speed test's, and it is started by the tile's OK on a worker thread",
       "new SpeedTest()" in center and "HttpURLConnection" not in center and "new Thread(" in center.split("private void speedTest")[1]
@@ -188,8 +188,8 @@ check("from the home «مركز التحكم» is near: ▲ from the apps row, a
       and "if (e.getAction() == KeyEvent.ACTION_DOWN) keyedSinceHome = true;" in main)
 # ---- 4.3.1: ours before the TV's, the city beside it; a saved old default order follows the new one
 check("«إعدادات تلفزيونك» comes before the TV's «الإعدادات» by default, «المدينة» right after it; the old default order saved by the editor counts as never reordered",
-      center.index('"ours", "games", "city", "adhan", "tv"') > 0 and 'OLD_DEFAULT = "net,sound,speed,tv,ours,saver"' in center and 'if (v.equals(OLD_DEFAULT)) v = "";' in center
-      and center.index('tile("city"') < center.index('tile("games"') < center.index('tile("ours"') < center.index('tile("tv"') and "host.openCity()" in center)
+      center.index('"speed", "games", "city", "adhan", "tv"') > 0 and 'OLD_DEFAULT = "net,sound,speed,tv,ours,saver"' in center and 'if (v.equals(OLD_DEFAULT)) v = "";' in center
+      and center.index('tile("city"') < center.index('tile("games"') < center.index('tile("tv"') and 'tile("ours"' not in center and "host.openCity()" in center)
 # ---- 4.3.1: «تلفزيونك» (the hub) and the build line
 check("«تلفزيونك» opens the screensaver app's hub (the games one press away), «الألعاب» opens its window, an old screensaver without the hub gets its settings, and the build line comes first",
       'YourTvHubActivity"' in main and 'hub.putExtra("open", window)' in main and 'openOurSettings(false, "games")' in main and "host.openGames()" in center and "host.openUpdate()" in center
@@ -225,6 +225,6 @@ check("the tray's scroll does no avoidable work per step: the name row's fade st
 
 # ---- 4.3.1: ours before the TV's, the city beside it; a saved old default order follows the new one
 check("«إعدادات تلفزيونك» comes before the TV's «الإعدادات» by default, «المدينة» right after it; the old default order saved by the editor counts as never reordered",
-      center.index('"ours", "games", "city", "adhan", "tv"') > 0 and 'OLD_DEFAULT = "net,sound,speed,tv,ours,saver"' in center and 'if (v.equals(OLD_DEFAULT)) v = "";' in center
-      and center.index('tile("city"') < center.index('tile("games"') < center.index('tile("ours"') < center.index('tile("tv"') and "host.openCity()" in center)
+      center.index('"speed", "games", "city", "adhan", "tv"') > 0 and 'OLD_DEFAULT = "net,sound,speed,tv,ours,saver"' in center and 'if (v.equals(OLD_DEFAULT)) v = "";' in center
+      and center.index('tile("city"') < center.index('tile("games"') < center.index('tile("tv"') and 'tile("ours"' not in center and "host.openCity()" in center)
 sys.exit(1 if failed else 0)
