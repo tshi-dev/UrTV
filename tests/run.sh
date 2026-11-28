@@ -522,5 +522,6 @@ python3 tests/saver_gate_test.py   # 4.4 review: a settings change during the pa
 python3 tests/saver_prayerfix_test.py   # 4.4 review: the late prayer correction reaches a running dream (F2)
 python3 tests/saver_kids_keep_test.py   # 4.4 review: the kids copy keeps its last real answer (F3)
 #
+python3 tests/keep_settle_test.py   # R-380 protected features stay on across the restarts (keep.sh marks settle.sh, keep once more after the last restart)
 # «regressions» (docs/dev/REGRESSIONS.md): the gate's own tests, and any guard of the register this file does not run by name above
 python3 tests/regressions/run.py --rest
