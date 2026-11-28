@@ -74,6 +74,7 @@
   
   html.side .mid,html.side .mid.n2,html.side .mid.n3{grid-template-columns:minmax(0,1fr)!important;grid-auto-rows:1fr;gap:5.5vh;align-content:stretch;min-height:100vh;box-sizing:border-box;padding:1vh 1vw}
   html.side .mid{align-items:stretch}html.side .mid .week{grid-column:auto!important;grid-row:auto!important;min-height:0;display:flex;flex-direction:column;justify-content:center}
+  html.side .mid .week{zoom:var(--sidez,1)}   
   html.ccr-sharp .week{--cr:8px;border-radius:8px!important}html.ccr-soft .week{--cr:16px;border-radius:16px!important}html.ccr-round .week{--cr:26px;border-radius:26px!important}
   
   html.row .mid{box-sizing:border-box;min-height:100vh;padding-top:6.25vh;padding-bottom:6.25vh;padding-right:1vw;padding-left:1vw}
@@ -5365,7 +5366,22 @@ function addCardStyle(){
 function bootWidget(){
   document.documentElement.classList.add('widget');
   if(_Q.get('row') === '1') document.documentElement.classList.add('row');
-  if(_Q.get('side') === '1') document.documentElement.classList.add('side');
+  if(_Q.get('side') === '1') {
+    document.documentElement.classList.add('side');
+    let sideFitQueued = false;
+    const fitSide = () => {
+      sideFitQueued = false;
+      const root = document.documentElement, mid = document.querySelector('.mid');
+      if(!mid) return;
+      let z = 1;
+      root.style.setProperty('--sidez', '1');
+      while(z > 0.55 && mid.scrollHeight > innerHeight + 1){ z = Math.round((z - 0.05) * 100) / 100; root.style.setProperty('--sidez', String(z)); }
+    };
+    const queueFit = () => { if(!sideFitQueued){ sideFitQueued = true; requestAnimationFrame(fitSide); } };
+    new MutationObserver(queueFit).observe(document.body || document.documentElement, {childList: true, subtree: true, characterData: true});
+    addEventListener('resize', queueFit);
+    addEventListener('load', queueFit);
+  }
   if(_Q.get('tvos') === '1') document.documentElement.classList.add('tvos');
   if(CONFIG.lowram) document.documentElement.classList.add('lowram');
   addCardStyle();

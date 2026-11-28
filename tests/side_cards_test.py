@@ -36,7 +36,7 @@ check("it never takes the focus (the D-pad's ways on the home are unchanged)", "
 check("the settings are read on the loader, the view placed on the UI thread, with the home card's refreshes; dropped on destroy",
       "final String u = side.read();" in main and "loader.execute(() -> {" in main[main.index("private void refreshSideCards()"):]
       and main.count("refreshSideCards();") >= 2 and "if (sideCards != null) sideCards.drop();" in main)
-check("the page: #side=1 is one narrow column, the cards share its height, no two side by side", "if(_Q.get('side') === '1') document.documentElement.classList.add('side');" in page
+check("the page: #side=1 is one narrow column, the cards share its height, no two side by side", "if(_Q.get('side') === '1') {   // 4.4 beta 4: «كنبة»'s side cards (SideCards): one narrow column\n    document.documentElement.classList.add('side');" in page
       and "html.side .mid,html.side .mid.n2,html.side .mid.n3{grid-template-columns:minmax(0,1fr)!important" in page)
 # 4.4 beta 4 (the supervisor, run 23): the column never repeats the strip, and wears the strip's material (no framed look of its own)
 import shutil, subprocess, tempfile
@@ -54,4 +54,6 @@ else:
 check("the column reads the strip's cards as HomeCard does (home_panels over the first) and passes them; the strip's material is put on its page",
       'String cards = SideTopics.beside(cards(opt), strip);' in side and 'int all = c.getColumnIndex("home_panels");' in side and "String u = url(frag, layout, strip);" in side
       and "side.show(u == null || homeCard == null ? u : homeCard.glassed(u));" in main and "String glassed(String u) { return withGlass(u); }" in (ROOT / "android/launcher/src/main/java/sa/urtv/home/HomeCard.java").read_text(encoding="utf-8"))
+check("the column's cards shrink together until all of them fit (runs 22-26: B's third card stood below the column's edge), in one frame, never under 0.55",
+      "html.side .mid .week{zoom:var(--sidez,1)}" in page and "while(z > 0.55 && mid.scrollHeight > innerHeight + 1)" in page and "requestAnimationFrame(fitSide)" in page)
 sys.exit(1 if failed else 0)
