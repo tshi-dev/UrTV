@@ -1,4 +1,4 @@
-version: 4.4 (build 7)
+version: 4.4 (build 8)
 city: الرياض (24.6877, 46.7219)
 timezone: Asia/Riyadh
 country: SA
@@ -86,6 +86,7 @@ national: auto
 cardstyle: current
 cardsize: m
 cardcorner: style
+sidecards: off
 design: info
 bar: none
 barat: bottom
