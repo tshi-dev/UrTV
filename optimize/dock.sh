@@ -28,6 +28,8 @@
 #                                          the Home key there: TCL G10/G08, Changhong Android 14, Sony BRAVIA VH21, Xiaomi MiTV-AFMU0/1); after extras-setup
 #   optimize/dock.sh home-key on|off|status    4.4 «زر الرئيسية يفتح تلفزيونك مباشرة»: the add-on catches the remote's Home key (on by default on a Google TV,
 #                                          only while the person's home is ours; the window watch stays as the fallback)
+#   optimize/dock.sh boot-home on|off|status   4.4 «ابدأ بالرئيسية بعد التشغيل» (R-410): UrTV in front a few seconds after the TV starts (on by default on Changhong and
+#                                          Skyworth, which boot into Live TV after a power cut; the TV's own «boot input» setting is the better way where it has one)
 #   optimize/dock.sh key-filter on|off|status  4.4 «فلتر أزرار الريموت» (R-408): off = the add-on never filters the remote's keys (a key remapper of the person's
 #                                          gets them all; the Home catch, the Settings key outside the home and the remote buttons over apps stop; on is the default)
 #   optimize/dock.sh key                   «أزرار الريموت»: this remote's app buttons (YouTube, Netflix…: the ones its brand has) and the app each opens
@@ -210,6 +212,12 @@ case "${1:-}:$#" in
       *) echo "usage: optimize/dock.sh key-filter on|off|status"; exit 1 ;;
     esac ;;
   key-filter:*) echo "usage: optimize/dock.sh key-filter on|off|status"; exit 1 ;;
+  boot-home:2)
+    case "$2" in
+      on|off|status) send BOOT_HOME "--es mode $2" ;;
+      *) echo "usage: optimize/dock.sh boot-home on|off|status"; exit 1 ;;
+    esac ;;
+  boot-home:*) echo "usage: optimize/dock.sh boot-home on|off|status"; exit 1 ;;
   home-watch:2)
     case "$2" in
       on|off|status) send HOME_WANTED "--es mode $2" ;;
