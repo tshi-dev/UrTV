@@ -154,6 +154,7 @@ public class MainActivity extends Activity {
     private ConfigSnapshot lastCfg;
     private PopupWindow inputsPopup;
     private HomeCard homeCard;
+    private SideCards sideCards;   // 4.4 beta 4: «كنبة»'s small cards down the left (off by default: #sidecards=, the owner's pick)
     private NowCard nowCard;   // «يُتلى الآن»: at the right end of the pills row while a surah or a station is on
     private Pill searchPill;   // 4.3.3 «بحث»: the TV's own search inside the apps (GlobalSearch), off until the settings turn it on
     private Pill marketsPill, matchesPill, phonePill, updatePill;   // «تحديث»: an update is worth opening the update screen for (UpdateNotice)   // «الجوال» (C14): the phone remote's page
@@ -241,7 +242,7 @@ public class MainActivity extends Activity {
 
     // the cards were changed from the phone while the home screen is in front: follow now, not at the next return
     private final BroadcastReceiver cardsChanged = new BroadcastReceiver() {
-        @Override public void onReceive(Context c, Intent i) { if (resumed) { homeCard.refresh(); wireFocus(); } }
+        @Override public void onReceive(Context c, Intent i) { if (resumed) { homeCard.refresh(); refreshSideCards(); wireFocus(); } }
     };
 
     // ---------------------------------------------------------------- lifecycle
@@ -482,6 +483,7 @@ public class MainActivity extends Activity {
         updateClock();
         updateNowPlaying();
         homeCard.refresh();
+        refreshSideCards();
         applyClean();   // «UrTV النظيف» changed while another screen was in front (after the card refresh: applyClean may hide the card)
         if (reminder != null) reminder.refresh(true);   // a card that came due while another app was in front; the alarm follows the tasks (both off the UI thread: QA-3)
         readAnimationScale();
@@ -532,6 +534,7 @@ public class MainActivity extends Activity {
         if (control != null) control.dismiss();   // its speed test stops with it
         if (appOptions != null) { appOptions.dismiss(); appOptions = null; }
         homeCard.pause();
+        if (sideCards != null) sideCards.pause();
         if (reminder != null) reminder.hide();
     }
 
@@ -745,9 +748,21 @@ public class MainActivity extends Activity {
     /** the photos were let go (onTrimMemory): the next onResume shows one at once */
     private boolean wallTrimmed;
 
+    /** 4.4 beta 4 SideCards: the screensaver's settings read on the loader, the column placed (or taken away) on the UI thread */
+    private void refreshSideCards() {
+        if (sideCards == null) sideCards = new SideCards(this, (android.view.ViewGroup) findViewById(android.R.id.content), () -> homeCard == null ? -1 : homeCard.stripTop());
+        final SideCards side = sideCards;
+        if (loader.isShutdown()) return;
+        loader.execute(() -> {
+            final String u = side.read();
+            runOnUiThread(() -> { if (!isFinishing() && !isDestroyed() && resumed) side.show(u == null || homeCard == null ? u : homeCard.glassed(u)); });   // never after onPause (it resumes the page's timers)
+        });
+    }
+
     @Override
     protected void onDestroy() {
         if (safeRedirect) { super.onDestroy(); return; }   // nothing of the screen was made (CrashLoop)
+        if (sideCards != null) sideCards.drop();
         unregisterReceiver(packages);
         KeyTrace.release();
         unregisterReceiver(dockChanged);
@@ -1236,6 +1251,11 @@ public class MainActivity extends Activity {
             case "prayers":   // the settings' «الأذان لكل صلاة»: sound and screen for each of the five, behind the same lock as the adhan's settings
                 if (getResources().getBoolean(R.bool.show_listening))
                     handler.post(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, new Intent(this, sa.urtv.home.tilawah.PrayerSoundActivity.class), S.t("الأذان لكل صلاة")));
+                break;
+            case "ownadhan":   // 4.4 beta 4 the settings' «أذاني من ملف» (the emulator's count: inside «المؤذن» it was ~37 presses): «صوتياتي» asking for the file that becomes the adhan
+                if (getResources().getBoolean(R.bool.show_listening))
+                    handler.post(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, new Intent(this, sa.urtv.home.tilawah.AudioActivity.class)
+                        .putExtra(sa.urtv.home.tilawah.AudioActivity.EXTRA_USE, "own"), S.t("أذاني من ملف")));
                 break;
             case "listen":   // the settings' «تلاوة وأذان» ← «افتح تلاوة وأذان»: the same as the button
                 if (getResources().getBoolean(R.bool.show_listening))
@@ -3692,8 +3712,11 @@ public class MainActivity extends Activity {
         if (nameRow == null || nameRow.getWidth() == 0) return;
         View f = getCurrentFocus();
         boolean inBar = f != null && (dockCards.contains(f) || f == allAppsCard || f == settingsCard) && edit == null;
-        placeZoomName(appsZoom && inBar ? f : null);
-        if (appsZoom) inBar = false;   // «تكبير وظل»: the name is under the tile, not above the tray
+        // 4.4 beta 4 (the supervisor, run 23: «يوتيوب» drawn over the match card): with the big clock the strip comes down to the apps row, over the place
+        // of the name above the tray, so the name goes under the tile as in «تكبير وظل»
+        boolean under = appsZoom || (bigClockOn && homeCard != null && homeCard.inRow());
+        placeZoomName(under && inBar ? f : null);
+        if (under) inBar = false;   // «تكبير وظل»: the name is under the tile, not above the tray
         // this runs on every step of the tray's scroll: a new animator each step (cancel and restart, an invalidation each) is exactly what makes a scroll janky;
         // the name's fade starts only when it has to change
         if (nameShown != inBar || (!inBar && nameRow.getAlpha() > 0f && !nameHiding)) {   // 4.4 beta 2: the row also fades when it was never shown (the zoom ways: it stayed beside the name over the icon)

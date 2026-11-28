@@ -75,6 +75,13 @@ for (const [w, h] of [[1676, 208], [1117, 139]]) {
   const rule = css.split('\n').find(l => l.includes('html.row.widget .week.lf,')) || '';
   check('the strip\'s focus: a 3% scale and a short shadow, no ring', /transform:scale\(1\.03\)/.test(rule) && /box-shadow:0 4px 10px/.test(rule) && !/inset/.test(rule), rule);
 }
+// 4.4 beta 4 SideCards: #side=1 is one column of 340 x 434 (1080p) or 227 x 289 (720p); A's two and B's three cards one under another, inside it
+for (const [w, h, cards] of [[340, 434, 'nextprayer,hourly'], [340, 434, 'nextprayer,hourly,nextmatch'], [227, 289, 'nextprayer,hourly,nextmatch']]) {
+  const s = await page('tv.html', w, h, `panel=nextprayer&home_panel=${cards}&side=1`);
+  const n = cards.split(',').length;
+  check(`tv.html #side=1 at ${w}x${h}: ${n} cards one under another, inside the column`, s.cls.includes('side') && s.cards.length === n
+    && s.cards.every((b, i) => b[0] >= 0 && b[2] <= w && b[1] >= 0 && b[3] <= h + 1 && (i === 0 || b[1] >= s.cards[i - 1][3])), JSON.stringify(s.cards));
+}
 await browser.close();
 if (failed) { console.log(`\n${failed} failed`); process.exit(1); }
 console.log('\nall passed');

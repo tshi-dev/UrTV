@@ -24,7 +24,7 @@ public class AudioActivity extends RowScreen {
     /** pick a file and give its id back (RESULT_OK, "id") */
     static final String EXTRA_PICK = "pick";
     /** 4.4 beta 4: «أذاني من ملف» in «المؤذن»: "own" or "own_fajr": the file added here becomes that adhan at once (nothing else is asked) and the screen closes */
-    static final String EXTRA_USE = "use";
+    public static final String EXTRA_USE = "use";
     private static final int ASK_READ = 7;
 
     private boolean pick;

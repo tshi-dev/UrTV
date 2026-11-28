@@ -69,7 +69,7 @@ final class HomeCard {
         }
     }
 
-    private static final String FONTS = "https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/";
+    static final String FONTS = "https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/";
 
     /** Sent inside the app when the cards were changed from the phone: the home screen in front follows at once. */
     static final String CHANGED = "sa.urtv.home.CARDS_CHANGED";
@@ -122,6 +122,13 @@ final class HomeCard {
     boolean inRow() { return row && cards > 0; }
     /** «كنبة», with cards or «بدون» */
     boolean couch() { return couch; }
+    /** the strip's top in the window while it is on the screen (row, laid out), else -1: «كنبة»'s side cards keep above it (SideCards) */
+    int stripTop() {
+        if (web == null || !inRow() || web.getHeight() == 0 || web.getVisibility() != View.VISIBLE) return -1;
+        int[] at = new int[2];
+        web.getLocationInWindow(at);
+        return at[1];
+    }
     /** the layout the home showed last, for the report (a word, nothing else) */
     static volatile boolean footballShown;
     private FootballFocus.Host footballHost;
@@ -377,6 +384,9 @@ final class HomeCard {
      * design/43 «توحيد المظهر»: the cards wear the home's one material (GlassStyle.material, CARDS), the same as the upper buttons and the apps bar, so the stocks, the prayers, the
      * games and the tasks are one family with them in every look. The page reads it as #hpanel= and #hline= (CSS html.hcard) and, with the switch on, its ink (html.hsync).
      */
+    /** «كنبة»'s side cards wear the same material as the strip (the supervisor, run 23: they kept the page's own framed look, its diamonds) */
+    String glassed(String u) { return withGlass(u); }
+
     private String withGlass(String u) {
         if (u == null || !u.contains("#") || DebugFlags.on(activity, "nocardglass")) return u;   // (a tester's switch: the cards keep their own look)
         return u + glassQuery(GlassStyle.material(lookNow, lightNow, GlassStyle.CARDS));
@@ -408,6 +418,26 @@ final class HomeCard {
         idle.removeCallbacks(this);
         if (resumed) idle.postDelayed(this, KICK_PULL_MS);
     } };
+
+    /** what the home's pages read from file:// and the fonts' address, answered here (S1: the page reads its own file and the assets only; the fonts from
+     *  the APK); null for anything else. HomeCard's page and «كنبة»'s side cards (SideCards) both ask it, {@code page} being the page now loaded. */
+    static WebResourceResponse served(Activity a, WebResourceRequest r, String page) {
+        String s = r.getUrl().toString();
+        if ("file".equals(r.getUrl().getScheme()) && !FileGate.allowed(r.getUrl().getPath(), page == null ? null : Uri.parse(page).getPath())) {   // S1: the page reads its own file and the assets, nothing of the app's folders
+            return new WebResourceResponse("text/plain", "UTF-8", 403, "Forbidden", Collections.<String, String>emptyMap(), new java.io.ByteArrayInputStream(new byte[0]));
+        }
+        if (s.startsWith(FONTS)) {
+            String name = s.substring(FONTS.length());
+            if (name.matches("[A-Za-z0-9_-]+\\.woff2")) {
+                try {
+                    return new WebResourceResponse("font/woff2", null, 200, "OK",
+                        Collections.singletonMap("Access-Control-Allow-Origin", "*"),
+                        a.getAssets().open("fonts/" + name));
+                } catch (java.io.IOException ignored) { }
+            }
+        }
+        return null;
+    }
 
     @SuppressLint("SetJavaScriptEnabled")
     @SuppressWarnings("deprecation")
@@ -460,19 +490,8 @@ final class HomeCard {
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView v, WebResourceRequest r) {
                 String s = r.getUrl().toString();
-                if ("file".equals(r.getUrl().getScheme()) && !FileGate.allowed(r.getUrl().getPath(), url == null ? null : Uri.parse(url).getPath())) {   // S1: the page reads its own file and the assets, nothing of the app's folders
-                    return new WebResourceResponse("text/plain", "UTF-8", 403, "Forbidden", Collections.<String, String>emptyMap(), new java.io.ByteArrayInputStream(new byte[0]));
-                }
-                if (s.startsWith(FONTS)) {
-                    String name = s.substring(FONTS.length());
-                    if (name.matches("[A-Za-z0-9_-]+\\.woff2")) {
-                        try {
-                            return new WebResourceResponse("font/woff2", null, 200, "OK",
-                                Collections.singletonMap("Access-Control-Allow-Origin", "*"),
-                                activity.getAssets().open("fonts/" + name));
-                        } catch (java.io.IOException ignored) { }
-                    }
-                }
+                WebResourceResponse fixed = served(activity, r, url);   // the file gate and the fonts (the side cards' page too)
+                if (fixed != null) return fixed;
                 if (s.startsWith(OWN_BASE)) return ownPhoto(s.substring(OWN_BASE.length()));
                 NetLog.count(s);   // G3: what the card's page asks the network (the request log)
                 return super.shouldInterceptRequest(v, r);

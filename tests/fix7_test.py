@@ -60,7 +60,7 @@ ma = text(HOME + "MainActivity.java")
 check("a saved set of cards (empty list = «بدون» too) sends the home a message", "PhoneApps.cardsChanged(app);" in act
       and 'extras.putString("home_panel", cards.length() == 0 ? "none" : cards.toString())' in act)
 check("the home follows it at once when it is in front, with its own (not exported) receiver",
-      "InternalReceivers.register(this, cardsChanged, new IntentFilter(HomeCard.CHANGED))" in ma and "if (resumed) { homeCard.refresh(); wireFocus(); }" in ma
+      "InternalReceivers.register(this, cardsChanged, new IntentFilter(HomeCard.CHANGED))" in ma and "if (resumed) { homeCard.refresh(); refreshSideCards(); wireFocus(); }" in ma
       and "unregisterReceiver(cardsChanged)" in ma)
 check("the message stays inside the app", "setPackage(app.getPackageName())" in text(HOME + "PhoneApps.java") and 'CHANGED = "sa.urtv.home.CARDS_CHANGED"' in text(HOME + "HomeCard.java"))
 sr = text("android/app/src/main/java/sa/urtv/screensaver/SaverReceiver.java")

@@ -75,6 +75,11 @@
   /* 4.4 beta 4 (the owner, «شكل البطاقات»): one size step either way (the cards' own fit, fitCards, still keeps them inside their box on the home),
      and three corners that override the card style's own radius; the roundest is 26 px, so a card is never a pill */
   html.csz-s .week{zoom:.88}html.csz-l .week{zoom:1.12}
+  /* 4.4 beta 4 (SideCards, docs/mockups/couch-side-cards/): «كنبة»'s small cards down the left, one column of 340 x 434 at 1080p; the cards share the
+     height with 24 px between them, and fitCards steps their content down inside it (never a scroll, never cut); the focus never comes here */
+  html.side .mid,html.side .mid.n2,html.side .mid.n3{grid-template-columns:minmax(0,1fr)!important;grid-auto-rows:1fr;gap:5.5vh;align-content:stretch;min-height:100vh;box-sizing:border-box;padding:1vh 1vw}
+  html.side .mid{align-items:stretch}html.side .mid .week{grid-column:auto!important;grid-row:auto!important;min-height:0;display:flex;flex-direction:column;justify-content:center}
+  html.side .mid .week{zoom:var(--sidez,1)}   /* 4.4 beta 4 fitSide: the column's cards shrink together until all of them fit, never one cut */
   html.ccr-sharp .week{--cr:8px;border-radius:8px!important}html.ccr-soft .week{--cr:16px;border-radius:16px!important}html.ccr-round .week{--cr:26px;border-radius:26px!important}
   /* 4.4 beta 4 (the owner: «كنبة» as couch-tv, the big clock always centred, the strip between its digits and the apps row: 208 px at 1080p, 139 at
      720p): the cards fill the strip less 6.25vh above and below (182 of 208), the same height, centred; 1vw at the sides. That room is the focus's: a
@@ -5913,6 +5918,24 @@ function addCardStyle(){
 function bootWidget(){
   document.documentElement.classList.add('widget');
   if(_Q.get('row') === '1') document.documentElement.classList.add('row');   // 4.4 «التخطيط: كنبة»: the cards in one row above the apps tray
+  if(_Q.get('side') === '1') {   // 4.4 beta 4: «كنبة»'s side cards (SideCards): one narrow column
+    document.documentElement.classList.add('side');
+    // 4.4 beta 4 (the emulator, runs 22-26: B's third card stood below the column's edge, its cards' type kept its least size in the narrow column):
+    // after each change of the cards they shrink together, a step at a time, until all of them fit; the steps run in one frame (no flicker)
+    let sideFitQueued = false;
+    const fitSide = () => {
+      sideFitQueued = false;
+      const root = document.documentElement, mid = document.querySelector('.mid');
+      if(!mid) return;
+      let z = 1;
+      root.style.setProperty('--sidez', '1');
+      while(z > 0.55 && mid.scrollHeight > innerHeight + 1){ z = Math.round((z - 0.05) * 100) / 100; root.style.setProperty('--sidez', String(z)); }
+    };
+    const queueFit = () => { if(!sideFitQueued){ sideFitQueued = true; requestAnimationFrame(fitSide); } };
+    new MutationObserver(queueFit).observe(document.body || document.documentElement, {childList: true, subtree: true, characterData: true});
+    addEventListener('resize', queueFit);
+    addEventListener('load', queueFit);
+  }
   if(_Q.get('tvos') === '1') document.documentElement.classList.add('tvos');   // 4.4 beta 2 the full look «tvOS»: the same row, its cards as glass
   if(CONFIG.lowram) document.documentElement.classList.add('lowram');
   addCardStyle();   // «شكل البطاقة» applies to each of them

@@ -70,6 +70,7 @@ import java.util.Locale;
  * "clear"; cdname = its name (up to 40 characters).
  * national = auto (as always from now: the quiet green look on National Day, 21-25 September, and Founding Day, 20-24 February) or off.
  * cardstyle = the look of the card beside the clock (Prefs.CARD_STYLES; current is the plain card).
+ * sidecards = off|a|b: «كنبة»'s side cards (4.4 beta 4, off by default: Prefs.SIDE_CARDS_DEFAULT is the owner's pick).
  * cardsize = s|m|l, cardcorner = style|sharp|soft|round: «حجم البطاقات» and «زوايا البطاقات» (4.4 beta 4; m and style change nothing).
  * design = the screensaver's design (Prefs.SAVER_DESIGNS; info is the page as it always was); bar = a centred bar (none, prayers, slot: the left slot's
  * item, weather), barat = where it goes (bottom, clock: under the clock); wx = the weather's place (auto: as the design has it).
@@ -420,6 +421,8 @@ public class SaverReceiver extends BroadcastReceiver {
         String cardSize = i.getStringExtra("cardsize"), cardCorner = i.getStringExtra("cardcorner");
         if (cardSize != null && !java.util.Arrays.asList(Prefs.CARD_SIZES).contains(cardSize)) return "error: cardsize is one of s, m, l";
         if (cardCorner != null && !java.util.Arrays.asList(Prefs.CARD_CORNERS).contains(cardCorner)) return "error: cardcorner is one of style, sharp, soft, round";
+        String sideCards = i.getStringExtra("sidecards");
+        if (sideCards != null && !java.util.Arrays.asList(Prefs.SIDE_CARDS).contains(sideCards)) return "error: sidecards is one of off, a, b";
         String design = i.getStringExtra("design"), bar = i.getStringExtra("bar"), barAt = i.getStringExtra("barat"), wxAt = i.getStringExtra("wx");
         if (design != null && !isChoice(Prefs.SAVER_DESIGNS, design)) return "error: design is one of " + choices(Prefs.SAVER_DESIGNS);
         if (bar != null && !isChoice(Prefs.SAVER_BARS, bar)) return "error: bar is one of " + choices(Prefs.SAVER_BARS);
@@ -597,6 +600,7 @@ public class SaverReceiver extends BroadcastReceiver {
         if (cardStyle != null) p.setCardStyle(cardStyle);
         if (cardSize != null) p.setCardSize(cardSize);
         if (cardCorner != null) p.setCardCorner(cardCorner);
+        if (sideCards != null) p.setSideCards(sideCards);
         if (design != null) p.setDesign(design);
         if (bar != null) p.setBar(bar);
         if (barAt != null) p.setBarAt(barAt);
@@ -788,7 +792,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nlang: " + p.lang()
             + "\nnational: " + p.national()
             + "\ncardstyle: " + p.cardStyle()
-            + "\ncardsize: " + p.cardSize() + "\ncardcorner: " + p.cardCorner()
+            + "\ncardsize: " + p.cardSize() + "\ncardcorner: " + p.cardCorner() + "\nsidecards: " + p.sideCards()
             + "\ndesign: " + p.design() + "\nbar: " + p.bar() + "\nbarat: " + p.barAt() + "\nwx: " + p.wxAt()
             + "\nmarkets: " + (p.marketsOn() ? "" : "off ") + Prefs.join(p.markets(), ",") + "\nclocksize: " + p.clockSize() + "\nmkstyle: " + p.mkStyle()
             + "\nstocks: " + Prefs.join(p.stocks(), ",") + "\nstkchg: " + p.stkChg()

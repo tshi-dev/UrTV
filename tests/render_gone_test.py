@@ -21,8 +21,8 @@ check("the two apps carry the same RenderGuard", a_guard.split("\n", 1)[1] == h_
 # every WebView we create has a client that answers a dead renderer
 sources = list(APP.glob("*.java")) + list(HOME.glob("*.java")) + list((HOME / "tilawah").glob("*.java"))
 makers = [p for p in sources if p.name != "WebViews.java" and ("new WebView(" in text(p) or "WebViews.make(" in text(p))]   # 4.3.5: the home makes them through WebViews.make
-check("the files that make a WebView: ScreenView, HomeCard and «المباريات» (MatchesActivity), no others",
-      sorted(p.name for p in makers) == ["HomeCard.java", "MatchesActivity.java", "ScreenView.java"], [p.name for p in makers])
+check("the files that make a WebView: ScreenView, HomeCard, «المباريات» (MatchesActivity) and «كنبة»'s side cards (SideCards), no others",
+      sorted(p.name for p in makers) == ["HomeCard.java", "MatchesActivity.java", "ScreenView.java", "SideCards.java"], [p.name for p in makers])
 for p in makers:
     s = text(p)
     check(f"{p.name}: onRenderProcessGone is handled and answers true (the app is not taken down with the renderer)",
@@ -45,8 +45,11 @@ matches = text(HOME / "MatchesActivity.java")
 check("«المباريات»: a dead renderer takes the page away (destroyed, the activity finishes), never reloaded",
       "if (v == web) web = null;" in matches and "v.destroy();" in matches and "finish();   // the renderer died" in matches
       and "loadUrl" not in matches[matches.index("onRenderProcessGone"):matches.index("onRenderProcessGone") + 300])
-check("the only pauseTimers/resumeTimers are HomeCard's and «المباريات»'s (never in front together: each resumes them as it comes, pauses them as it goes; the screensaver app none)",
-      sorted(p.name for p in sources if "pauseTimers" in text(p) or "resumeTimers" in text(p)) == ["HomeCard.java", "MatchesActivity.java"]
+side = text(HOME / "SideCards.java")
+check("«كنبة»'s side cards: a dead renderer takes the column away (destroyed, never reloaded), made again only on a later resume while the guard allows",
+      "guard.gone(" in side and "v.destroy();" in side and "guard.mayCreate(" in side and "loadUrl" not in side[side.index("onRenderProcessGone"):side.index("onRenderProcessGone") + 300])
+check("the only pauseTimers/resumeTimers are HomeCard's, «المباريات»'s and the side cards' (the side cards with the home: they resume in its onResume, pause in its onPause; the screensaver app none)",
+      sorted(p.name for p in sources if "pauseTimers" in text(p) or "resumeTimers" in text(p)) == ["HomeCard.java", "MatchesActivity.java", "SideCards.java"]
       and "web.onResume(); web.resumeTimers();" in matches and "web.onPause(); web.pauseTimers();" in matches)
 
 if not shutil.which("javac"):

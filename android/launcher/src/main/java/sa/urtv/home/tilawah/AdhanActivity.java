@@ -82,7 +82,7 @@ public class AdhanActivity extends Activity {
 
         int current = chosenVoice();
         int selected = 0;
-        for (int i = 0; i < voices.length + own + ownFajr; i++) if (voiceAt(i) == current) selected = i;
+        for (int i = 1; i <= voices.length + own + ownFajr; i++) if (voiceAt(i) == current) selected = i;   // the voice in use keeps the focus (row 0 is «أذاني من ملف»)
         list.setSelection(selected);
         list.post(() -> {
             list.requestFocus();
@@ -96,11 +96,15 @@ public class AdhanActivity extends Activity {
         if (adapter != null && (o != own || of != ownFajr)) { own = o; ownFajr = of; adapter.notifyDataSetChanged(); }   // a file added from «أذاني من ملف» is a row now
     }
 
-    /** the last row, after every voice: «أذاني من ملف» */
-    private int fileRow() { return voices.length + own + ownFajr; }
+    /**
+     * the first row, before every voice: «أذاني من ملف» (4.4 beta 4, the emulator's count of the findability review: as the last row, after the 21
+     * voices, it was ~37 presses from the settings; first, it is one UP from the voice in use)
+     */
+    private int fileRow() { return 0; }
 
     /** the voice a row stands for: 0 (the person's own), or 1..21 */
     private int voiceAt(int position) {
+        position -= 1;   // after «أذاني من ملف»
         if (ownFajr == 1 && position == 0) return Prefs.OWN_FAJR;
         position -= ownFajr;
         return own == 1 && position == 0 ? Prefs.OWN : voices[position - own];
