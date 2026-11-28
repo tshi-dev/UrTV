@@ -258,6 +258,7 @@ python3 tests/music_stations_test.py   # 4.4 beta 4: music.sh stations lists the
 python3 tests/station_status_test.py    # 4.4 radio: a station dead three checks in a row is hidden (stations/status.json)
 python3 tests/radio_week_test.py        # 4.4 radio: the stations' troubles of the last 7 days, kept and reported
 python3 tests/surah_recover_test.py      # 4.4: a surah through ExoPlayer (file buffer, Range resume), on from its place, no loop of prepares
+python3 tests/surah_buffer_test.py   # 4.4 beta 4: a surah's buffer (two hours over a weak link) and its MP3 decoder
 python3 tests/adhan_level_test.py        # 4.4 «مستوى صوت الأذان»: 0-100 or like the TV, per prayer; «كل الصلوات بصوت عدا الفجر»
 python3 tests/iqama_test.py             # 4.4 «الإقامة»: a sound and a notice at the iqama (off by default; never in kids mode over other apps)
 python3 tests/audio_upload_test.py      # 4.4 «صوتياتي»: one upload at a time, no lock held over a copy, the iqama on delete, the page's words
