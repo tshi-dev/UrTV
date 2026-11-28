@@ -87,6 +87,7 @@ public class SuggestedAppsActivity extends Activity {
         for (SuggestedApps.App a : SuggestedApps.forTv(Build.VERSION.SDK_INT)) {
             // a MIRROR app (UrTV Player) gets a tile only once a release of it is really there: never a tile that cannot install
             if (a.kind == SuggestedApps.Kind.MIRROR && !SuggestedApps.mirrorShown(mirrorAnswer(a), System.currentTimeMillis())) continue;
+            if (a.kind == SuggestedApps.Kind.FLAG && !DoctorOfferStore.listed(this)) continue;   // 4.3.7 «فحص تلفزيونك»: only while urtv-data's flag is on
             shown.add(a);
         }
         for (int i = 0; i < shown.size(); i += 2) {
@@ -151,6 +152,12 @@ public class SuggestedAppsActivity extends Activity {
     private void act(SuggestedApps.App a) {
         boolean update = a == SuggestedApps.PLAYER_APP && installed(a.pkg) && MirrorInstall.known(this) != null;   // installed over, its data kept
         if (installed(a.pkg) && !update) { open(a.pkg); return; }
+        if (a.kind == SuggestedApps.Kind.FLAG) {   // 4.3.7: nothing is installed by us: Downloader's code, on the tile
+            DoctorOfferRule.Flag f = DoctorOfferStore.flag(this);
+            TextView t = buttons.get(a.id);
+            if (t != null && f != null && !f.code.isEmpty()) t.setText(S.t("افتح Downloader واكتب الرمز") + " " + f.code);
+            return;
+        }
         if (a.kind == SuggestedApps.Kind.STORE) { store(a.pkg); return; }
         if (busy) return;
         busy = true;

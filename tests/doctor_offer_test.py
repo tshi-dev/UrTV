@@ -34,6 +34,10 @@ else:
     print("FAIL no javac or java: the rule cannot be run")
     failed += 1
 
+def DOCTOR_PKG_OK(sug):
+    return 'static final String PKG = "sa.urtv.doctor"' in (HOME / "DoctorOfferRule.java").read_text(encoding="utf-8") and 'new App("doctor", DOCTOR,' in sug
+
+
 main = (HOME / "MainActivity.java").read_text(encoding="utf-8")
 store = (HOME / "DoctorOfferStore.java").read_text(encoding="utf-8")
 man = (ROOT / "android/launcher/src/main/AndroidManifest.xml").read_text(encoding="utf-8")
@@ -52,6 +56,11 @@ check("the flag is read from urtv-data's content/doctor.json at most every 6 hou
 check("the words: «ساعدنا نحسّن UrTV، ثبّت فحص تلفزيونك، مجاني» (7 words), «ثبّته», «لاحقاً»; each has its English",
       all(w in main for w in ("ساعدنا نحسّن UrTV، ثبّت فحص تلفزيونك، مجاني", "ثبّته", "افتح Downloader واكتب الرمز")) and len("ساعدنا نحسّن UrTV، ثبّت فحص تلفزيونك، مجاني".split()) <= 8
       and all(w in (ROOT / "i18n/en/home.tsv").read_text(encoding="utf-8") for w in ("ثبّته\tInstall it", "ساعدنا نحسّن UrTV، ثبّت فحص تلفزيونك، مجاني\t")))
+sug = (HOME / "SuggestedApps.java").read_text(encoding="utf-8")
+act = (HOME / "SuggestedAppsActivity.java").read_text(encoding="utf-8")
+check("the suggested apps list: «فحص تلفزيونك» is a FLAG entry listed only while the flag is on, and the tile says Downloader's code (nothing installed by us); the package name is the rule's",
+      'DOCTOR = "sa.urtv.doctor"' in sug and DOCTOR_PKG_OK(sug) and "a.kind == SuggestedApps.Kind.FLAG && !DoctorOfferStore.listed(this)" in act and "if (a.kind == SuggestedApps.Kind.FLAG) {" in act
+      and "static boolean listed(Context c)" in store and "f != null && f.on && !f.code.isEmpty()" in store)
 perms = re.findall(r"<uses-permission[^>]*android:name=\"([^\"]+)\"", man)
 base = subprocess.run(["git", "show", "v4.3.517:android/launcher/src/main/AndroidManifest.xml"], cwd=ROOT, capture_output=True, text=True)
 base_perms = re.findall(r"<uses-permission[^>]*android:name=\"([^\"]+)\"", base.stdout) if base.returncode == 0 else None

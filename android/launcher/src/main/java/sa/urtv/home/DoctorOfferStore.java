@@ -26,6 +26,9 @@ final class DoctorOfferStore {
     /** the kept flag, null when there is none */
     static DoctorOfferRule.Flag flag(Context c) { return DoctorOfferRule.parse(prefs(c).getString("flag", null)); }
 
+    /** the suggested apps list shows «فحص تلفزيونك» only while the flag is on with a code (hidden while off or missing) */
+    static boolean listed(Context c) { DoctorOfferRule.Flag f = flag(c); return f != null && f.on && !f.code.isEmpty(); }
+
     /** the build «لاحقاً» was pressed for, 0 when never */
     static long dismissed(Context c) { return prefs(c).getLong("dismissed_build", 0); }
 
