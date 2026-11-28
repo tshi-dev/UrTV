@@ -138,6 +138,26 @@ shot settings-c-tvos-prayer 2
 key BACK BACK
 saver --es settingsstyle buttons
 
+# ---- 4.4 beta 4 (the tester, build 654: the settings not found from the home in «كنبة»): «كنبة» with «بدون» (the date over the big clock), the
+# apps row's «الإعدادات» at its end (the owner's «تكبير»), «مركز التحكم» with «الإعدادات» as its first row, and OK on it
+saver --es homelayout couch --es couch on --es clock glass --es appsstyle zoom --es home_panel none
+start sa.urtv.home/.MainActivity
+shot couch-none-date 12
+key DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT
+shot couch-row-gear 1.5
+start sa.urtv.home/.MainActivity
+sleep 4
+key DPAD_UP DPAD_UP
+shot couch-header 1
+key DPAD_CENTER
+shot couch-panel 2
+key DPAD_DOWN
+shot couch-panel-settings 1
+key DPAD_CENTER
+shot couch-panel-settings-open 3
+key BACK
+saver --es homelayout classic --es home_panel matches,prayerrow,hourly
+
 adb logcat -d -s AndroidRuntime:E > "$OUT/crashes.txt"
 ls "$OUT"
 exit 0
