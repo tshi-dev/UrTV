@@ -871,6 +871,8 @@ html.lowram .photo.settle, html.lowram .week ul.flip li, html.lowram .mrow.flip 
 // 4.4 (a black-video report): a page left behind another app (a WebView we did not free, or a TV that keeps it) must not keep working for
 // hours: while the page is hidden every interval's work is skipped (the clock, the album, the panels, the photos, saveSnap, the fetches);
 // back in view, the clock and the panels catch up at once. The timers stay, so nothing has to be started again.
+// Object.fromEntries is Chrome 73: on WebView 66-72 (Android 9 TVs) and Tizen the first call stopped the whole script (report rows 140, 644, 707, 711, 762...)
+if (!Object.fromEntries) Object.fromEntries = function(it){ const o = {}; for(const e of it) o[e[0]] = e[1]; return o; };
 let PAGE_SKIPPED = false, PAGE_FULL = false;   // PAGE_FULL: the full screensaver (boot) runs, not the home's cards or a page of its own
 (function(){
   const real = window.setInterval.bind(window);
