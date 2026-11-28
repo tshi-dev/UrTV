@@ -23,21 +23,25 @@ case "$what" in saver|launcher|extras|addon|all|prefetch) ;; *) echo "usage: opt
 . optimize/home-journal.sh   # the journal of the home switch (what the switch changed, to undo it after a restart)
 failed=0   # an extra that did not install: the rest are still tried, then run.sh must not count the step as done
 
-# curl with up to 3 tries. A Windows curl (Schannel) that can't reach the certificate revocation server fails every
+# curl with up to 3 tries (a 5xx answer included, with a longer wait each time). A Windows curl (Schannel) that can't reach the certificate revocation server fails every
 # download; on that error, and only if this curl has the flag, the next try skips just that check.
 curl_get() {
-  local i rc=0 errf extra=()
+  local i rc=0 errf wait extra=()
   errf=$(mktemp)
   for i in 1 2 3; do
     rc=0; curl "${extra[@]+"${extra[@]}"}" "$@" 2> "$errf" || rc=$?
     [ "$rc" = 0 ] && { rm -f "$errf"; return 0; }
-    [ "$rc" = 22 ] && break   # the server answered with an error (no such file): another try gives the same
+    # the server answered with an error: a 4xx (no such file) gives the same again; a 5xx (GitHub busy, a release being
+    # published) is tried again after the wait below, up to 3 tries in all (4.4: one 503 stopped the setup)
+    [ "$rc" = 22 ] && ! grep -qE 'error: 5[0-9][0-9]' "$errf" && break
+    wait=$((i * 2)); [ "$rc" != 22 ] || wait=$((i * 5))   # a busy server gets longer: 5 s, then 10 s
+    [ "$rc" != 22 ] || [ "$i" = 3 ] || echo "The download server answered $(grep -oE 'error: 5[0-9][0-9]' "$errf" | sed -n 1p | cut -c8-) (busy): trying again in $wait s." >&2
     if [ "${#extra[@]}" = 0 ] && grep -qiE 'revocation|CRYPT_E_' "$errf" \
        && curl -V 2> /dev/null | grep -i schannel > /dev/null && curl --help all 2> /dev/null | grep ssl-revoke-best-effort > /dev/null; then
       echo "Windows could not check the certificate revocation list: trying again without that check." >&2
       extra=(--ssl-revoke-best-effort)
     fi
-    [ "$i" = 3 ] || sleep $((i * 2))
+    [ "$i" = 3 ] || sleep "$wait"
   done
   cat "$errf" >&2; rm -f "$errf"
   return "$rc"
