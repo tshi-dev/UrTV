@@ -248,6 +248,13 @@ final class NowPlayingBridge {
         } catch (RuntimeException ignored) { }
     }
 
+    /** 4.4 beta 4: "1" when the TV's clock is far from the network's (ClockCheck), "0" when it is right, "" while it is not known: the page then says «ساعة التلفزيون غير مضبوطة» instead of a date */
+    @JavascriptInterface
+    public String clockOff() {
+        int s = ClockCheck.state();
+        return s < 0 ? "" : String.valueOf(s);
+    }
+
     /** «تم» on the card: that task is done (a repeating reminder moves to its next time) */
     @JavascriptInterface
     public void reminderDone(long id) { new Prefs(app).doneTaskId(id); }

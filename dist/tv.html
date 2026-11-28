@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261128132047">
+<meta name="urtv-build" content="20261128132115">
 <title>شاشة تلفزيونك</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -1365,6 +1365,14 @@ function hijriAt(d){
 }
 const hijriUtc = d => CONFIG.hijri ? new Date(d.getTime() + CONFIG.hijri*86400000) : d;
 
+const CLOCK_OFF = 'ساعة التلفزيون غير مضبوطة';
+function clockOff(){ try{ return !!(window.UrtvNative && window.UrtvNative.clockOff && String(window.UrtvNative.clockOff()) === '1'); }catch(e){ return false; } }
+function clockOffLine(){
+  const off = clockOff();
+  document.documentElement.classList.toggle('clockoff', off);
+  if(off) setText(document.getElementById('greg'), CLOCK_OFF);
+  return off;
+}
 function tickDates(){
   const now = new Date();
   document.documentElement.classList.toggle('nohijri', !!CONFIG.noHijri);
@@ -1401,6 +1409,7 @@ function tickDates(){
     setText(document.getElementById('hijri'), wd + n('islamic-umalqura', hijriAt(now)) + ' هـ');
     setText(document.getElementById('greg'), wd + n('gregory', now));
   }catch(e){}
+  clockOffLine();
 }
 
 const PRAYER_KEYS = ['Fajr','Dhuhr','Asr','Maghrib','Isha'];

@@ -1509,6 +1509,16 @@ function hijriAt(d){
 // the same for a date held as UTC noon of a day
 const hijriUtc = d => CONFIG.hijri ? new Date(d.getTime() + CONFIG.hijri*86400000) : d;
 
+// 4.4 beta 4 (a user: a wrong Gregorian year on the screensaver): the app compares the TV's clock with the network's (ClockCheck); when it is far
+// off, the date line says so instead of a date that is wrong. Nothing changes while it is right or not known (no app, no network yet).
+const CLOCK_OFF = 'ساعة التلفزيون غير مضبوطة';
+function clockOff(){ try{ return !!(window.UrtvNative && window.UrtvNative.clockOff && String(window.UrtvNative.clockOff()) === '1'); }catch(e){ return false; } }
+function clockOffLine(){
+  const off = clockOff();
+  document.documentElement.classList.toggle('clockoff', off);
+  if(off) setText(document.getElementById('greg'), CLOCK_OFF);
+  return off;
+}
 function tickDates(){
   const now = new Date();
   document.documentElement.classList.toggle('nohijri', !!CONFIG.noHijri);
@@ -1546,6 +1556,7 @@ function tickDates(){
     setText(document.getElementById('hijri'), wd + n('islamic-umalqura', hijriAt(now)) + ' هـ');
     setText(document.getElementById('greg'), wd + n('gregory', now));
   }catch(e){}
+  clockOffLine();   // last: over whichever date was written
 }
 
 const PRAYER_KEYS = ['Fajr','Dhuhr','Asr','Maghrib','Isha'];

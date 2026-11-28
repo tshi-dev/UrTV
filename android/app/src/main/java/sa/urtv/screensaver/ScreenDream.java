@@ -89,6 +89,7 @@ public class ScreenDream extends DreamService {
         entered = true;
         Showing.enter();
         snapHandler.post(adhanWatch);
+        ClockCheck.start(this);   // 4.4 beta 4: the TV's clock against the network's, for the page's date line
         show(true);
         InternalReceivers.register(this, changed, new IntentFilter(Prefs.CHANGED));
     }
