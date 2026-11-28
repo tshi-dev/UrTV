@@ -984,6 +984,17 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
     rm -f "${URTV_RUN_DIR:-optimize/run}/home-skipped.txt"
     echo "Launcher is home. Press Home from inside an app to double-check."
   fi
+  # 4.4: the report written before this run keeps what the LAST home switch said: its «Home switch: skipped» line is rewritten on each
+  # run, from home-skipped.txt (gone after a switch that worked), so a later run that made the switch does not leave «skipped» there
+  rep="${URTV_RUN_DIR:-optimize/run}/report.md"
+  if [ -f "$rep" ]; then
+    skip_line=$(cat "${URTV_RUN_DIR:-optimize/run}/home-skipped.txt" 2> /dev/null || true)
+    awk -v l="$skip_line" '
+      /^Home switch: skipped/ { if (!done && l != "") print l; done = 1; next }
+      { print }
+      /^Home: / && !done && l != "" { print l; done = 1 }
+      END { if (!done && l != "") print l }' "$rep" > "$rep.tmp" && mv "$rep.tmp" "$rep"
+  fi
   echo "Undo everything: optimize/reset.sh"
 fi
 
