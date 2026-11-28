@@ -33,8 +33,8 @@ final class TvRowsPick {
     /** A card's height (dp): 16:9 of its cell (AspectFrame). */
     static float cardHeight(float cellW) { return cellW * 9f / 16f; }
 
-    /** the empty state: the permission is allowed, the provider answered, and it holds no row (not «all filtered out»: those are the person's own choices) */
-    static boolean nothingShared(int providerRows) { return providerRows == 0; }
+    /** the empty state: the permission is allowed, the provider ANSWERED (a cursor, no exception: a refused read or a TV with no provider is not «nobody shares»), and it holds no row (not «all filtered out»: those are the person's own choices) */
+    static boolean nothingShared(boolean answered, int providerRows) { return answered && providerRows == 0; }
 
     /** the one log line of a load, fixed words and numbers only (never a title or an app): the permission state, the rows the TV's provider holds, the rows shown */
     static String logLine(boolean epg, int providerRows, int shown) {

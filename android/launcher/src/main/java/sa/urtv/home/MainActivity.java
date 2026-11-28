@@ -549,6 +549,7 @@ public class MainActivity extends Activity {
         if (resumed && level >= TRIM_MEMORY_RUNNING_LOW && level < TRIM_MEMORY_UI_HIDDEN) LiteAutoStore.note(this, LiteAuto.TRIM);   // 4.4 beta 3: memory ran low with the home in front
         if (resumed || !Ram.trimNow(Ram.tier(this), level)) return;   // only when the system really asks (LOW: behind another app; MID: MODERATE and worse; NORMAL: never)
         homeCard.destroy();
+        if (sideCards != null) sideCards.drop();   // review F121: «كنبة»'s side cards are a second page in memory: let go with the first (onResume makes it again)
         if (sceneHome != null) sceneHome.trim();   // the scene not showing lets its pictures go
         thinWallpaper();   // the photos go, one tiny stand-in stays so the way back is not black until the next photo decodes
         wallTrimmed = true;
@@ -750,6 +751,7 @@ public class MainActivity extends Activity {
 
     /** 4.4 beta 4 SideCards: the screensaver's settings read on the loader, the column placed (or taken away) on the UI thread */
     private void refreshSideCards() {
+        if (cleanShown) { if (sideCards != null) sideCards.drop(); return; }   // review F122: «UrTV النظيف» is bare: no side cards
         if (sideCards == null) sideCards = new SideCards(this, (android.view.ViewGroup) findViewById(android.R.id.content), () -> homeCard == null ? -1 : homeCard.stripTop());
         final SideCards side = sideCards;
         if (loader.isShutdown()) return;
@@ -2649,6 +2651,7 @@ public class MainActivity extends Activity {
     private static final int CORAL = 0xFFEE8B70;
 
     private FavEdit edit;                 // null: the mode is off
+    private List<String> editStart = new ArrayList<>();   // the row the mode started with (the inputs it showed: one of them taken out is the person's choice)
     private boolean wantEdit;             // asked for from the settings, waiting for the favourites to be on screen
     private TextView editHint, undoChip;
     private final Map<View, TextView> xByCard = new HashMap<>();
@@ -3097,6 +3100,7 @@ public class MainActivity extends Activity {
             View f = getCurrentFocus();
             for (int i = 0; i < dockCards.size(); i++) if (dockCards.get(i) == f) focus = i;
         }
+        editStart = new ArrayList<>(row);
         edit = new FavEdit(row, MIN_DOCK, Math.max(0, focus));
         glideTo(0);
         editHint.setText(S.tv(FavEdit.HINT));
@@ -3116,7 +3120,7 @@ public class MainActivity extends Activity {
         endEditUi(at);
         if (e.changed()) {
             focusPkgAfter = row.get(at);
-            Dock.save(this, row);   // the same store as «ترتيب المفضلة» and dock.sh; its broadcast builds the row from it
+            Dock.save(this, InputFav.keepInputs(InputFav.unreported(Dock.saved(this), editStart), row, Dock.MAX));   // a saved input the TV did not report is not lost (review F100, second pass); one the person removed is   // the same store as «ترتيب المفضلة» and dock.sh; its broadcast builds the row from it
         }
     }
 
@@ -4326,6 +4330,7 @@ public class MainActivity extends Activity {
         maskVis(tvRowsBox, on ? View.GONE : null);
         updatePrayerLine();   // its own view: shown only while the mask is on and the tick is kept, hidden otherwise
         if (homeCard != null) homeCard.hide(on);   // «UrTV النظيف»: the home's own card never shows (the prayer card below is the one card)
+        refreshSideCards();   // review F122: nor the side cards (dropped while the mask is on, drawn again when it goes)
         if (was && !on) {   // back to the full home: what the mask hid is drawn again from the person's own settings
             restoreClean();
             updateClock();

@@ -23,7 +23,7 @@ public final class PairHost {
     /** how many connections may be open at once (the setup uses one; a stuck caller cannot pile them up) */
     static final int MAX_OPEN = 2;
     /** the longest one command and one file push may take over the paired route before the call ends with «timeout» and the connection is closed */
-    static final long RUN_MS = 120_000, EXEC_MS = 600_000;
+    static final long RUN_MS = 120_000, EXEC_MS = 600_000, CONNECT_MS = 30_000;
     private static final ConnPool<PairClient.Connection> OPEN = new ConnPool<>(MAX_OPEN, c -> { try { c.close(); } catch (RuntimeException ignored) { } });
 
     public static boolean available() { return PairClient.available(); }
@@ -80,7 +80,8 @@ public final class PairHost {
         if (!paired(c)) throw new IOException("not_paired");
         PairClient.Connection conn;
         try {
-            conn = PairClient.connect(c.getApplicationContext(), line -> Log.i(TAG, line));
+            final Context app = c.getApplicationContext();
+            conn = Deadline.call(() -> PairClient.connect(app, line -> Log.i(TAG, line)), CONNECT_MS, null);   // the connect step (mDNS, TLS, the key) had no limit either (review F96, second pass)
         } catch (IOException e) {
             String m = String.valueOf(e.getMessage());
             throw new IOException(m.contains("service of this TV found") ? "no_port" : m.contains("not paired") ? "not_paired" : "refused");

@@ -99,11 +99,17 @@ public class AudioActivity extends RowScreen {
     }
 
     private void use(AudioStore.Item it, String as) {
-        String why = AudioUse.set(this, it, as);
-        if ("too_long".equals(why)) toast(S.t("الأذان خمس دقائق على الأكثر"));
-        else if (why != null) toast(S.t("تعذّر نسخ الملف"));
-        else toast("none".equals(as) ? S.t("رجع الأذان لمؤذنه") : S.t("صار أذانك ✓"));
-        refresh();
+        // review F93 (second pass): the copy into the adhan and the alarm are off the screen's thread here too (a long file through SafeReplace on a slow TV froze the remote)
+        new Thread(() -> {
+            final String why = AudioUse.set(this, it, as);
+            runOnUiThread(() -> {
+                if (isFinishing()) return;
+                if ("too_long".equals(why)) toast(S.t("الأذان خمس دقائق على الأكثر"));
+                else if (why != null) toast(S.t("تعذّر نسخ الملف"));
+                else toast("none".equals(as) ? S.t("رجع الأذان لمؤذنه") : S.t("صار أذانك ✓"));
+                refresh();
+            });
+        }, "audio-use").start();
     }
 
     private void hand(AudioStore.Item it) {

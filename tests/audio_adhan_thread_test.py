@@ -17,4 +17,8 @@ check("AudioUse.set is not called inside runOnUiThread", "AudioUse.set(" in copy
 setf = use[use.index("static String set("):]
 setf = setf[:setf.index("if (\"dua\"")]
 check("AudioUse.set schedules the alarm on its own thread (scheduleSoon)", "scheduleSoon(c)" in setf and "AdhanScheduler.schedule(c)" not in setf)
+use = act[act.index("private void use(AudioStore.Item it, String as) {"):]
+use = use[:use.index("private void hand(")]
+check("the older use() path (the file's menu: «أذاني الخاص», «أذان الفجر الخاص», back to the muezzin) runs AudioUse.set on a thread of its own too, and only the toast and refresh go back to the screen (review F93, second pass)",
+      'new Thread(() -> {' in use and 'AudioUse.set(this, it, as)' in use and use.index("new Thread(") < use.index("AudioUse.set(") < use.index("runOnUiThread(") and '"audio-use").start();' in use)
 sys.exit(1 if failed else 0)

@@ -102,8 +102,8 @@ public class RescueActivity extends Activity {
             Set<String> off = RescuePlan.packages(adb.run("pm list packages -d; echo END_OF_LIST").output);
             if (installed == null || off == null) { say("التلفزيون ما قال قائمة تطبيقاته، فما غيّرنا شيئاً. اضغط الزر مرة ثانية."); return; }
             String fromHome = homeLedger();
-            boolean fromCopy = fromHome == null && !LedgerReceiver.read(this).isEmpty();   // the home is gone (a reinstall wiped its data) or did not answer: the copy it sent earlier
-            List<String> ledger = RescuePlan.ledger(fromHome != null ? fromHome : fromCopy ? LedgerReceiver.read(this) : null);
+            boolean fromCopy = LedgerKeep.useCopy(fromHome, LedgerReceiver.read(this));   // the home is gone, did not answer, or answered an empty ledger (a reinstall wiped its data): the copy it sent earlier
+            List<String> ledger = RescuePlan.ledger(fromCopy ? LedgerReceiver.read(this) : fromHome);
             String a11y = lastLine(adb.run("settings get secure enabled_accessibility_services").output);
             RescuePlan.Plan p = RescuePlan.plan(installed, off, ledger, a11y);
             for (String c : p.commands) adb.run(c);

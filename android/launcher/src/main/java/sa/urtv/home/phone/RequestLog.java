@@ -42,4 +42,20 @@ public final class RequestLog {
         String m = method == null ? "-" : method.replaceAll("[^A-Za-z]", "");
         return "request " + (m.isEmpty() ? "-" : m) + " path=" + path(path) + " ua=" + family(ua);
     }
+
+    /** review F127: a poll (/api/state), each key press and each draw stroke wrote a line and pushed the setup lines a report needs out of the logcat ring: a path is logged at most once a minute */
+    public static final class Throttle {
+        private final java.util.LinkedHashMap<String, Long> last = new java.util.LinkedHashMap<String, Long>(16, 0.75f, true) {
+            @Override protected boolean removeEldestEntry(java.util.Map.Entry<String, Long> e) { return size() > 64; }
+        };
+        private final long everyMs;
+        public Throttle(long everyMs) { this.everyMs = everyMs; }
+        /** true when this path may be logged now (and it is counted as logged) */
+        public synchronized boolean due(String path, long nowMs) {
+            Long t = last.get(path);
+            if (t != null && nowMs - t >= 0 && nowMs - t < everyMs) return false;
+            last.put(path, nowMs);
+            return true;
+        }
+    }
 }

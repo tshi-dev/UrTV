@@ -26,6 +26,9 @@ public final class InputFavRun {
         o.append("keep inputs\t").append(String.join(",", kept)).append('\n');
         o.append("keep inputs full\t").append(String.join(",", InputFav.keepInputs(added, Arrays.asList("a", "b"), 2))).append('\n');
         o.append("keep inputs none\t").append(String.join(",", InputFav.keepInputs(dock, Arrays.asList("a"), 10))).append('\n');
+        o.append("unreported\t").append(String.join(",", InputFav.unreported(Arrays.asList("a", "@input:x", "@input:y"), Arrays.asList("a", "@input:x")))).append(" | ").append(String.join(",", InputFav.unreported(Arrays.asList("a", "@input:x"), null))).append('\n');
+        o.append("count\t").append(InputFav.count(Arrays.asList("a", "@input:x", "@input:y", "b"))).append(' ').append(InputFav.count(null)).append('\n');
+        o.append("full row keeps the input\t").append(String.join(",", InputFav.keepInputs(Arrays.asList("@input:x"), Arrays.asList("a", "b", "c"), 3))).append('\n');
         System.out.print(o);
     }
 }

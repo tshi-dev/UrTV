@@ -19,4 +19,7 @@ src = (PAIR / "PairHost.java").read_text(encoding="utf-8")
 ok = "Deadline.call(() -> conn.run(command)" in src and "Deadline.call(() -> conn.exec(command, in, size)" in src
 print(("PASS" if ok else "FAIL") + " pair deadline: PairHost.run and exec go through it")
 failed += not ok
+ok = "Deadline.call(() -> PairClient.connect(app, line -> Log.i(TAG, line)), CONNECT_MS, null)" in src and "CONNECT_MS = 30_000" in src
+print(("PASS" if ok else "FAIL") + " pair deadline: the connect step has a limit too (review F96, second pass)")
+failed += not ok
 sys.exit(1 if failed else 0)

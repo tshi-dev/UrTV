@@ -9,6 +9,7 @@ public final class LedgerKeepRun {
         System.out.println("keep empty\t" + LedgerKeep.keep("old.pkg\n", "").replace("\n", ",") + " " + LedgerKeep.keep("old.pkg\n", null).replace("\n", ",") + " " + LedgerKeep.keep("old.pkg\n", "?? bad\n").replace("\n", ","));
         System.out.println("keep nothing\t[" + LedgerKeep.keep(null, null) + "]");
         System.out.println("push\t" + LedgerKeep.worthPushing("", "a.b\n") + " " + LedgerKeep.worthPushing("a.b\n", "a.b\n") + " " + LedgerKeep.worthPushing("a.b\n", "") + " " + LedgerKeep.worthPushing(null, "x.y\n") + " " + LedgerKeep.worthPushing("a.b\n", "a.b\nc.d\n"));
+        System.out.println("use copy\t" + LedgerKeep.useCopy(null, "a.b\n") + " " + LedgerKeep.useCopy("\n", "a.b\n") + " " + LedgerKeep.useCopy("x.y\n", "a.b\n") + " " + LedgerKeep.useCopy("", "") + " " + LedgerKeep.useCopy("?? bad", "a.b"));
         System.out.println("long\t" + LedgerKeep.names("a".repeat(201)).size());
     }
 }

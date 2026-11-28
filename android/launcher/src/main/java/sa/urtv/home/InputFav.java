@@ -48,13 +48,29 @@ final class InputFav {
     }
 
     /**
-     * The row an editor of apps saves: its apps, then the inputs the saved list holds that it did not show (an editor of apps lists only
-     * apps; saving its row alone dropped the HDMI favourite, review F100). Never past {@code max}: the apps come first.
+     * The row an editor of apps saves: its apps, then the inputs the saved list holds that it did not show. An input is the person's own choice («أسماء المصادر»), so it is
+     * kept even when the row is full: the apps give way at the end (a row of apps alone never fills the room of an input it does not show: review F100, second pass).
      */
     static List<String> keepInputs(List<String> saved, List<String> row, int max) {
-        List<String> out = new ArrayList<>(row);
-        if (saved == null) return out;
-        for (String e : saved) if (isInput(e) && !out.contains(e) && out.size() < max) out.add(e);
+        List<String> inputs = new ArrayList<>();
+        if (saved != null) for (String e : saved) if (isInput(e) && !row.contains(e) && !inputs.contains(e)) inputs.add(e);
+        int room = Math.max(0, max - inputs.size());
+        List<String> out = new ArrayList<>(row.size() > room ? row.subList(0, room) : row);
+        out.addAll(inputs);
         return out;
+    }
+
+    /** the saved inputs an editor was not shown (the TV did not report them): the ones it must not lose; an input it showed and the person removed is not among them */
+    static List<String> unreported(List<String> saved, List<String> shownAtStart) {
+        List<String> out = new ArrayList<>();
+        if (saved != null) for (String e : saved) if (isInput(e) && (shownAtStart == null || !shownAtStart.contains(e)) && !out.contains(e)) out.add(e);
+        return out;
+    }
+
+    /** how many inputs a list holds */
+    static int count(List<String> saved) {
+        int n = 0;
+        if (saved != null) for (String e : saved) if (isInput(e)) n++;
+        return n;
     }
 }

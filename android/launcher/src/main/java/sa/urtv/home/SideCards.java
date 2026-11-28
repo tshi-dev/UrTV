@@ -154,7 +154,7 @@ final class SideCards {
             @TargetApi(26)
             @Override
             public boolean onRenderProcessGone(WebView v, RenderProcessGoneDetail detail) {
-                if (v == web) { guard.gone(android.os.SystemClock.elapsedRealtime()); parent.removeView(v); web = null; shown = null; }
+                if (v == web) { guard.gone(android.os.SystemClock.elapsedRealtime()); parent.getViewTreeObserver().removeOnGlobalLayoutListener(fitter); parent.removeView(v); web = null; shown = null; }   // review F126: the layout listener goes with the dead renderer (it was added with the page)
                 v.destroy();
                 return true;
             }

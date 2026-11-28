@@ -12,7 +12,7 @@ public final class ResumeOffer {
     /** how long after the sound started the cut-off is still worth an offer (a radio left on all day is cut off after hours) */
     /** the same numbers as Prefs.SOURCE_SURAH and SOURCE_RADIO (tests/resume_offer_test.py checks it): Prefs needs Android, this file must not */
     static final int SURAH = 1, RADIO = 2;
-    static final long MAX_AGE_MS = 24L * 3600_000L;
+    static final long MAX_AGE_MS = 10L * 60_000L;   // review F124: counted from the last time it was seen alive (the service stamps it every 30 s while it plays); a TV turned off in the evening and on in the morning is not «cut off»
 
     /** the offer is due: «was playing» is written (at > 0, not from the future, not older than MAX_AGE_MS), nothing of ours plays now, it is a recitation or a station */
     public static boolean due(long playingAt, long now, boolean ourPlaying, int source) {

@@ -14,6 +14,8 @@ public final class RequestLogRun {
         System.out.println("root\t" + RequestLog.path("/") + " " + RequestLog.path(null));
         String l = RequestLog.line("GET", "/y?pin=1234", chrome);
         System.out.println("line\t" + l);
+        RequestLog.Throttle t = new RequestLog.Throttle(60_000);
+        System.out.println("throttle\t" + t.due("GET /api/state", 1000) + " " + t.due("GET /api/state", 2000) + " " + t.due("POST /api/key", 2000) + " " + t.due("GET /api/state", 61_000) + " " + t.due("GET /api/state", 61_500));
         System.out.println("no ua text\t" + (!l.contains("Mozilla") && !l.contains("SM-S918B") && !l.contains("1234")));
     }
 }

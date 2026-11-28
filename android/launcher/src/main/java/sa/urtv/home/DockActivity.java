@@ -239,7 +239,7 @@ public class DockActivity extends Activity {
     }
 
     private void add(String pkg) {
-        if (row.size() >= Dock.MAX) { toast(S.t("%s كحد أقصى", ar(Dock.MAX))); return; }
+        if (row.size() + InputFav.count(Dock.saved(this)) >= Dock.MAX) { toast(S.t("%s كحد أقصى", ar(Dock.MAX))); return; }   // the favourite inputs take their places too
         row.add(pkg);
         Dock.save(this, InputFav.keepInputs(Dock.saved(this), row, Dock.MAX));
         render(row.size() - 1);

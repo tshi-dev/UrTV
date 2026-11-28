@@ -34,7 +34,11 @@ iid = "com.tcl.tvinput/.passthroughinput.TvPassThroughService/HW1413744128"
 want = {"token": "@input:" + iid, "isInput token": "true", "isInput app": "false", "isInput bare prefix": "false", "idOf": iid,
         "added": "com.netflix.ninja,net.mbc.shahidTV,@input:" + iid, "has": "true", "removed": "com.netflix.ninja,net.mbc.shahidTV",
         "full": "2", "comma refused": "2", "original untouched": "2",
-        "keep inputs": "a,b,@input:" + iid, "keep inputs full": "a,b", "keep inputs none": "a"}
+        "keep inputs": "a,b,@input:" + iid, "keep inputs full": "a,@input:" + iid, "keep inputs none": "a", "unreported": "@input:y | @input:x", "count": "2 0", "full row keeps the input": "a,b,@input:x"}
 for k, v in want.items():
     check(f"input fav: {k}", got.get(k) == v, f"{got.get(k)!r}, wanted {v!r}")
+main_src = (HOME / "MainActivity.java").read_text(encoding="utf-8"); dock_src = (HOME / "DockActivity.java").read_text(encoding="utf-8")
+check("review F100 (second pass): «تعديل المفضلة» keeps a saved input the TV did not report (not one the person removed), and «ترتيب المفضلة» counts the inputs against the room",
+      "editStart = new ArrayList<>(row);" in main_src and "InputFav.keepInputs(InputFav.unreported(Dock.saved(this), editStart), row, Dock.MAX)" in main_src
+      and "row.size() + InputFav.count(Dock.saved(this)) >= Dock.MAX" in dock_src, "")
 sys.exit(1 if failed else 0)

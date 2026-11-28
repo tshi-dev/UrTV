@@ -21,6 +21,7 @@ public final class LedgerReceiver extends BroadcastReceiver {
             File dir = c.getFilesDir(), tmp = new File(dir, LedgerKeep.FILE + ".tmp");
             try (FileOutputStream o = new FileOutputStream(tmp)) { o.write(text.getBytes(StandardCharsets.UTF_8)); }
             if (!tmp.renameTo(new File(dir, LedgerKeep.FILE))) tmp.delete();
+            else if (isOrderedBroadcast()) setResultCode(android.app.Activity.RESULT_OK);   // the home saves «sent» only when it hears this (review F120)
         } catch (IOException | RuntimeException ignored) { /* the kept copy stays */ }
     }
 

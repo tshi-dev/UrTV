@@ -18,6 +18,8 @@ check("the service writes «was playing» when a recitation or a station starts,
       and "prefs.setPlayingAt(0);" in svc.split("private void playbackPaused() {")[1].split("\n    }\n")[0]
       and "prefs.setPlayingAt(0);" in svc.split("void stopPlayback() {")[1].split("\n    }\n")[0])
 bar = main.split("private void updateHomeNudge(boolean takeFocus) {")[1].split("\n    }\n")[0]
+check("review F124: the stamp is refreshed every 30 s while it plays (a power-off hours ago is not «cut off»), and the offer is only for the last 10 minutes",
+      "prefs.setPlayingAt(System.currentTimeMillis());   // «was playing» = the last time it was seen alive" in svc and "MAX_AGE_MS = 10L * 60_000L" in rd(H + "tilawah/ResumeOffer.java"))
 check("the bar offers it (not in kids mode, not in «UrTV النظيف», after the more urgent offers, before the city question), with its own words",
       "boolean askResume = !askStock && !askUpdate && !askExtras && !askOverlay && !kids && !cleanShown && sa.urtv.home.tilawah.MusicService.cutOff(this);" in bar
       and "!askOverlay && !askResume && mismatch == null" in bar and 'S.t("توقفت الإذاعة فجأة")' in bar and 'S.t("كمّل الإذاعة")' in bar and 'S.t("كمّل التلاوة")' in bar)

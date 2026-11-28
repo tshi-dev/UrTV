@@ -192,7 +192,10 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
                     updateSession();
                 } catch (IllegalStateException ignored) {}
                 // 4.4: and every 30 s while it plays (two small writes a minute; before, only a pause or a stop saved it)
-                if (playing && source != Prefs.SOURCE_ADHAN && SystemClock.elapsedRealtime() - lastSaved >= SAVE_EVERY_MS) save();
+                if (playing && source != Prefs.SOURCE_ADHAN && SystemClock.elapsedRealtime() - lastSaved >= SAVE_EVERY_MS) {
+                    save();
+                    if (source == Prefs.SOURCE_SURAH || source == Prefs.SOURCE_RADIO) prefs.setPlayingAt(System.currentTimeMillis());   // «was playing» = the last time it was seen alive (ResumeOffer: a TV turned off hours ago is not «cut off»)
+                }
             }
             if (watchStall()) return;   // a stalled station was restarted (its own tick starts again with it)
             handler.postDelayed(this, 1000);

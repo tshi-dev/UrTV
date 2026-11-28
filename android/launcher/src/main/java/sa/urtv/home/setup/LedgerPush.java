@@ -1,5 +1,7 @@
 package sa.urtv.home.setup;
 
+import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -29,8 +31,16 @@ public final class LedgerPush {
                 SharedPreferences sp = app.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
                 if (!LedgerKeep.worthPushing(sp.getString(KEY, ""), now)) return;
                 try { app.getPackageManager().getPackageInfo(LedgerKeep.RESCUE_PACKAGE, 0); } catch (PackageManager.NameNotFoundException e) { return; }   // no rescue app: asked again at the next start
-                app.sendBroadcast(new Intent(LedgerKeep.ACTION).setComponent(new ComponentName(LedgerKeep.RESCUE_PACKAGE, LedgerKeep.RECEIVER)).putExtra(LedgerKeep.EXTRA, now), LedgerKeep.PERMISSION);
-                sp.edit().putString(KEY, now).apply();
+                // the rescue app is installed by adb and never opened: it is in the stopped state, where Android drops even an explicit broadcast unless it says it may reach
+                // stopped apps (review F120). Ordered, so the rescue's own answer says it was heard: only then is the list remembered as sent.
+                final String sent = now;
+                Intent i = new Intent(LedgerKeep.ACTION).setComponent(new ComponentName(LedgerKeep.RESCUE_PACKAGE, LedgerKeep.RECEIVER)).putExtra(LedgerKeep.EXTRA, now)
+                    .addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+                app.sendOrderedBroadcast(i, LedgerKeep.PERMISSION, new BroadcastReceiver() {
+                    @Override public void onReceive(Context c2, Intent i2) {
+                        if (getResultCode() == Activity.RESULT_OK) app.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString(KEY, sent).apply();   // heard and written
+                    }
+                }, null, Activity.RESULT_CANCELED, null, null);
             } catch (Exception ignored) { /* the copy is a help, never a failure of the home */ }
         }, "ledger-push");
         t.setPriority(Thread.MIN_PRIORITY);

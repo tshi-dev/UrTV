@@ -68,11 +68,11 @@ final class TvRows {
         Row row = new Row();
         row.key = TvRowsPick.WATCH_NEXT;
         row.title = TvRowsPick.WATCH_NEXT_TITLE;
-        int[] counted = new int[1];
+        int[] counted = new int[2];   // [0] the rows the TV's provider holds, [1] 1 only when it answered (a cursor, no exception: review F123)
         row.items.addAll(watchNext(c, counted));
         boolean epg = c.checkSelfPermission(EPG) == PackageManager.PERMISSION_GRANTED;
         android.util.Log.i("UrTVRows", TvRowsPick.logLine(epg, counted[0], row.items.size()));   // #56: what the TV's provider holds, and the permission state
-        if (row.items.isEmpty() && TvRowsPick.nothingShared(counted[0])) {   // nothing is shared by any app: said, not a missing row
+        if (row.items.isEmpty() && TvRowsPick.nothingShared(counted[1] == 1, counted[0])) {   // nothing is shared by any app: said, not a missing row
             Item none = new Item();
             none.title = TvRowsPick.NOTHING_SHARED;
             none.meta = TvRowsPick.NOTHING_SHARED_LINE;
@@ -126,6 +126,7 @@ final class TvRows {
                 TvContract.WatchNextPrograms.COLUMN_INTENT_URI, TvContract.WatchNextPrograms.COLUMN_BROWSABLE};
         try (Cursor cur = c.getContentResolver().query(TvContract.WatchNextPrograms.CONTENT_URI, cols, null, null,
                 TvContract.WatchNextPrograms.COLUMN_LAST_ENGAGEMENT_TIME_UTC_MILLIS + " DESC")) {
+            if (cur != null) providerRows[1] = 1;   // the provider answered: an empty answer is «ما يشارك», a refusal or no provider is not
             while (cur != null && cur.moveToNext()) {
                 providerRows[0]++;
                 if (out.size() >= MAX_WATCH_NEXT) continue;   // all rows are counted for the log; only the first ones are shown

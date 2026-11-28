@@ -17,19 +17,25 @@ check("the receiver in the rescue manifest is the one the home sends to, for the
       f'android:name="{const("RECEIVER")}"' in man and f'<action android:name="{const("ACTION")}" />' in man and 'android:permission="sa.urtv.permission.EXTRAS"' in man.split("LedgerReceiver")[1].split("</receiver>")[0]
       and const("RESCUE_PACKAGE") == "sa.urtv.rescue" and "applicationId 'sa.urtv.rescue'" in gradle and const("PERMISSION") == "sa.urtv.permission.EXTRAS")
 check("the home sends to that component only (explicit, never an implicit broadcast), with the permission, only when the list changed and the rescue app is installed, on a thread of its own",
-      "new Intent(LedgerKeep.ACTION).setComponent(new ComponentName(LedgerKeep.RESCUE_PACKAGE, LedgerKeep.RECEIVER))" in push and "LedgerKeep.PERMISSION)" in push and "LedgerKeep.worthPushing(" in push
-      and "getPackageInfo(LedgerKeep.RESCUE_PACKAGE" in push and 'new Thread(' in push and "sp.edit().putString(KEY, now).apply();" in push.split("sendBroadcast")[1])
+      "new Intent(LedgerKeep.ACTION).setComponent(new ComponentName(LedgerKeep.RESCUE_PACKAGE, LedgerKeep.RECEIVER))" in push and "LedgerKeep.PERMISSION, new BroadcastReceiver()" in push and "LedgerKeep.worthPushing(" in push
+      and "getPackageInfo(LedgerKeep.RESCUE_PACKAGE" in push and 'new Thread(' in push)
+check("F120: the broadcast may reach a stopped rescue app (FLAG_INCLUDE_STOPPED_PACKAGES), is ordered, and the list is remembered as sent only when the rescue answers RESULT_OK (not when it was only sent)",
+      "addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES)" in push and "app.sendOrderedBroadcast(i, LedgerKeep.PERMISSION" in push and "getResultCode() == Activity.RESULT_OK" in push
+      and "app.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString(KEY, sent).apply();" in push.split("onReceive")[1] and "putString(KEY, now)" not in push
+      and "setResultCode(android.app.Activity.RESULT_OK)" in recv and "isOrderedBroadcast()" in recv)
+check("F120: «إنقاذ» uses the copy when the home answered nothing or an empty ledger (LedgerKeep.useCopy), not only when it did not answer",
+      "boolean fromCopy = LedgerKeep.useCopy(fromHome, LedgerReceiver.read(this));" in act and "RescuePlan.ledger(fromCopy ? LedgerReceiver.read(this) : fromHome)" in act)
 check("the home pushes at each start of its process (HomeApp)", "sa.urtv.home.setup.LedgerPush.maybe(this);" in rd("android/launcher/src/main/java/sa/urtv/home/HomeApp.java"))
 check("the rescue app compiles the same LedgerKeep (shared from the setup's folder)", "'LedgerKeep.java'" in gradle.split("def sharedSetup")[1].split("\n")[0])
 check("«إنقاذ» uses the kept copy only when the home does not answer, and says so",
-      "fromCopy = fromHome == null && !LedgerReceiver.read(this).isEmpty();" in act and "fromHome != null ? fromHome : fromCopy ? LedgerReceiver.read(this) : null" in act and "if (fromCopy) said.append(" in act)
+      "if (fromCopy) said.append(" in act)
 check("the receiver writes the copy atomically (tmp then rename) in its own files folder, ignores another action, and an empty list never wipes the kept one",
       "LedgerKeep.keep(read(c), i.getStringExtra(LedgerKeep.EXTRA))" in recv and ".renameTo(" in recv and "LedgerKeep.ACTION.equals(i.getAction())" in recv and "c.getFilesDir()" in recv)
 if shutil.which("javac"):
     with tempfile.TemporaryDirectory() as tmp:
         subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / S / "LedgerKeep.java"), str(ROOT / "tests/LedgerKeepRun.java")], check=True)
         got = dict(l.split("\t") for l in subprocess.run(["java", "-cp", tmp, "sa.urtv.home.setup.LedgerKeepRun"], check=True, capture_output=True).stdout.decode("utf-8").splitlines())
-    want = {"clean": "com.a.b,x.y_z,", "names none": "0 0", "keep new": "new.one,new.two,", "keep empty": "old.pkg, old.pkg, old.pkg,", "keep nothing": "[]", "push": "true false false true true", "long": "0"}
+    want = {"use copy": "true true false false true", "clean": "com.a.b,x.y_z,", "names none": "0 0", "keep new": "new.one,new.two,", "keep empty": "old.pkg, old.pkg, old.pkg,", "keep nothing": "[]", "push": "true false false true true", "long": "0"}
     for k, v in want.items():
         check(f"ledger keep: {k}", got.get(k) == v, got.get(k))
 else:

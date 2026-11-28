@@ -37,6 +37,11 @@ public final class LedgerKeep {
         return now.isEmpty() ? clean(kept) : now;
     }
 
+    /** «إنقاذ» uses the kept copy when the home gives it nothing: no answer, or an empty ledger (a reinstalled home answers «\n», never null: review F120) and the copy has names */
+    public static boolean useCopy(String fromHome, String copy) {
+        return names(fromHome).isEmpty() && !names(copy).isEmpty();
+    }
+
     /** the home pushes only a list that is not empty and not the one it pushed last */
     public static boolean worthPushing(String lastPushed, String now) {
         String n = clean(now);
