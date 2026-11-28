@@ -808,6 +808,7 @@ public class MainActivity extends Activity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
+        logHomeCaller(intent);   // 4.4 (R-412): who started HOME (fixed words; a TCL A11's settings sent the person here)
         Parental.SESSION.clear();
         if (edit != null) leaveEdit();   // Home while editing: the order so far is kept
         if (appsEdit != null) leaveAppsEdit();
@@ -5483,6 +5484,16 @@ public class MainActivity extends Activity {
         if (text == null || !resumed || isDestroyed() || isFinishing()) return;
         if (NowPlaying.adhanLive() || KickoffOverlay.showing() || LiteAutoStore.pending() != null) return;
         if (HomeNotice.show(homeRoot, text, font("regular"), Ram.low(this))) RoleNotice.shown();
+    }
+
+    /** R-412: a HOME start of our home: the kind of app that asked for it (HomeCaller), one fixed-word line */
+    private void logHomeCaller(Intent intent) {
+        try {
+            if (intent == null || intent.getCategories() == null || !intent.getCategories().contains(Intent.CATEGORY_HOME)) return;
+            android.net.Uri r = android.os.Build.VERSION.SDK_INT >= 22 ? getReferrer() : null;
+            String pkg = r != null && "android-app".equals(r.getScheme()) ? r.getHost() : null;
+            android.util.Log.i("UrTVHomeCaller", "home started by: " + HomeCaller.word(pkg));
+        } catch (RuntimeException ignored) { }
     }
 
     private Typeface font(String family) {

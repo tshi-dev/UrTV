@@ -106,6 +106,8 @@ again; after «كمّل» it reads the owner again and switches in that order if
 Read only, on any set: `optimize/venv/bin/python -I optimize/tv.py "dumpsys wifi" | grep -o 'cname=[^ ]*' | sort | uniq -c`
 says who owns the saved networks (no names are printed).
 
+**Home opens by itself from the TV's settings** (a TCL on Android 11, R-412): `adb logcat -s UrTVHomeCaller` right after it says who started HOME (`system` for the Home key or Android itself, `the TV's settings`, `a maker's app`); send that line with the option's name in a report.
+
 ## The remote's shortcut keys
 
 **A key remapper of the person's** (an accessibility service that filters keys, like Button Mapper) and the add-on «إضافات تلفزيونك» both ask Android for the remote's keys; Android gives a key to each in turn, and a key the first one keeps never reaches the other. Where the remapper stops working, `optimize/dock.sh key-filter off` turns our filter off (R-408): the remapper gets every key, and the add-on's Home catch, Settings key and app buttons over other apps stop.
