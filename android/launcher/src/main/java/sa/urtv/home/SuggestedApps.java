@@ -23,7 +23,7 @@ import java.util.List;
 public final class SuggestedApps {
     private SuggestedApps() { }
 
-    public enum Kind { GITHUB, STORE, MIRROR }
+    public enum Kind { GITHUB, STORE, MIRROR, FLAG }   // FLAG (4.3.7): «فحص تلفزيونك», listed only while urtv-data's content/doctor.json says on, installed from Downloader's code (DoctorOfferStore)
 
     public static final class App {
         public final String id, pkg, name, why, repo, file;
@@ -62,6 +62,7 @@ public final class SuggestedApps {
     public static final String PLAYER_CERT = "13ade7d009a07f5ba5bab0b7734bd449df10dd47b53868dfa28e44cd8069dfea";
     public static final String PLAYER = "com.urtv.player", PLAYER_REPO = "tshi-dev/UrTV-Player", PLAYER_FILE = "urtv-player.apk", PLAYER_TAG = "";
 
+    public static final String DOCTOR = "sa.urtv.doctor";   // 4.3.7 (DoctorOfferRule.PKG is the same name: tests/doctor_offer_test.py)
     public static final String SMARTTUBE = "org.smarttube.stable", TVBRO = "com.phlox.tvwebbrowser", VLC = "org.videolan.vlc", OPENSHELF = "io.github.wingedpanther.openshelf";
 
     /** In the order shown. The why lines are Arabic; i18n/en/home.tsv has their English. */
@@ -89,6 +90,9 @@ public final class SuggestedApps {
         PLAYER_APP = p;
     }
 
+    /** 4.3.7 «فحص تلفزيونك» (sa.urtv.doctor): the diagnostic app, listed only while the flag is on (the settings' list: DoctorOfferStore.listed); never a box of the setup, nothing of it is installed by us */
+    public static final App DOCTOR_APP = settingsOnly(new App("doctor", DOCTOR, "فحص تلفزيونك", "يفحص تلفزيونك ويقول لك وش فيه، مجاني", Kind.FLAG, null, null, 21, false));
+
     /** at most this many IPTV players are ever suggested */
     public static final int MAX_IPTV = 2;
 
@@ -96,6 +100,7 @@ public final class SuggestedApps {
     public static List<App> all() {
         List<App> out = new ArrayList<>(java.util.Arrays.asList(ALL));
         out.add(PLAYER_APP);
+        out.add(DOCTOR_APP);
         return out;
     }
 

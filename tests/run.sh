@@ -545,6 +545,7 @@ python3 tests/saver_prayerfix_test.py   # 4.4 review: the late prayer correction
 python3 tests/saver_kids_keep_test.py   # 4.4 review: the kids copy keeps its last real answer (F3)
 #
 python3 tests/keep_settle_test.py   # R-380 protected features stay on across the restarts (keep.sh marks settle.sh, keep once more after the last restart)
+python3 tests/doctor_offer_test.py
 # 4.4 the PC-side setup fixes (R-363 to R-380): one test per fix
 python3 tests/share_decode_test.py   # R-363 share.py reads the TV as UTF-8 (Windows)
 python3 tests/sigpipe_test.py   # R-364 no exit 141 from an early reader in a pipefail pipeline
