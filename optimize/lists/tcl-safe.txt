@@ -3,10 +3,9 @@
 # Apply: optimize/disable.sh optimize/lists/tcl-safe.txt     Undo: optimize/restore.sh optimize/lists/tcl-safe.txt
 # Packages missing on a given TV are simply skipped.
 
-# TCL telemetry, accounts and ads
+# TCL telemetry and ads (the TCL account and Google's partner setup are on keep.txt since 4.4: the accounts page)
 com.tcl.bi                             # telemetry (over a thousand events a day)
 com.tcl.logkit                         # log collection
-com.tcl.usercenter                     # TCL account / phone binding
 com.tcl.overseasappshow                # preinstalled-app showcase
 com.tcl.messagebox                     # promo pop-ups
 com.tcl.esticker                       # on-screen promo stickers
@@ -23,7 +22,6 @@ com.tcl.copydatatotv
 # Google extras
 com.google.android.tvrecommendations   # sponsored / recommendation rows
 com.google.android.feedback
-com.google.android.partnersetup
 com.google.android.onetimeinitializer
 com.google.android.play.games
 android.autoinstalls.config.google.gtvpai   # silently installs promoted apps

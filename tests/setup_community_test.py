@@ -181,7 +181,7 @@ check("community.sh's comment says what it does offline (nothing applied)", "off
 rsrc = (setup_parity.SETUP / "SetupReport.java").read_text(encoding="utf-8")
 check("the report says it too, as a «!! » line of share.py's allowlist", '"!! community list: " + SetupCommunity.OFFLINE_SAID' in rsrc)
 # our own lists know this TV (3 TCL packages of ours): no community list
-p, rc, out, res, jout = case(inst + ["com.tcl.bi", "com.tcl.logkit", "com.tcl.usercenter"])
+p, rc, out, res, jout = case(inst + ["com.tcl.bi", "com.tcl.logkit", "com.tcl.messagebox"])   # (com.tcl.usercenter, the TCL account, is on keep.txt since R-450)
 check("step: a TV our own lists know (3 of their TCL packages) gets no community list (both)", p.changes("java") == [] == p.changes("sh") and res == "DONE", (p.diff(), out))
 # another model of the brand: nothing
 p = Pair(packages=inst, MAKER=brand, MODEL="ZZZZZ999", DEVICE="zz")

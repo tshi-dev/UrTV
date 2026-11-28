@@ -128,6 +128,16 @@ check("R-362: a kept app the ledger holds is turned back on and leaves the ledge
       "pm enable --user 0 com.tcl.partnercustomizer" in log.read_text() and "-com.tcl.partnercustomizer" not in state.read_text().split()
       and "-com.maker.off" in state.read_text().split() and "com.tcl.partnercustomizer" not in left and "com.tcl.bi" in left, r.stdout + r.stderr + log.read_text() + str(left))
 
+# ---- R-450 (a TCL on Android 12: the accounts page showed errors after the setup): the accounts apps an earlier run turned off come back on
+(runs / "disabled-by-us.txt").write_text("com.google.android.partnersetup\ncom.tcl.usercenter\ncom.google.android.syncadapters.contacts\ncom.tcl.bi\n")
+tvstate("-com.google.android.partnersetup", "-com.tcl.usercenter", "-com.google.android.syncadapters.contacts", "-com.tcl.bi", "com.tcl.messagebox")
+r = subprocess.run(["bash", str(ROOT / "optimize/disable.sh"), "optimize/lists/tcl-safe.txt"], capture_output=True, text=True, env={**env(), "URTV_RUN_DIR": str(runs)}, cwd=ROOT)
+left = (runs / "disabled-by-us.txt").read_text().split()
+back = ("com.google.android.partnersetup", "com.tcl.usercenter", "com.google.android.syncadapters.contacts")
+check("R-450: the partner setup, the TCL account and a sync adapter the ledger holds are turned back on and leave it; the safe list is applied (not refused)",
+      "Refusing" not in r.stdout + r.stderr and all(f"pm enable --user 0 {p}" in log.read_text() and "-" + p not in state.read_text().split() and p not in left for p in back)
+      and "com.tcl.bi" in left, r.stdout + r.stderr + log.read_text() + str(left))
+
 # ---- offlist directly
 r = lambda *a: subprocess.run([sys.executable, "-I", str(ROOT / "optimize/offlist.py"), *a], capture_output=True, text=True, env=env())
 check("name of an unknown app is its last word", r("name", "com.some.brandapp").stdout.strip() == "brandapp")

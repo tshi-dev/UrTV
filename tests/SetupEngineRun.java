@@ -261,6 +261,13 @@ public class SetupEngineRun {
         SetupEngine.Result rk = engine(tk, mk, new Dead(), new ArrayList<>()).debloat();
         line("Kheal " + rk.status + " partnerOff=" + tk.off.contains("com.tcl.partnercustomizer") + " makerOff=" + tk.off.contains("com.maker.off")
             + " ledgerHas=" + SetupEngine.ledgerNames(mk.get("disabled-by-us.txt")).contains("com.tcl.partnercustomizer") + " healed=" + SetupEngine.healed(Arrays.asList("com.tcl.partnercustomizer", "com.tcl.bi", "x.y"), new LinkedHashSet<>(Arrays.asList("com.tcl.partnercustomizer", "com.tcl.bi"))));
+        // Kacct (4.4, a TCL on Android 12: the accounts page showed errors after the setup): Google's partner setup and the TCL account an earlier setup
+        // turned off (the safe list had them), and a sync adapter a community list turned off, are turned back on and leave the ledger
+        FakeTv ta = tv(); for (String p : new String[]{"com.google.android.partnersetup", "com.tcl.usercenter", "com.google.android.syncadapters.calendar"}) { ta.installed.add(p); ta.off.add(p); }
+        Mem ma = new Mem(); ma.put("disabled-by-us.txt", "com.google.android.partnersetup\ncom.tcl.usercenter\ncom.google.android.syncadapters.calendar\ncom.tcl.messagebox\n");
+        SetupEngine.Result ra = engine(ta, ma, new Dead(), new ArrayList<>()).debloat();
+        line("Kacct " + ra.status + " off=" + ta.off.contains("com.google.android.partnersetup") + ta.off.contains("com.tcl.usercenter") + ta.off.contains("com.google.android.syncadapters.calendar")
+            + " ledger=" + SetupEngine.ledgerNames(ma.get("disabled-by-us.txt")).contains("com.google.android.partnersetup") + " disables=" + ta.count("pm disable-user --user 0 com.google.android.partnersetup"));
         // C: a TV that answers nothing at all: nothing counts as done, nothing is changed
         FakeTv tc = tv(); tc.silent = true; Mem mc = new Mem(); Dead dc = new Dead();
         SetupEngine ec = engine(tc, mc, dc, new ArrayList<>());
