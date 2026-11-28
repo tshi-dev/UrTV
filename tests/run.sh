@@ -20,6 +20,7 @@ python3 tests/prayer_adj_test.py
 python3 tests/hijri_offset_test.py
 python3 tests/saver_hijri_test.py
 python3 tests/upload_test.py
+python3 tests/photo_twin_test.py   # 4.4 beta 4: the same photo is kept once
 python3 tests/install_extras_test.py
 python3 tests/share_test.py
 python3 tests/install_versions_test.py
