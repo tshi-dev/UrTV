@@ -1,3 +1,5 @@
+▶▶ WARNING (28 Nov, 09:45): round.sh does NOT yet restore everything on a real TV (review F102): homelayout, the home card, the settings style and a prayer's own adhan voice may stay changed. After EVERY round.sh run, compare `saver.sh show` with your show-before.txt and put back by hand anything that differs (homelayout couch, home-card stocks, the voices per prayer) before you stop. A fixed round.sh is coming.
+
 ▶▶ BETA 4 = next 7595a14b (28 Nov, morning). This replaces the 46dcad40 block. Do it FIRST.
 0. git fetch (round.sh changed a lot: it now sets its own 10-min idle and restores your 45 s, presses HOME before each step, forces UTF-8, opens games/radio through the hub like a person). Wait until apk-next/version.txt is newer than 3.654. TV muted; save `saver.sh show`.
 1. Install: `tester/auto/round.sh` (it installs apk-next; if install.sh launcher stops with «too slow», just run it again: the safety switch now waits 15 min). Push tester/auto/out/<build>/ (city-boxed copies only).
