@@ -1,0 +1,16 @@
+{
+ "asked": 105,
+ "ok": 105,
+ "failed": [],
+ "notfound": [],
+ "skipped": 0,
+ "stopped": "",
+ "providers": [
+  "yahoo"
+ ],
+ "daily_asked": 103,
+ "daily_ok": 102,
+ "daily_failed": 0,
+ "fx_ok": 35,
+ "requests": 251
+}
