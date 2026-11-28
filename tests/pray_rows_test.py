@@ -26,8 +26,8 @@ check("the home opens AdhanActivity, DuaActivity, AudioActivity for them, behind
       and '"DuaActivity"' in home and '"AudioActivity"' in home and "launchGuarded(ParentalPolicy.PILL_LISTEN" in home[home.index('case "voice"'):home.index('case "prayers"')])
 check("the hub: the three rows in «الصلاة والأذان» after «الأذان» (the muezzin first) and after «تنبيه قبل الأذان» (duas, then sounds), and the words people type lead to them",
       '{"المؤذن", PRAY}' in hub and '{"الأدعية والتذكيرات", PRAY}' in hub and '{"صوتياتي", PRAY}' in hub
-      and '"الأذان", "المؤذن", "الأذان لكل صلاة", "تنبيه قبل الأذان", "الأدعية والتذكيرات", "صوتياتي"' in hub
-      and '{"اذاني", "المؤذن"}' in hub and '{"دعاء", "الأدعية والتذكيرات"}' in hub)
+      and '"الأذان", "المؤذن", "أذاني من ملف", "الأذان لكل صلاة", "تنبيه قبل الأذان", "الأدعية والتذكيرات", "صوتياتي"' in hub   # «أذاني من ملف» right after the muezzin (the emulator's count)
+      and '{"اذاني", "أذاني من ملف"}' in hub and '{"دعاء", "الأدعية والتذكيرات"}' in hub)
 check("the provider answers adhan_voice (the muezzin's name) and duas_new (how many wait)", '"adhan_voice".equals(uri.getLastPathSegment())' in prov and '"duas_new".equals(uri.getLastPathSegment())' in prov
       and "DuaStore.freshCount(getContext())" in prov)
 check("a dua added from «صوتياتي» is fresh until the person changes it on the TV", "d.fresh = true;" in audio and "edit.fresh = false;" in act and 'put("fresh", d.fresh)' in dua and 'optBoolean("fresh", false)' in dua)

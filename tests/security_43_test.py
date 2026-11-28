@@ -35,9 +35,11 @@ if shutil.which("javac") and shutil.which("java"):
             check("every FileGate case ran", "ALL PASS" in out, out[-200:])
 check("FileGate is the same in both apps (only the package line differs)", text(HOME / "FileGate.java").split("\n", 1)[1] == text(SAVER / "FileGate.java").split("\n", 1)[1])
 card, view, page = text(HOME / "HomeCard.java"), text(SAVER / "ScreenView.java"), text(HOME / "HomePage.java")
-check("S1: a page is taken from the screensaver provider only when it is sa.urtv.screensaver with our signature; both WebViews refuse every file:// request but the page and the assets",
+side = text(HOME / "SideCards.java")
+check("S1: a page is taken from the screensaver provider only when it is sa.urtv.screensaver with our signature; every WebView refuses every file:// request but the page and the assets (HomeCard.served answers the card's page and «كنبة»'s side cards)",
       "providerIsOurs(c)" in page and "checkSignatures(c.getPackageName(), pi.packageName) == android.content.pm.PackageManager.SIGNATURE_MATCH" in page
-      and 'FileGate.allowed(r.getUrl().getPath(), url == null ? null : Uri.parse(url).getPath())' in card and "FileGate.allowed(r.getUrl().getPath(), pagePath)" in view and "403" in card and "403" in view)
+      and 'FileGate.allowed(r.getUrl().getPath(), page == null ? null : Uri.parse(page).getPath())' in card and "WebResourceResponse fixed = served(activity, r, url);" in card
+      and "WebResourceResponse fixed = HomeCard.served(activity, r, shown);" in side and "if (fixed != null) return fixed;" in side and "FileGate.allowed(r.getUrl().getPath(), pagePath)" in view and "403" in card and "403" in view)
 pc = text(SAVER / "PhotoCache.java")
 check("S4 S9 P6: a hosted photo that failed is an empty 404 (not null); a kept one is answered without the download lock, its time renewed at most once an hour",
       "notFound()" in pc and "private static final Object DOWNLOAD = new Object();" in pc and "if (kept(f)) return f;" in pc and "TOUCH_EVERY_MS" in pc and "static synchronized File hosted" not in pc)

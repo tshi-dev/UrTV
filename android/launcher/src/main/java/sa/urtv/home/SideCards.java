@@ -6,7 +6,14 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.webkit.RenderProcessGoneDetail;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
 /**
@@ -26,6 +33,7 @@ final class SideCards {
     private final Activity activity;
     private final ViewGroup parent;
     private WebView web;
+    private final RenderGuard guard = new RenderGuard();   // a renderer that keeps dying: the column stays away for a while (as HomeCard's card)
     private String shown;   // the page's address now on the screen, null for none
 
     SideCards(Activity activity, ViewGroup parent) {
@@ -74,8 +82,10 @@ final class SideCards {
         if (url == null) { drop(); return; }
         if (url.equals(shown) && web != null) { run(); return; }
         if (web == null) {
+            if (!guard.mayCreate(android.os.SystemClock.elapsedRealtime())) return;
             web = WebViews.make(activity);
             if (web == null) return;
+            setUp();
             web.setBackgroundColor(Color.TRANSPARENT);
             web.setFocusable(false);
             web.setFocusableInTouchMode(false);
@@ -105,6 +115,38 @@ final class SideCards {
     /** the home's onPause, with HomeCard.pause(): no timers or network while an app is in front */
     void pause() {
         if (web != null) { web.onPause(); web.pauseTimers(); }
+    }
+
+    /** the page as HomeCard's: its script, its own file and the assets (HomeCard.served), the fonts from the APK, the TV's font size not applied;
+     *  a dead renderer takes the column away, never reloaded (tests/render_gone_test.py); the next resume makes it again if the guard allows */
+    @SuppressLint("SetJavaScriptEnabled")
+    @SuppressWarnings("deprecation")
+    private void setUp() {
+        WebSettings s = web.getSettings();
+        s.setJavaScriptEnabled(true);
+        s.setDomStorageEnabled(true);
+        s.setAllowFileAccess(true);
+        s.setAllowFileAccessFromFileURLs(true);
+        s.setAllowUniversalAccessFromFileURLs(true);
+        s.setCacheMode(WebSettings.LOAD_DEFAULT);
+        s.setTextZoom(100);
+        web.setWebViewClient(new WebViewClient() {
+            @TargetApi(26)
+            @Override
+            public boolean onRenderProcessGone(WebView v, RenderProcessGoneDetail detail) {
+                if (v == web) { guard.gone(android.os.SystemClock.elapsedRealtime()); parent.removeView(v); web = null; shown = null; }
+                v.destroy();
+                return true;
+            }
+
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView v, WebResourceRequest r) {
+                WebResourceResponse fixed = HomeCard.served(activity, r, shown);
+                if (fixed != null) return fixed;
+                NetLog.count(r.getUrl().toString());   // G3: the request log, as the card's page
+                return super.shouldInterceptRequest(v, r);
+            }
+        });
     }
 
     /** the column goes, page and all */
