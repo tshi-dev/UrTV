@@ -27,7 +27,7 @@ pkg_state() {   # yes | no | unknown: «no» only when the package list was read
 }
 app_here() { [ "$(pkg_state)" = yes ]; }
 app() {   # mode -> the app's answer text, empty when it did not answer. An app without the feature answers «error: unknown action …».
-  tv "am broadcast -n $APP/.DockReceiver -a $APP.FAMILY_DNS --es mode $1" 2> /dev/null | tr -d '\r' | sed -n 's/.*data="\(.*\)"$/\1/p' | head -n 1 || true
+  tv "am broadcast -n $APP/.DockReceiver -a $APP.FAMILY_DNS --es mode $1" 2> /dev/null | tr -d '\r' | sed -n 's/.*data="\(.*\)"$/\1/p' | sed -n 1p || true
 }
 feature_state() {   # yes | no | unknown: «no» only for the app's own «error: unknown action» (every launcher released before this feature)
   local a; a=$(app status)

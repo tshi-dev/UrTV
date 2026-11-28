@@ -33,7 +33,7 @@ curl_get() {
     [ "$rc" = 0 ] && { rm -f "$errf"; return 0; }
     [ "$rc" = 22 ] && break   # the server answered with an error (no such file): another try gives the same
     if [ "${#extra[@]}" = 0 ] && grep -qiE 'revocation|CRYPT_E_' "$errf" \
-       && curl -V 2> /dev/null | grep -qi schannel && curl --help all 2> /dev/null | grep -q ssl-revoke-best-effort; then
+       && curl -V 2> /dev/null | grep -i schannel > /dev/null && curl --help all 2> /dev/null | grep ssl-revoke-best-effort > /dev/null; then
       echo "Windows could not check the certificate revocation list: trying again without that check." >&2
       extra=(--ssl-revoke-best-effort)
     fi
@@ -96,11 +96,11 @@ pm_install() {   # $1 file name in /data/local/tmp, $2 package: pm's answer. A b
   if [ -z "$out" ]; then printf '%s\n' NO_ANSWER; return 0; fi
   if grep -q Success <<< "$out"; then
     sleep 3
-    if ! "$PY" -I optimize/tv.py "pm list packages $2" | tr -d '\r' | grep -qx "package:$2"; then
+    if ! "$PY" -I optimize/tv.py "pm list packages $2" | tr -d '\r' | grep -x "package:$2" > /dev/null; then
       echo "$2 was removed right after the install (a service of this TV does that to apps installed over ADB): installing it again as if from the Play Store." >&2
       out=$(TV_JOB_LIMIT_S=1200 "$PY" -I optimize/tv.py --bg install "pm install -i com.android.vending -r /data/local/tmp/$1") || true
       sleep 3
-      if grep -q Success <<< "$out" && ! "$PY" -I optimize/tv.py "pm list packages $2" | tr -d '\r' | grep -qx "package:$2"; then
+      if grep -q Success <<< "$out" && ! "$PY" -I optimize/tv.py "pm list packages $2" | tr -d '\r' | grep -x "package:$2" > /dev/null; then
         out="Failure [$2 is removed by this TV right after every install]"
       fi
     fi
@@ -119,7 +119,7 @@ stream_install() {   # $1 file name in optimize/, $2 package: pm's answer, or no
   out=$("$PY" -I optimize/tv.py --install-stream "optimize/$1" -r 2> /dev/null) || true
   if grep -q Success <<< "$out"; then
     sleep 3
-    "$PY" -I optimize/tv.py "pm list packages $2" 2> /dev/null | tr -d '\r' | grep -qx "package:$2" || return 0   # removed again: the file way has the Play Store retry
+    "$PY" -I optimize/tv.py "pm list packages $2" 2> /dev/null | tr -d '\r' | grep -x "package:$2" > /dev/null || return 0   # removed again: the file way has the Play Store retry
     echo "Installed $1 by streaming it (no copy on the TV)." >&2
     printf '%s\n' "$out"
   elif grep -qE 'INSTALL_FAILED_VERSION_DOWNGRADE|UPDATE_INCOMPATIBLE|signatures do not match' <<< "$out"; then
@@ -170,7 +170,7 @@ push_install() {   # $1 apk name, $2 package
     echo "للشخص: بعد لحظات ممكن تطلع على التلفزيون رسالة من Play Protect؛ إذا طلعت اضغط «تثبيت على أي حال» (Install anyway)."
   fi
   # TCL: reinstalling the home app can switch the TV to an input; its TV app is stopped first (idea from Gathin23/cleanyourtv 11993bb0)
-  if [ "$2" = sa.urtv.home ] && "$PY" -I optimize/tv.py "pm list packages com.tcl.tv" 2> /dev/null | tr -d '\r' | grep -qx "package:com.tcl.tv"; then
+  if [ "$2" = sa.urtv.home ] && "$PY" -I optimize/tv.py "pm list packages com.tcl.tv" 2> /dev/null | tr -d '\r' | grep -x "package:com.tcl.tv" > /dev/null; then
     "$PY" -I optimize/tv.py "am force-stop com.tcl.tv" > /dev/null 2>&1 || true
   fi
   if ! fetch_apk "$1"; then
@@ -268,7 +268,7 @@ from_github() {   # $1 owner/repo, $2 package, $3 asset pattern ({abi} = the TV'
   local abis url name out code body size attempt prop
   # an extra that an earlier try already installed is not downloaded or uploaded again: a flaky Wi-Fi that dropped on the second
   # one resumes there, not from the first (an upload cut off half way is resumed by tv.py itself)
-  if "$PY" -I optimize/tv.py "pm list packages $2" | tr -d '\r' | grep -qx "package:$2"; then
+  if "$PY" -I optimize/tv.py "pm list packages $2" | tr -d '\r' | grep -x "package:$2" > /dev/null; then
     echo "$2 is already on the TV: left as it is (it updates itself)."; return 0
   fi
   body=$(curl_get -sSL -w '\n%{http_code}' "https://api.github.com/repos/$1/releases/latest") || body=$'\n000'
@@ -315,14 +315,14 @@ from_github() {   # $1 owner/repo, $2 package, $3 asset pattern ({abi} = the TV'
     if "$PY" -I optimize/tv.py --push-b64 "optimize/$name" "/data/local/tmp/$name"; then out=$(pm_install "$name" "$2"); else out=NO_ANSWER; fi
     [ "$out" = NO_ANSWER ] || break
     # the install may even have finished while the TV was silent
-    ! "$PY" -I optimize/tv.py "pm list packages $2" 2> /dev/null | tr -d '\r' | grep -qx "package:$2" || break
+    ! "$PY" -I optimize/tv.py "pm list packages $2" 2> /dev/null | tr -d '\r' | grep -x "package:$2" > /dev/null || break
     [ "$try" = 2 ] || sleep 5
   done
   if grep -q INSTALL_FAILED_VERIFICATION_FAILURE <<< "$out"; then   # 4.4 (cause 4): TV Bro refused by Play Protect: the same retry and hint as our apps
     verify_retry "$name" "$2" || { failed=1; return 0; }
     restore_verifier
   fi
-  if [ "$out" = NO_ANSWER ] && ! "$PY" -I optimize/tv.py "pm list packages $2" 2> /dev/null | tr -d '\r' | grep -qx "package:$2"; then
+  if [ "$out" = NO_ANSWER ] && ! "$PY" -I optimize/tv.py "pm list packages $2" 2> /dev/null | tr -d '\r' | grep -x "package:$2" > /dev/null; then
     echo "!! skipped after 2 timeouts: ${1##*/}; to add it later: optimize/install.sh extras"
     return 0   # the downloaded file stays, so the next try does not fetch it again
   fi
@@ -526,7 +526,7 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
   appop_file="${URTV_RUN_DIR:-optimize/run}/install-appop.txt"   # APPOP-BEGIN
   if [ ! -s "$appop_file" ]; then
     appop_now=$("$PY" -I optimize/tv.py "appops get sa.urtv.home REQUEST_INSTALL_PACKAGES" 2>/dev/null | tr -d '\r' || true)
-    appop_mode=$(sed -nE 's/^REQUEST_INSTALL_PACKAGES: *(allow|ignore|deny|default|foreground).*/\1/p' <<< "$appop_now" | head -n 1)
+    appop_mode=$(sed -nE 's/^REQUEST_INSTALL_PACKAGES: *(allow|ignore|deny|default|foreground).*/\1/p' <<< "$appop_now" | sed -n 1p)
     if [ -z "$appop_mode" ] && grep -q "No operations" <<< "$appop_now"; then appop_mode=default; fi   # never set: Android's own default
     if [ -n "$appop_mode" ]; then
       mkdir -p "$(dirname "$appop_file")"
@@ -617,7 +617,7 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
     local holders res top
     holders=$("$PY" -I optimize/tv.py "cmd role get-role-holders --user 0 android.app.role.HOME 2> /dev/null" 2> /dev/null | tr -d '\r' | sed -n 1p) || holders=""
     res=$("$PY" -I optimize/tv.py "cmd package resolve-activity --brief -c android.intent.category.HOME -a android.intent.action.MAIN" 2> /dev/null | tr -d '\r' | tail -n 1) || res=""
-    top=$("$PY" -I optimize/tv.py "dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity'" 2> /dev/null | tr -d '\r' | head -n 1 | sed 's/^ *//') || top=""
+    top=$("$PY" -I optimize/tv.py "dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity'" 2> /dev/null | tr -d '\r' | sed -n 1p | sed 's/^ *//') || top=""
     DIAG="role holder: ${holders:-none}; Home resolves to: ${res:-unknown}; on screen after Home: ${top:-unknown}"
   }
   # an on-TV dialog (a Home chooser, a role request, a permission) is what is in front
@@ -746,7 +746,7 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
           done
         fi
         if [ "$front" != yes ]; then
-          DIAG="am start: $(tr -d '\r' <<< "$res" | grep -iE 'Status|Error' | head -n 2 | tr '\n' ' ')"
+          DIAG="am start: $(tr -d '\r' <<< "$res" | grep -iE 'Status|Error' | sed -n 1,2p | tr '\n' ' ')"
           safe_putback || return 1
           return 12
         fi
@@ -780,7 +780,7 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
       printf '%s\n' "$stepout"
       # Nokia Streaming Box 8000 answers «This command is illegal» to pm disable-user for its own launcher: no switch there.
       # Put the stock home back as it was and stop the switch (4); nothing else of the setup depends on it.
-      if grep -A2 -F "\$ pm disable-user --user 0 ${STOCK%%/*}" <<< "$stepout" | grep -qi 'illegal'; then
+      if grep -A2 -F "\$ pm disable-user --user 0 ${STOCK%%/*}" <<< "$stepout" | grep -i 'illegal' > /dev/null; then
         printf '%s\n' "cmd role add-role-holder --user 0 android.app.role.HOME ${STOCK%%/*}" \
           "cmd package set-home-activity --user 0 $STOCK" "pm enable com.google.android.tungsten.setupwraith" \
           "touch /data/local/tmp/home_ok.$NONCE" "input keyevent KEYCODE_HOME" | "$PY" -I optimize/tv.py --batch > /dev/null \

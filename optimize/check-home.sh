@@ -20,7 +20,7 @@ else
   # the first app of the favourites row (dock.sh show prints "dock: pkg1,pkg2,...")
   # shellcheck disable=SC2207
   candidates+=($(optimize/dock.sh show 2> /dev/null | sed -n 's/^dock: //p' | cut -d' ' -f1 | tr ',' '\n' \
-                 | grep -v '^sa\.urtv\.' | head -1 || true))
+                 | grep -v '^sa\.urtv\.' | sed -n 1p || true))
 fi
 app=
 for c in "${candidates[@]}"; do

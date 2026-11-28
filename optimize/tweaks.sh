@@ -47,7 +47,7 @@ putcmd() {   # key value: a value that was not set (null) is deleted
 # recorded as null (restore would delete the TV's real value) and a setting that cannot be read is not changed.
 tvget() { local v; v=$("$PY" -I optimize/tv.py "$(getcmd "$1")" 2> /dev/null | tr -d '\r' | tail -n 1) || v=""; echo "${v:-unknown}"; }
 JOURNAL_DONE="${JOURNAL%.txt}.done"   # a restored journal is kept under this name: a second restore must not write defaults over it
-jget() { sed -n "s/^$1=//p" "$JOURNAL" 2> /dev/null | head -n 1; }
+jget() { sed -n "s/^$1=//p" "$JOURNAL" 2> /dev/null | sed -n 1p; }
 jset() {   # key value: the key's line in the journal (added if it is not there)
   if grep -q "^$1=" "$JOURNAL"; then sed "s/^$1=.*/$1=$2/" "$JOURNAL" > "$JOURNAL.tmp" && mv "$JOURNAL.tmp" "$JOURNAL"
   else echo "$1=$2" >> "$JOURNAL"; fi
@@ -76,7 +76,7 @@ psget() {
   case "$1" in
     standby_bucket) o=$("$PY" -I optimize/tv.py "am get-standby-bucket $PS" 2> /dev/null | tr -d '\r' | tail -n 1 | tr -dc '0-9') || o=""
                     bucket_name "$o" ;;
-    appop_*) o=$("$PY" -I optimize/tv.py "appops get $PS ${1#appop_}" 2> /dev/null | tr -d '\r' | head -n 1) || o=""
+    appop_*) o=$("$PY" -I optimize/tv.py "appops get $PS ${1#appop_}" 2> /dev/null | tr -d '\r' | sed -n 1p) || o=""
              case "$o" in
                "No operations"*) echo default ;;
                "${1#appop_}: "*) o=${o#*: }; o=${o%%[;, ]*}; [[ "$o" =~ ^[a-z_]+$ ]] && echo "$o" || echo unknown ;;
@@ -84,7 +84,7 @@ psget() {
              esac ;;
   esac
 }
-test_build() { "$PY" -I optimize/tv.py "getprop ro.build.type" 2> /dev/null | tr -d '\r' | grep -Eqx 'userdebug|eng'; }   # test-keys alone is common on shipped TVs
+test_build() { "$PY" -I optimize/tv.py "getprop ro.build.type" 2> /dev/null | tr -d '\r' | grep -Ex 'userdebug|eng' > /dev/null; }   # test-keys alone is common on shipped TVs
 psput() {   # key value
   case "$1" in
     standby_bucket) echo "am set-standby-bucket $PS $2" ;;
@@ -218,7 +218,7 @@ if [ "$1" = apply ]; then
   if [ "$SDK" -lt 24 ]; then echo "Our apps: not compiled ahead of time (cmd package compile needs Android 7; this TV is SDK $SDK_SAY)"
   else
     for p in $OURS; do
-      "$PY" -I optimize/tv.py "pm list packages $p" 2> /dev/null | tr -d '\r' | grep -qx "package:$p" || continue
+      "$PY" -I optimize/tv.py "pm list packages $p" 2> /dev/null | tr -d '\r' | grep -x "package:$p" > /dev/null || continue
       r=$("$PY" -I optimize/tv.py "cmd package compile -m speed-profile -f $p 2>&1" 2> /dev/null | tr -d '\r') || r=""
       if grep -qx Success <<< "$r"; then jset "compiled_$p" speed-profile; echo "Compiled ahead of time: $p"
       else echo "info: $p was not compiled ahead of time (the TV said: $(tail -n 1 <<< "${r:-nothing}")); Android compiles it later by itself"; fi

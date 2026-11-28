@@ -27,7 +27,7 @@ case "${1:-}" in
     for p in "$@"; do
       if ! [[ "$p" =~ ^[A-Za-z0-9_][A-Za-z0-9_.]*$ ]]; then echo "!! not a package id: $p"; exit 2; fi
       if [ "$mode" = unkeep ]; then   # the same two refusals as optimize/disable.sh: features people use, and Android's own core
-        if grep -vE '^[[:space:]]*(#|$)' optimize/lists/keep.txt | awk '{print $1}' | grep -qxF "$p"; then echo "!! $p is in optimize/lists/keep.txt (a feature people use): it is never turned off here"; continue; fi
+        if grep -vE '^[[:space:]]*(#|$)' optimize/lists/keep.txt | awk '{print $1}' | grep -xF "$p" > /dev/null; then echo "!! $p is in optimize/lists/keep.txt (a feature people use): it is never turned off here"; continue; fi
         if grep -qEf <(grep -vE '^[[:space:]]*(#|$)' optimize/lists/core.txt | sed 's/.*/^(&)$/') <<< "$p"; then echo "!! $p is Android's own core: it is never turned off here"; continue; fi
       fi
       if grep -qxE "$HOME_SWITCH" <<< "$p"; then echo "!! $p belongs to the home screen switch: optimize/restore.sh brings the stock home back, not this"; continue; fi

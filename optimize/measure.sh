@@ -93,7 +93,7 @@ printf '%s\n' \
   | tv --batch > "$out"
 [ "$mode" = --screensaver ] && tv "input keyevent KEYCODE_HOME" > /dev/null
 
-kb() { local v; v=$(sed -n "s/^$1:[[:space:]]*\([0-9][0-9]*\).*/\1/p" "$out" | head -1); echo "${v:-0}"; }   # the first number on that exact line; 0 if the TV has none
+kb() { local v; v=$(sed -n "s/^$1:[[:space:]]*\([0-9][0-9]*\).*/\1/p" "$out" | sed -n 1p); echo "${v:-0}"; }   # the first number on that exact line; 0 if the TV has none
 avail=$(( $(kb MemAvailable) / 1024 )); total=$(( $(kb MemTotal) / 1024 ))
 swap=$(( ($(kb SwapTotal) - $(kb SwapFree)) / 1024 ))
 procs=$(sed -n '/== processes/{n;n;p;}' "$out" | tr -dc '0-9')
@@ -111,6 +111,6 @@ if [ -f "$RUN/summary.md" ] && grep -q "^| $label |" "$RUN/summary.md"; then   #
 fi
 printf '| %s | %s | %s | %s | %s | %s |\n' "$label" "$avail" "$swap" "$procs" "${idle:+$idle%}" "$disabled" | tee -a "$RUN/summary.md"
 # our two apps' own memory (TOTAL PSS, MB), one line under the table; the table's columns stay as they are
-ours() { local v; v=$(sed -nE "s/^$1:[[:space:]]*TOTAL( PSS:)?[[:space:]]*([0-9]+).*/\2/p" "$out" | head -1); if [ -n "$v" ]; then echo "$(( v / 1024 )) MB"; else echo "not running"; fi; }
+ours() { local v; v=$(sed -nE "s/^$1:[[:space:]]*TOTAL( PSS:)?[[:space:]]*([0-9]+).*/\2/p" "$out" | sed -n 1p); if [ -n "$v" ]; then echo "$(( v / 1024 )) MB"; else echo "not running"; fi; }
 echo "tweaks at this reading: $(sed -n '/^== tweaks/,/^== our apps/p' "$out" | grep = | tr -d '\r' | paste -sd' ' -)"
 echo "our apps (TOTAL PSS): screensaver $(ours sa.urtv.screensaver), home $(ours sa.urtv.home)"

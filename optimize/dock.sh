@@ -105,7 +105,7 @@ case "${1:-}:$#" in
     # On some TVs the Settings screen for it is hidden, so the person's choice is set from here. Without the add-on there is nothing to allow: say so, change nothing.
     case "$2" in
       on|status)
-        if ! "$PY" -I optimize/tv.py "pm list packages sa.urtv.extras" | tr -d '\r' | grep -qx "package:sa.urtv.extras"; then
+        if ! "$PY" -I optimize/tv.py "pm list packages sa.urtv.extras" | tr -d '\r' | grep -x "package:sa.urtv.extras" > /dev/null; then
           echo "overlay: «إضافات تلفزيونك» is not installed on this TV: it draws the notice over another app. Offer it to the person: optimize/install.sh addon (or the add-on's install screen on the TV), then run this again"; exit 1
         fi ;;
     esac
@@ -130,7 +130,7 @@ case "${1:-}:$#" in
     # sleep-setup and type-setup are the old names of the same step.
     svc="sa.urtv.extras/sa.urtv.home.ExtrasA11yService"; what="«إضافات تلفزيونك» (UrTV Extras)"
     done_msg="«إضافات تلفزيونك» is on: the end of «مؤقت النوم» turns the screen off, the phone remote presses keys and types in the app in front, the Settings key works in other apps, and on a Google TV the Home button comes back to UrTV"
-    if ! "$PY" -I optimize/tv.py "pm list packages sa.urtv.extras" | tr -d '\r' | grep -qx "package:sa.urtv.extras"; then
+    if ! "$PY" -I optimize/tv.py "pm list packages sa.urtv.extras" | tr -d '\r' | grep -x "package:sa.urtv.extras" > /dev/null; then
       echo "!! «إضافات تلفزيونك» (sa.urtv.extras) is not installed on the TV: optimize/install.sh addon first, then the same command again. (Play Protect may ask: the person presses «تثبيت على أي حال».)"
       exit 1
     fi
