@@ -1,0 +1,113 @@
+name: Remote on Android 8
+
+# Report row 765 (a TCL OTT box on Android 8.0: after the install the remote moves briefly, then nothing). The apps of a commit (debug builds) are put on an
+# Android 8 (API 26) TV emulator and the D-pad is pressed 30 times in the home, alone and with the home's accessibility service on (tester/auto/ci/remote26.sh);
+# a key the system does not answer in 8 seconds, or a focus that does not move, is red. The result goes to the data-screens branch, in remote26-<run>/result.txt.
+# A push of a NEW branch work/auto-round-<shortsha> runs the file of THAT commit; we never force-push:
+#   git push origin X:refs/heads/work/auto-round-$(git rev-parse --short X)
+
+on:
+  push:
+    branches: ['work/auto-round-*']
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'branch or sha to run (the apps are built from it)'
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: remote26
+  cancel-in-progress: false
+
+jobs:
+  remote:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+      # Thmanyah comes from the private fonts repository, as in android.yml: built in, never committed
+      - uses: actions/checkout@v4
+        with:
+          repository: tshi-dev/urtv-fonts
+          token: ${{ secrets.FONTS_TOKEN }}
+          path: .fonts-private
+      - name: Private fonts
+        run: |
+          cp .fonts-private/web/*.woff2 assets/fonts/
+          mkdir -p android/launcher/src/main/assets/fonts
+          cp .fonts-private/android/*.otf android/launcher/src/main/assets/fonts/
+          rm -rf .fonts-private
+
+      - name: Build the page
+        run: python3 src/build.py
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build debug APKs
+        env:
+          URTV_BRANCH: ${{ inputs.ref || github.ref_name }}
+        run: gradle -p android assembleDebug --no-daemon
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: The remote on Android 8
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 26
+          target: android-tv
+          arch: x86
+          profile: tv_1080p
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          script: bash tester/auto/ci/remote26.sh android/launcher/build/outputs/apk/debug/launcher-debug.apk none auto-out
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: remote26
+          path: auto-out
+
+      - name: Publish to data-screens
+        if: always()
+        run: |
+          set -e
+          [ -s auto-out/remote26/result.txt ] || { echo "the Android 8 check left no result"; exit 1; }
+          run="remote26-${GITHUB_RUN_NUMBER}-$(date -u +%m%d-%H%M)"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for try in 1 2 3 4; do
+            work=$(mktemp -d)
+            git clone --quiet --depth 20 --branch data-screens "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" "$work"
+            cd "$work"
+            ls -d remote26-* 2>/dev/null | sort | head -n -9 | xargs -r rm -rf
+            mkdir -p "$run"; cp -r "$GITHUB_WORKSPACE"/auto-out/remote26/. "$run/"
+            find "$run" -name '*.xml' -delete   # the dumps stay in the artifact
+            git add -A
+            git commit --quiet -m "Remote on Android 8 of ${GITHUB_SHA::7} (run ${GITHUB_RUN_NUMBER})" || true
+            if git push origin data-screens; then break; fi
+            cd "$GITHUB_WORKSPACE"; sleep $((try * 5))
+          done
+          cat "$GITHUB_WORKSPACE/auto-out/remote26/result.txt" | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Android 8 remote verdict
+        if: always()
+        run: |
+          [ -s auto-out/remote26/result.txt ] || { echo "the Android 8 check left no result"; exit 1; }
+          cat auto-out/remote26/result.txt
+          grep -q '^PASS' auto-out/remote26/result.txt

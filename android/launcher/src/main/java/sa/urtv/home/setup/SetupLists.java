@@ -9,7 +9,6 @@ final class SetupLists {
         "com.tcl.bi",
         "com.tcl.logkit",
         "com.tcl.usercenter",
-        "com.tcl.partnercustomizer",
         "com.tcl.overseasappshow",
         "com.tcl.messagebox",
         "com.tcl.esticker",
@@ -44,6 +43,7 @@ final class SetupLists {
         "com.tcl.micmanager",
         "com.google.android.tv.remote.service",
         "com.tcl.autopair",
+        "com.tcl.partnercustomizer",
         "com.tcl.smartalexa",
         "com.tcl.inputmethod.international",
         "com.google.android.inputmethod.latin",
@@ -137,6 +137,8 @@ final class SetupLists {
         "com\\.cltv\\.mal",
         "com\\.mediatek\\.(tis|tv\\.service|tv\\.agent)",
         "android\\.ext\\.(services|shared)",
+        ".*(wifi|connectivity|captiveportal|networkrecommendation|networkscor|carrierconfig).*",
+        "com\\.mediatek\\.network",
     };
 
     /** never turned off: the TV's inputs (HDMI, AV, sources, the tuner) and keyboards, regular expressions matched against the whole name (optimize/lists/inputs.txt) */

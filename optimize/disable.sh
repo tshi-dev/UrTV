@@ -61,6 +61,17 @@ else
   echo "!! disable.sh: the TV did not say which packages it has or which were already off, so NOTHING was turned off (a restore could not be exact). Run the same command again." >&2
   exit 1
 fi
+# 4.4 (report row 765, R-362): an app an earlier run turned off (the ledger) that keep.txt names now (com.tcl.partnercustomizer: a TCL OTT box on Android 8 lost its
+# remote) is turned back on and leaves the ledger; only what the ledger holds and the TV says is off now, never what the maker had off
+if [ -s "$LEDGER" ]; then
+  healed=$(grep -E '^[A-Za-z0-9_.]+$' "$LEDGER" | grep -Fx -f <(grep -vE '^[[:space:]]*(#|$)' "$KEEP" | awk '{print $1}') | grep -Fx -f <(printf '%s\n' "$was_off" | grep . || echo '#none#') || true)
+  if [ -n "$healed" ]; then
+    echo "Turned back on, they are on the never-turn-off list now: $(paste -sd' ' - <<< "$healed")" >&2
+    printf '%s\n' "$healed" | awk '{print "pm enable --user 0 " $1}' | "$PY" -I optimize/tv.py --batch
+    grep -Fxv -f <(printf '%s\n' "$healed") "$LEDGER" > "$LEDGER.tmp" || true
+    mv "$LEDGER.tmp" "$LEDGER"
+  fi
+fi
 # The TV's own answer: a package that asks for TV_INPUT_HARDWARE (its own «requested permissions» block, not a shared user's), or serves
 # android.media.tv.TvInputService or an input method, stays on whatever its name. From Android 6 (SDK 23) a readable dump with no permission block
 # asks for nothing, so it passes; an older one, or a dump that cannot be read, stays on (NOCHK). «hung system process» is Android's watchdog

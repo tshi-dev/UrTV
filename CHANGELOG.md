@@ -2,6 +2,14 @@
 
 Newest first. `next` is where changes land first; a release is what was tested there.
 
+## 4.3.7
+
+A small hotfix of 4.3.6, three fixes. Nothing new on the screens.
+
+- **ريموت تلفزيون TCL (أندرويد 8) ما يستجيب بعد الإعداد:** `com.tcl.partnercustomizer` (جزء TCL من مفاتيح الريموت) صار من التطبيقات اللي ما نوقفها أبداً، والإعداد يرجّعه شغّالاً إذا كان أوقفه إعداد سابق منّا (ما نلمس إلا اللي سجّلنا إننا أوقفناه). **ما تأكدنا على تلفزيون Percee حقيقي**: السبب غير مثبت. إذا بقي الريموت ما يستجيب، أرسل تقرير.
+- **الواي فاي ما ينقطع:** حزم الاتصال بالشبكة (الواي فاي، الاتصال، بوابة الدخول) ما تنطفي أبداً من أي قائمة.
+- **سطر سجل أنظف:** `music.sh radio` ما عاد يسبب ClassCastException في سجل أندرويد.
+
 ## 4.3.6
 
 A safety hotfix of 4.3.5: the setup never turns off the apps that open a TV's own Settings, its channels (Live TV) or the setup of its inputs.
