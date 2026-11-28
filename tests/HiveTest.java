@@ -11,7 +11,7 @@ public final class HiveTest {
     static long[] now = {1_000_000L};
 
     static String line(String id, String ar, String en, int level, int kids) {
-        return id + "\t" + ar + "\t" + en + "\t" + level + "\t" + kids + "\tس " + id + "\tQ " + id + "\tج " + id + "\tA " + id + "\tx\tx\ty\ty\tz\tz\n";
+        return id + "\t" + ar + "\t" + en + "\t" + level + "\t" + kids + "\tس " + id + "\tQ " + id + "\t" + (ar.isEmpty() ? "ج" : ar) + " " + id + "\t" + (en.isEmpty() ? "A" : en) + " " + id + "\tx\tx\ty\ty\tz\tz\n";   // the answers start with the item's own letter
     }
     /** a bank from test lines (id, ar, en, level, kids, 10 texts) and hint lines (letter, samples); null when a line is refused */
     static HiveBank bank(String items, String hints) {
@@ -107,6 +107,30 @@ check("board: 25 cells, every neighbour link goes both ways, 56 links in all (5 
         boolean banned = false;
         for (char l : (HiveBank.AR + HiveBank.EN).toCharArray()) for (String h : starter.hints(l)) { String t = h.toLowerCase(); banned |= t.contains("israel") || t.contains("إسرائيل") || t.contains("western sahara") || t.contains("الصحراء الغربية"); }
         check("starter: neither Israel nor Western Sahara is offered as a sample answer", !banned);
+        {   // R-480: the WHOLE bundled bank: for every letter that offers choices, every choice starts with that letter
+            int pairs = 0, withChoices = 0, bad = 0, mixed = 0, dup = 0, tooFew = 0;
+            for (boolean english : new boolean[] {false, true}) for (char l : (english ? HiveBank.EN : HiveBank.AR).toCharArray()) for (HiveBank.Item it : starter.of(l)) {
+                pairs++;
+                String[][] w = HiveGame.wrongChoices(starter, it, l, english, false, new Random(it.id.hashCode()));
+                if (w.length + 1 < HiveGame.MIN_CHOICES) { tooFew++; continue; }   // an open answer: no choices at all
+                withChoices++; java.util.Set<String> seen = new java.util.HashSet<>(); seen.add(it.a[english ? 1 : 0]);
+                if (!HiveBank.starts(l, it.a[english ? 1 : 0])) mixed++;   // the answer itself must be of the letter too
+                for (String[] x : w) { if (!HiveBank.starts(l, x[english ? 1 : 0])) bad++; if (!seen.add(x[english ? 1 : 0])) dup++; }
+            }
+            check("choices, the whole bundled bank (" + pairs + " question-letter pairs, " + withChoices + " with choices, " + tooFew + " answered open): every choice of every cell starts with the cell's letter, none is the answer or twice", bad == 0 && dup == 0 && withChoices > 100);
+            check("choices, the whole bundled bank: the right answer itself is of the letter it is asked under (the index and the folding agree; one known index slip, «الألومنيوم» under «و», is never asked)", mixed <= 1);
+            boolean asked = true; int played = 0;
+            for (long seed = 0; seed < 400; seed++) {
+                HiveGame pg = new HiveGame(starter, new HiveGame.Settings(), HiveBoard.TEAM_SIDES, () -> now[0], new Random(seed));
+                for (int c2 = 0; c2 < HiveBoard.CELLS; c2++) {
+                    if (!pg.pick(c2)) continue;
+                    HiveGame.Question q = pg.question(); played++;
+                    if (q.kind == HiveGame.Kind.BANK) { asked &= HiveBank.starts(q.letter, q.item.a[0]); for (int i = 0; i < q.choices(); i++) asked &= HiveBank.starts(q.letter, q.option(i, false)); }
+                    pg.skip();
+                }
+            }
+            check("choices, played: 400 games, every question of every cell (" + played + ") and every choice shown starts with the cell's letter", asked && played > 1000);
+        }
 
         // ---- a game
         HiveGame.Settings s = new HiveGame.Settings(); s.alternate = true;   // the older checks below are about the turns alternating (the setting «بالتناوب»)
@@ -129,9 +153,35 @@ check("board: 25 cells, every neighbour link goes both ways, 56 links in all (5 
         check("turn: picking a free hexagon asks a question of its letter, options hidden, 15 seconds on the clock", g.pick(c) && g.phase() == HiveGame.Phase.ASK && g.question().kind == HiveGame.Kind.BANK
             && g.question().item.ar == 'ب' && !g.optionsShown() && g.leftMs() == 15000 && !g.pick(c) && !g.judge(true));
         int rp = g.question().rightPlace();
-        check("turn: «خيارات» shows the four options once a turn, the right one in its place in both languages", g.canShowOptions() && g.showOptions() && g.optionsShown() && !g.showOptions()
+        check("turn: «خيارات» shows the choices once a turn (three here: the letter has three answers), the right one in its place in both languages", g.canShowOptions() && g.showOptions() && g.optionsShown() && !g.showOptions()
             && g.question().option(rp, false).equals(g.question().item.a[0]) && g.question().option(rp, true).equals(g.question().item.a[1])
-            && new HashSet<>(Arrays.asList(g.question().option(0, false), g.question().option(1, false), g.question().option(2, false), g.question().option(3, false))).size() == 4);
+            && g.question().choices() == 3 && new HashSet<>(Arrays.asList(g.question().option(0, false), g.question().option(1, false), g.question().option(2, false))).size() == 3);
+        {   // ---- owner feedback R-480: EVERY choice starts with the cell's letter
+            StringBuilder many = new StringBuilder();
+            for (char l : "بتج".toCharArray()) for (int n = 0; n < 6; n++) many.append(line("m-" + (int) l + "-" + n, "" + l, n < 5 ? "" + (char) ('A' + (l - 'ب') % 3) : "", 1 + n % 3, 0));
+            many.append(line("two-1", "د", "", 1, 0)).append(line("two-2", "د", "", 1, 0)).append(line("one-1", "ر", "", 1, 0));
+            HiveBank mb = bank(many.toString(), "");
+            boolean allStart = true, four = true, distinct = true; int checked = 0;
+            for (char l : "بتج".toCharArray()) for (HiveBank.Item it : mb.of(l)) {
+                String[][] w = HiveGame.wrongChoices(mb, it, l, false, false, new Random(it.id.hashCode()));
+                four &= w.length == 3; Set<String> seen = new HashSet<>(); seen.add(it.a[0]);
+                for (String[] x : w) { allStart &= HiveBank.starts(l, x[0]); distinct &= seen.add(x[0]); checked++; }
+            }
+            check("choices: with six answers of a letter every question gets three wrong choices that ALL start with the letter, never the answer, never the same twice (" + checked + " checked)", allStart && four && distinct && checked == 3 * 6 * 3);
+            HiveGame.Settings st = new HiveGame.Settings();
+            boolean fewer = true, open = true;
+            for (HiveBank.Item it : mb.of('د')) { String[][] w = HiveGame.wrongChoices(mb, it, 'د', false, false, new Random(1)); fewer &= w.length == 1; }
+            check("choices: a letter with two answers gives one wrong choice: fewer than three choices means no «خيارات» for that cell (an open answer), never a choice of another letter", fewer && HiveGame.MIN_CHOICES == 3 && HiveGame.MAX_CHOICES == 4);
+            HiveGame og = null; for (long seed = 0; og == null; seed += 7) { HiveGame t = new HiveGame(mb, st, HiveBoard.TEAM_SIDES, () -> now[0], new Random(seed)); if (new String(t.board.letter).indexOf('د') >= 0 && new String(t.board.letter).indexOf('ب') >= 0) og = t; }
+            og.pick(cellOf(og, 'د')); boolean openCell = og.question().kind == HiveGame.Kind.BANK && og.question().choices() == 0 && !og.canShowOptions() && !og.showOptions();
+            check("choices: the open cell offers no «خيارات» and still plays (the question, the answer, the host's judge)", openCell && og.reveal() && og.judge(true));
+            HiveGame.Settings en = new HiveGame.Settings(); en.english = true;
+            boolean enOk = true; for (HiveBank.Item it : mb.of('A')) { String[][] w = HiveGame.wrongChoices(mb, it, 'A', true, false, new Random(2)); for (String[] x : w) enOk &= HiveBank.starts('A', x[1]); }
+            check("choices: in an English game every choice starts with the Latin letter too", enOk);
+            check("choices: the folding is the letter index's: أ إ آ and the hamza forms as ا, a leading «ال» skipped, marks and tatweel dropped, ة as ه, an English letter capital or not",
+                HiveBank.starts('ا', "أسد") && HiveBank.starts('ا', "إبل") && HiveBank.starts('ا', "آية") && HiveBank.starts('ا', "الأسد") && HiveBank.starts('ب', "البحر") && HiveBank.starts('ب', "بَحْر") && !HiveBank.starts('ب', "تمر")
+                && HiveBank.starts('ه', "هرم") && HiveBank.starts('ي', "ىمن") && HiveBank.starts('A', "apple") && HiveBank.starts('A', "  Apple") && !HiveBank.starts('A', "Banana") && !HiveBank.starts('ب', null));
+        }
         String firstId = g.question().item.id;
         check("turn: OK shows the answer, «صح» gives the hexagon to the team in turn and the turn passes", g.reveal() && g.phase() == HiveGame.Phase.JUDGE && g.judge(true) && g.board.owner[c] == HiveBoard.TEAM_SIDES
             && g.phase() == HiveGame.Phase.PICK && g.turn() == HiveBoard.TEAM_TOP && !g.pick(c));

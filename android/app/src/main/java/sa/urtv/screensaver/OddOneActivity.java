@@ -39,10 +39,9 @@ public class OddOneActivity extends GameActivity {
         for (int i = 0; i < players.length; i++) players[i] = num(PLAYERS[i]);
         for (int i = 0; i < rounds.length; i++) rounds[i] = num(OddOneGame.ROUNDS[i]);
         chips = new GameChips().add("players", S.t("اللاعبين"), players, 1).add("rounds", S.t("الجولات"), rounds, 0)
-            .add("laps", S.t("الكلام"), new String[]{S.t("لفّة وحدة"), S.t("لفّتين")}, 0)
-            .add("phones", S.t("اللعب بالجوالات"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
+            .add("laps", S.t("الكلام"), new String[]{S.t("لفّة وحدة"), S.t("لفّتين")}, 0);
+            modeChip(chips);
         remembered(soundChip(chips));
-        chips.get("phones").picked = getIntent().getBooleanExtra("phones", false) ? 1 : 0;   // off unless the «بالجوالات» page opened this game; never kept from last time
     }
     @Override protected void onPause() { super.onPause(); keep(); }
     /** the words this TV played last wait in the next games (ids only, the newest first) */
@@ -52,6 +51,9 @@ public class OddOneActivity extends GameActivity {
         GamePrefs.remember(this, id(), r);
     }
 
+    @Override protected String[] phoneHidden() { return new String[] {"players"}; }
+    @Override protected Runnable remoteWay() { return () -> { screen = Screen.SETUP; redraw(); start(); }; }
+    @Override protected GameChips lobbyChips() { return chips; }
     private void start() {
         if (topics == null) { toast(S.t("قريبًا")); return; }
         if (chips.picked("phones") == 1) { if (!openPhones()) return; screen = Screen.LOBBY; phoneLobby = true; redraw(); return; }

@@ -65,7 +65,7 @@ public final class GamesBoardData {
         for (QuizPick.Item it : items) {
             Character a = ar.get(it.id), e = en.get(it.id);
             if (a == null && e == null) continue;
-            if (!bank.add(it.id, a == null ? 0 : a, e == null || !QuizPick.playable(it, true) ? 0 : e, it.diff, it.kids, it.q, it.a, it.w)) return null;
+            if (!bank.add(it.id, a == null ? 0 : a, e == null || !QuizPick.playable(it, true) ? 0 : e, it.diff, it.kids, it.cat, it.q, it.a, it.w)) return null;
         }
         if (bank.size() == 0) return null;
         if (kh != null) {

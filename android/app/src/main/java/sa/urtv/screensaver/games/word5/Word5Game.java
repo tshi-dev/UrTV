@@ -12,14 +12,14 @@ public final class Word5Game {
 
     private final Word5Words words; private final String answer;
     public final int tries;
-    private final String[] guesses; private final int[][] colours;
+    private final String[] guesses, shownGuesses; private final int[][] colours;
     private final int[] keys = new int[Word5Text.LETTERS];
-    private final StringBuilder typing = new StringBuilder();
+    private final StringBuilder typing = new StringBuilder(), shownTyping = new StringBuilder();   // `typing` is the spelling the rules use (ة is ه), `shownTyping` what the player typed (the tile shows this)
     private int row; private boolean won;
 
     public Word5Game(Word5Words words, String answer, int tries) {
         this.words = words; this.answer = answer; this.tries = tries;
-        guesses = new String[tries]; colours = new int[tries][];
+        guesses = new String[tries]; shownGuesses = new String[tries]; colours = new int[tries][];
     }
 
     /** green, yellow or gray for each of the five letters */
@@ -38,16 +38,19 @@ public final class Word5Game {
     }
 
     /** OK on a letter key (0..27 in keyboard order): false when the row is full or the game is over */
-    public boolean type(int letter) {
+    public boolean type(int letter) { return type(letter, letter < 0 || letter >= Word5Text.LETTERS ? '?' : Word5Text.ALPHABET.charAt(letter)); }
+
+    /** the same, and `shown` is the character the player typed (ة ى ء أ إ ...): the tile shows it, the matching uses the letter (SPEC «Normalization») */
+    public boolean type(int letter, char shown) {
         if (over() || letter < 0 || letter >= Word5Text.LETTERS || typing.length() >= Word5Text.LENGTH) return false;
-        typing.append(Word5Text.ALPHABET.charAt(letter));
+        typing.append(Word5Text.ALPHABET.charAt(letter)); shownTyping.append(shown);
         return true;
     }
 
     /** «حذف» (and Back): false when there is nothing to delete */
     public boolean delete() {
         if (over() || typing.length() == 0) return false;
-        typing.setLength(typing.length() - 1);
+        typing.setLength(typing.length() - 1); shownTyping.setLength(shownTyping.length() - 1);
         return true;
     }
 
@@ -58,9 +61,9 @@ public final class Word5Game {
         String guess = typing.toString();
         if (!words.allows(guess)) return Entered.UNKNOWN;   // not five keyboard letters: the row shakes, the letters stay, no try is lost
         int[] c = score(guess, answer);
-        guesses[row] = guess; colours[row] = c; row++;
+        guesses[row] = guess; shownGuesses[row] = shownTyping.toString(); colours[row] = c; row++;
         for (int i = 0; i < c.length; i++) { int k = Word5Text.ALPHABET.indexOf(guess.charAt(i)); keys[k] = Math.max(keys[k], c[i]); }
-        typing.setLength(0);
+        typing.setLength(0); shownTyping.setLength(0);
         if (guess.equals(answer)) { won = true; return Entered.WON; }
         return row == tries ? Entered.LOST : Entered.NEXT;
     }
@@ -71,6 +74,9 @@ public final class Word5Game {
     public int row() { return row; }
     public String typing() { return typing.toString(); }
     public String guess(int r) { return guesses[r]; }
+    /** what the tiles show: the row as the player typed it (ة stays ة), the same five letters as `typing`/`guess` for the rules */
+    public String typingShown() { return shownTyping.toString(); }
+    public String guessShown(int r) { return shownGuesses[r]; }
     public int[] colours(int r) { return colours[r]; }
     /** a key's colour: 0 not tried yet, else GRAY, YELLOW or GREEN */
     public int key(int letter) { return keys[letter]; }
