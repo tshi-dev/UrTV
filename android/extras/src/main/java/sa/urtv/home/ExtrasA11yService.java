@@ -270,7 +270,7 @@ public class ExtrasA11yService extends AccessibilityService {
     }
 
     /** the catch acts: on, and the person's home is ours (the setup's word, or Android's default home); never over a home the person kept */
-    private boolean homeKeyActive() { return homeKey(this) && KeyButton.homeCatchSafe() && (wanted(this) || oursChosen()); }   // beta 3: never on Xiaomi (its remote's app buttons and volume), kept on a TCL
+    private boolean homeKeyActive() { return homeKey(this) && KeyButton.homeCatchSafe() && (wanted(this) || oursChosen()); }   // beta 3: never on Xiaomi (its remote's app buttons and volume) but its Google TVs of RemoteButtons.XIAOMI_GTV_HOME_CATCH (R-405); kept on a TCL
 
     /** whether Android sends us the keys now (the catch can act) */
     private boolean homeKeyFiltering() {

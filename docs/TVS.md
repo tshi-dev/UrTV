@@ -83,7 +83,7 @@ User reports (and the tester's own TV) since 4.3: on TCL G10/G08, Changhong (And
 is ours, yet the Home key opens Google TV's home (`launcherx`), which the firmware starts by name. The add-on «إضافات تلفزيونك» is the
 answer: its Home watch brings UrTV forward after each Home press («the person's home is ours», set by «جهّز كل شي» or
 `optimize/dock.sh home-watch on`). The in-TV setup's report says `Google TV: Home works through the add-on's watch…` (or that the
-watch is NOT bound). Never turn `launcherx` off (some Google TVs then cannot start).
+watch is NOT bound). Never turn `launcherx` off (some Google TVs then cannot start). On Xiaomi the add-on's Home key catch is off (R-310: its remote's app buttons and volume), except on the Xiaomi Google TVs listed in `RemoteButtons.XIAOMI_GTV_HOME_CATCH` (MiTV-AFMU0/1, MiTV-AXTU0, MiTV-MZTU0; R-405): add a model there only from a report of that TV.
 
 ## When the setup wizard owns the Wi-Fi (TCL G08/G10/G14, Google TV sets)
 

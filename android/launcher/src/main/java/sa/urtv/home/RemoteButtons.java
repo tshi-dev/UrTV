@@ -192,4 +192,17 @@ final class RemoteButtons {
      * Android 11 keeps it (its double volume step is the remote-buttons' filter only, filterSafe), as every build before 608 did.
      */
     static boolean homeCatchSafe(int tv) { return !xiaomi(tv); }
+
+    /**
+     * 4.4 (R-405): on Xiaomi's Google TVs the Home key went on opening Google TV's home, because the catch is off on every Xiaomi (R-310). These models
+     * (docs/TVS.md: Android 14 with Google TV's home) get it back; every other Xiaomi keeps R-310's rule (no key filter outside our home: its remote's app
+     * buttons and volume). A model is added only from a report of that TV.
+     */
+    static final String[] XIAOMI_GTV_HOME_CATCH = {"MiTV-AFMU0", "MiTV-AFMU1", "MiTV-AXTU0", "MiTV-MZTU0"};
+
+    static boolean homeCatchSafe(int tv, String model) {
+        if (homeCatchSafe(tv)) return true;
+        for (String m : XIAOMI_GTV_HOME_CATCH) if (m.equals(model)) return true;
+        return false;
+    }
 }
