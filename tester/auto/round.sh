@@ -4,7 +4,7 @@
 # It installs the build of the tag (apk-next by default) OVER the installed one, so the data stays; saves the settings and the sound; then runs, with nobody
 # touching the remote, every check below and writes tester/auto/out/<build>/report.md with the screenshots (the city boxed) and a column of the previous
 # build's numbers. At the end it puts the settings, the sound, the display and the font back. Steps (--only takes these words, in this order):
-#   install   layouts   reach   settings   saver   radio   display   font   adhan   games   health
+#   install   layouts   reach   settings   saver   radio   display   font   adhan   games   switch   health
 # Never touches the family PIN, the TV's setup wizard or the old launcher, never changes the Wi-Fi, never restarts the TV. NEVER PRESSES BLIND: a key is sent only after
 # the screen it is for was read (the front app, or the screen's own text through uiautomator), and a screen that is not the one expected is a FAIL, not a retry with more keys.
 # What it reads is in tester/auto/lib.py (tested by tests/tester_auto_test.py); what it opens is in tester/auto/screens.tsv; its limits are in thresholds.tsv.
@@ -397,6 +397,23 @@ if want games; then
   if on_top "$SAVER_PKG" && see "الأسرع"; then shot games-list; step "games-list" PASS "the games list is on the screen (the badges: look at shots/games-list.png)"
   else shot games-list; step "games-list" FAIL "the games list was not on the screen: $(front)"; fi
   key KEYCODE_HOME
+fi
+
+# ---- app switch: the home out to Settings and back 5 times (tester/perf/switch.sh, through the round's own TV command): the medians are metrics (no limit yet: a number a
+# person can read next to the previous build's), a round that measured nothing is a SKIP, never a pass
+if want switch; then
+  echo "switch…"
+  key KEYCODE_HOME; nap 2
+  mkdir -p "$OUT/raw/switch"
+  ROUND_TV="$TV" ADB="bash tester/perf/tvadb.sh" bash tester/perf/switch.sh "$OUT/raw/switch" 5 > "$OUT/raw/switch.txt" 2>&1
+  got=0
+  for k in leave_ms back_ms jank_pct p99_ms; do
+    v=$(sed -n "s/^INFO $k: median \([0-9.]*\).*/\1/p" "$OUT/raw/switch.txt" | head -n 1)
+    if [ -n "$v" ]; then got=1; case "$k" in jank_pct) u=% ;; *) u=ms ;; esac; metric "switch_$k" "$v" "$u"; fi
+  done
+  if [ "$got" = 1 ]; then step switch PASS "the home out to Settings and back, 5 times: $(grep '^INFO' "$OUT/raw/switch.txt" | sed 's/^INFO //' | tr '\n' ';')"
+  else step switch SKIP "the TV gave no number for the app switch (raw/switch.txt)"; fi
+  key KEYCODE_HOME; nap 2
 fi
 
 # ---- health: cold starts, memory, jank over a scripted walk, crashes, ANRs, frozen lines

@@ -17,7 +17,7 @@ on:
         description: 'branch or sha to run (the apps are built from it); a push runs the pushed commit'
         default: 
       skip:
-        description: 'steps to leave out, comma separated (install layouts settings saver radio display font adhan games health)'
+        description: 'steps to leave out, comma separated (install layouts reach settings saver radio display font adhan games switch health)'
         default: ''
 
 permissions:

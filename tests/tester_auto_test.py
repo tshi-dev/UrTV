@@ -86,7 +86,7 @@ check("a clean round on the stand-in: exit 0, GREEN, report.md written", r.retur
 by = {}
 for s in steps:
     by[s[1]] = by.get(s[1], 0) + 1
-check("every step passed: install, 9 layouts, 9 ways from the home to the settings, 30 settings screens (3 styles × 10 sections), saver, 2 stations, 2 displays, 2 font, 20 adhan states, games", by.get("FAIL", 0) == 0 and by.get("PASS", 0) == 1 + 9 + 9 + 30 + 1 + 2 + 2 + 2 + 20 + 1 and "SKIP" not in by,
+check("every step passed: install, 9 layouts, 9 ways from the home to the settings, 30 settings screens (3 styles × 10 sections), saver, 2 stations, 2 displays, 2 font, 20 adhan states, games, the app switch", by.get("FAIL", 0) == 0 and by.get("PASS", 0) == 1 + 9 + 9 + 30 + 1 + 2 + 2 + 2 + 20 + 1 + 1 and "SKIP" not in by,
       (by, [s for s in steps if s[1] != "PASS"][:5]))
 metrics = {l.split("\t")[0] for l in (out / "metrics.tsv").read_text(encoding="utf-8").splitlines()}
 check("the health numbers are in: cold starts, memory, jank, crashes, ANRs, frozen lines", {"cold_start_home_ms", "cold_start_saver_ms", "pss_home_kb", "pss_saver_kb", "jank_home_pct", "jank_home_p99_ms", "crashes", "anrs", "frozen_lines"} <= metrics, metrics)
@@ -181,6 +181,10 @@ check("the round puts back, exactly as the TV kept them (the fake prints what th
       st2.get("layout") == "couch" and st2.get("card") == "matches" and st2.get("sstyle") == "tvos"
       and st2.get("adhan_tokens") == "fajr=silent/on,dhuhr=v7/off,asr=silent/off,maghrib=own/on,isha=/on"
       and ["tv wm size 1600x900; wm density 280"] == last("tv wm size 1"), (st2.get("layout"), st2.get("card"), st2.get("sstyle"), st2.get("adhan_tokens"), last("tv wm size 1")))
+metrics_all = (out / "metrics.tsv").read_text(encoding="utf-8") if (out / "metrics.tsv").exists() else ""
+check("the app switch (fixes C, tester/perf/switch.sh through the round's own TV command): 5 rounds home to Settings and back, the medians are metrics, the step passes; the front is tvadb.sh",
+      any(x[:2] == ["switch", "PASS"] for x in steps) and "switch_leave_ms" in metrics_all and "switch_back_ms" in metrics_all
+      and "tester/perf/tvadb.sh" in (ROOT / "tester/auto/round.sh").read_text(encoding="utf-8") and "ROUND_TV" in (ROOT / "tester/perf/tvadb.sh").read_text(encoding="utf-8"), (steps[-3:], metrics_all[-200:]))
 ONLY_RADIO = ("--skip", "layouts,reach,settings,saver,display,font,adhan,games,health")
 rr0, outr0, _ = run(args=ONLY_RADIO)
 rr1, outr1, _ = run({"FAKE_RADIO_OFFSET": "1"}, args=ONLY_RADIO)
