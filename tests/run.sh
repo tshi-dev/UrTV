@@ -414,6 +414,7 @@ python3 tests/fragment_keep_test.py   # 4.3.2 (a user's adhan times and prayer c
 python3 tests/glow_mode_test.py   # «توهّج لون التطبيق» (4.3.1): the glow behind the focused app is OFF by default (new installs and old ones), ha
 python3 tests/google_tv_home_test.py   # Google TV (user reports: TCL G10/G08, Changhong Android 14, Sony BRAVIA VH21, Xiaomi MiTV-AFMU0/1): since 4.3
 python3 tests/home_snapshot_test.py   # The home's stand-in picture (HomeSnapshot): the rules pinned from the source: what the key is made of, the age
+python3 tests/prefs_migration_test.py   # R-411: every preference key 4.3.6 wrote is still read by 4.4 with its type, and none is newly removed
 python3 tests/boot_home_test.py   # R-410: «ابدأ بالرئيسية بعد التشغيل»: our home in front after a boot, on by default on Changhong and Skyworth only
 python3 tests/wizard_home_test.py   # R-409: the setup wizard keeps Home: the add-on's Home key catch on by default, said plainly in the result and the report
 python3 tests/key_filter_switch_test.py   # R-408: «فلتر أزرار الريموت»: dock.sh key-filter off and the add-on never filters the remote's keys (a key remapper)

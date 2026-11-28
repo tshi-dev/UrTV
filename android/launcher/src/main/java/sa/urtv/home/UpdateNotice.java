@@ -36,7 +36,13 @@ final class UpdateNotice {
         return UpdateChannel.cached();   // 4.3.3 hotfix: this runs on the UI thread (the pill, the card, the minute tick): the kept word, never a query to the screensaver
     }
 
-    private static int newest(Context c) { return c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getInt("newest_" + channel(c), 0); }
+    private static int newest(Context c) {
+        android.content.SharedPreferences sp = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        String ch = channel(c);
+        if (sp.contains("newest_" + ch)) return sp.getInt("newest_" + ch, 0);
+        // R-411: 4.3 kept one read as "newest" + "channel"; after the update to 4.4 that read counts for its own channel until the first 4.4 read (up to 12 h later)
+        return ch.equals(sp.getString("channel", "")) ? sp.getInt("newest", 0) : 0;
+    }
 
     /** R-288: the last read found no add-on file in this channel's release (a 404): the add-on is then never «behind» */
     private static boolean extrasAbsent(Context c) { return c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean("extras_absent_" + channel(c), false); }
