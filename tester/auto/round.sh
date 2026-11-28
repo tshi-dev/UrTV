@@ -4,7 +4,7 @@
 # It installs the build of the tag (apk-next by default) OVER the installed one, so the data stays; saves the settings and the sound; then runs, with nobody
 # touching the remote, every check below and writes tester/auto/out/<build>/report.md with the screenshots (the city boxed) and a column of the previous
 # build's numbers. At the end it puts the settings, the sound, the display and the font back. Steps (--only takes these words, in this order):
-#   install   layouts   settings   saver   radio   display   font   adhan   games   health
+#   install   layouts   reach   settings   saver   radio   display   font   adhan   games   health
 # Never touches the family PIN, the TV's setup wizard or the old launcher, never changes the Wi-Fi, never restarts the TV. NEVER PRESSES BLIND: a key is sent only after
 # the screen it is for was read (the front app, or the screen's own text through uiautomator), and a screen that is not the one expected is a FAIL, not a retry with more keys.
 # What it reads is in tester/auto/lib.py (tested by tests/tester_auto_test.py); what it opens is in tester/auto/screens.tsv; its limits are in thresholds.tsv.
@@ -106,6 +106,16 @@ focus_walk() {   # $1 text, $2 the key, $3 at most how many presses: press only 
   done
   return 1
 }
+PRESSES=0
+reach_walk() {   # like focus_walk, every key counted in PRESSES (the reach step: what a person presses from the home)
+  local i
+  for i in $(seq 0 "$3"); do
+    dump "$OUT/raw/focus.xml"
+    if [ "$($LIB focused "$OUT/raw/focus.xml")" = "$1" ]; then return 0; fi
+    [ "$i" -lt "$3" ] && key "$2" && PRESSES=$((PRESSES + 1)) && nap 1
+  done
+  return 1
+}
 
 # ---- what is put back at the end
 WM_BACK="wm size reset; wm density reset" LAYOUT_BEFORE="" PANEL_BEFORE="" SAVED_FONT="" SAVED_VOL="" SAVED_MUTED="" DISPLAY_CHANGED=0 FONT_CHANGED=0 SETTINGS_SAVED=0
@@ -186,6 +196,33 @@ if want layouts; then
     done 4< <(rows card)
   done 3< <(rows layout)
   $SAVER homelayout classic > /dev/null 2>&1; $SAVER home-card none > /dev/null 2>&1
+fi
+
+# ---- from the home to our settings, in each layout and card, by the keys a person presses (the tester, build 654: in «كنبة» they were not found):
+# up to «مركز التحكم», OK, its row «الإعدادات», OK; at most REACH_MAX presses, Home not counted
+REACH_MAX=6
+if want reach; then
+  echo "reach…"
+  while IFS=$'\t' read -r _ lkey lname _ _ <&3; do
+    while IFS=$'\t' read -r _ ckey cname _ _ <&4; do
+      name="reach-$lkey-$ckey"
+      if ! $SAVER homelayout "$lkey" > /dev/null 2>&1 || ! $SAVER home-card "$ckey" > /dev/null 2>&1; then step "$name" FAIL "saver.sh refused homelayout $lkey / home-card $ckey"; continue; fi
+      key KEYCODE_HOME; nap 8
+      if ! on_top "$HOME_PKG"; then step "$name" FAIL "$lname، $cname: the home did not come to the front: $(front)"; continue; fi
+      PRESSES=0
+      if ! reach_walk "مركز التحكم" KEYCODE_DPAD_UP 4 && ! reach_walk "مركز التحكم" KEYCODE_DPAD_LEFT 8 && ! reach_walk "مركز التحكم" KEYCODE_DPAD_RIGHT 16; then
+        step "$name" FAIL "$lname، $cname: «مركز التحكم» was not reached from the home ($PRESSES presses)"; continue
+      fi
+      key KEYCODE_DPAD_CENTER; PRESSES=$((PRESSES + 1)); nap 2
+      if ! reach_walk "الإعدادات" KEYCODE_DPAD_DOWN 4; then step "$name" FAIL "$lname، $cname: «مركز التحكم» has no «الإعدادات» row ($PRESSES presses)"; key KEYCODE_BACK; continue; fi
+      key KEYCODE_DPAD_CENTER; PRESSES=$((PRESSES + 1))
+      if ! on_top "$SAVER_PKG" || ! see "بحث في الإعدادات"; then step "$name" FAIL "$lname، $cname: OK on «الإعدادات» did not open the settings: $(front)"
+      elif [ "$PRESSES" -le "$REACH_MAX" ]; then step "$name" PASS "$lname، $cname: the settings in $PRESSES presses from the home"
+      else step "$name" FAIL "$lname، $cname: the settings took $PRESSES presses from the home (at most $REACH_MAX)"; fi
+    done 4< <(rows card)
+  done 3< <(rows layout)
+  $SAVER homelayout classic > /dev/null 2>&1; $SAVER home-card none > /dev/null 2>&1
+  key KEYCODE_HOME
 fi
 
 # ---- the settings, each style opened to each section

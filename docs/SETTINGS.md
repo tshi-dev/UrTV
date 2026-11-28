@@ -41,6 +41,8 @@ the apps bar, «التطبيقات المخفية», locks, the quick buttons an
 series), «العائلة والجوال» (parental control, family DNS, the allowed phones), «اللغة والموقع» (the language, digits, months, 12/24, the Hijri shift;
 the city, the country, the greeting, weather, humidity and wind), «حول والتحديث» (version and updates, TV setup, report, data sources; light mode and
 the cache). The control centre's tile that opens the TV's own settings is «إعدادات الجهاز».
+From the home, on every layout: the header's «مركز التحكم», then its first row «الإعدادات» (always there, first, never hidden by «تخصيص»), OK. In
+«كنبة» the apps row also ends with «الإعدادات», in every apps look.
 In «كنبة» the rows of the section with the focus show on the left at once; OK (or the arrow toward the rows) goes into them, Back from a row returns to
 its section's item, Back on the list leaves; the settings open on «الصلاة والأذان» with the focus on its item. In «أزرار» and tvOS a button opens its
 section and Back returns to the buttons.

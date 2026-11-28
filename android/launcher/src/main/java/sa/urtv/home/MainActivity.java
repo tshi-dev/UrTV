@@ -1500,6 +1500,7 @@ public class MainActivity extends Activity {
             @Override public void openSaver() { guarded(ParentalPolicy.PILL_SAVER, SAVER_PKG, "شاشة التوقف", MainActivity.this::startSaver); }   // OK starts it, as optimize/start-saver.sh --preview does
             @Override public void openSaverSettings() { guarded(ParentalPolicy.PILL_SAVER_SETTINGS, SAVER_PKG, "شاشة التوقف", () -> openPackage(SAVER_PKG)); }   // a long OK: its settings
             @Override public void openOurSettings() { MainActivity.this.openOurSettings(false); }
+            @Override public void openSettings() { openSettingsScreen(); }
             @Override public void openCity() { MainActivity.this.openCity(); }
             @Override public void openGames() { MainActivity.this.openOurSettings(false, "games"); }
             @Override public String updateLine() { return MainActivity.this.buildMismatchLine(); }
@@ -3151,7 +3152,8 @@ public class MainActivity extends Activity {
             dockCards.add(card);
         }
         if (settingsBox != null) dockRow.addView(settingsBox);   // «أيقونات» (couch-tv): «الإعدادات» then «كل التطبيقات», the last two
-        if (allAppsBox != null) { dockRow.addView(allAppsBox); relayDock(); }   // «زجاجي»: «كل التطبيقات» stays the last
+        if (allAppsBox != null) dockRow.addView(allAppsBox);   // «زجاجي»: «كل التطبيقات» stays the last
+        if (settingsBox != null || allAppsBox != null) relayDock();   // «كنبة»: «الإعدادات» alone at the end in the other ways
         wireFocus();
     }
 
@@ -3749,6 +3751,8 @@ public class MainActivity extends Activity {
     private final GlassBar glassBar = new GlassBar();
     /** «كل التطبيقات», the bar's last tile in «زجاجي» (not a favourite: never in dockCards); null in the other ways */
     private View allAppsBox, allAppsCard, settingsBox, settingsCard;
+    /** «كنبة» (HomeCard.couch, known once the home's card is read): the row ends with «الإعدادات» in every way; a change builds the row again */
+    private boolean appsCouch;
     static final int REQ_ALL_APPS = 451, REQ_ICON = 452;
 
     private boolean glassWay() { return FavBar.GLASS.equals(appsLook); }
@@ -3775,9 +3779,14 @@ public class MainActivity extends Activity {
         settingsBox = null;
         settingsCard = null;
         boolean icons = FavBar.ICONS.equals(appsLook);   // 4.4 beta 4 (couch-tv): «أيقونات» ends with «الإعدادات» and «كل التطبيقات» (their «المزيد») too
-        if (!glassWay() && !icons) return;
-        int sh = getResources().getDisplayMetrics().heightPixels, corner = icons ? FavBar.radius(FavBar.ICONS, sh) : FavBar.glassRadius(sh, glassK);
-        if (icons) addSettingsTile(corner);
+        // 4.4 beta 4 (the tester, build 654: «كنبة» with «تكبير», the row ended at the last app and nothing on the home said «الإعدادات»): in «كنبة»
+        // every way of the row ends with «الإعدادات»
+        boolean gear = icons || appsCouch;
+        if (!glassWay() && !gear) return;
+        int sh = getResources().getDisplayMetrics().heightPixels;
+        int corner = icons ? FavBar.radius(FavBar.ICONS, sh) : glassWay() ? FavBar.glassRadius(sh, glassK) : FavBar.radius(appsLook, sh);
+        if (gear) addSettingsTile(corner, glassWay() ? 1f : FavBar.aspect(appsLook));
+        if (!glassWay() && !icons) { relayDock(); return; }   // «كل التطبيقات» stays the glass's and the icons' own
         AspectFrame card = new AspectFrame(this);
         card.ratio = 1f;
         card.setId(View.generateViewId());
@@ -3816,9 +3825,9 @@ public class MainActivity extends Activity {
     }
 
     /** 4.4 beta 4 (couch-tv's bar ends with its settings and «More»): «الإعدادات» in «أيقونات», a quiet square with the gear, OK opens our settings */
-    private void addSettingsTile(int corner) {
+    private void addSettingsTile(int corner, float ratio) {
         AspectFrame card = new AspectFrame(this);
-        card.ratio = 1f;
+        card.ratio = ratio;   // a square in «أيقونات» and «زجاجي», the apps' own card in the other ways
         card.setId(View.generateViewId());
         card.setFocusable(true);
         card.setClickable(true);
@@ -3838,7 +3847,7 @@ public class MainActivity extends Activity {
         int pad = Math.round(FavBar.px(FavBar.ICON, sh()) * 0.3f);
         gear.setPadding(pad, pad, pad, pad);
         card.addView(gear, new FrameLayout.LayoutParams(-1, -1));
-        card.setOnClickListener(v -> openOurSettings(false));
+        card.setOnClickListener(v -> openSettingsScreen());
         card.setOnFocusChangeListener((v, has) -> {
             scaleTo(v, has ? FavBar.ZOOM_SCALE : 1f);
             v.animate().translationZ(has ? dp(2 * GlowLook.LIFT_DP) : 0).setInterpolator(Motion.ease()).setDuration(Motion.move(MainActivity.this)).start();
@@ -4386,7 +4395,9 @@ public class MainActivity extends Activity {
         float dy = bigClockOn ? -Math.max(0, date.getTop() - clockTop) : 0f, dx = 0f;
         // 4.4 beta 4 (the owner: «كنبة» as couch-tv): with the big clock and the cards in their row, the date sits centred just above the digits
         // (couch-tv's date over its clock); the zone and prayer lines follow it. Anything else: the lift as before, no sideways move.
-        if (bigClockOn && homeCard != null && homeCard.inRow() && date.getWidth() > 0) {
+        // 4.4 beta 4 (the tester, build 654, «كنبة» with «بدون»: the date went up into the weather's column, one line under «الشروق»): the big clock is
+        // in the same box with no card, so the date sits over it the same way
+        if (bigClockOn && homeCard != null && (homeCard.inRow() || homeCard.couch()) && date.getWidth() > 0) {
             android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
             int[] box = ScenePlan.fixedBox(dm.widthPixels, dm.heightPixels, false, Dir.rtl());
             int[] at = new int[2];
@@ -4447,6 +4458,9 @@ public class MainActivity extends Activity {
         sceneTick(cfg);
         alignApps(cfg.appsAlign);   // 4.4 beta 2 «محاذاة التطبيقات»
         String wayNow = FavBar.look(cfg.appsStyle);
+        boolean couchNow = homeCard != null && homeCard.couch();
+        boolean gearNew = couchNow != appsCouch;   // the layout turned «كنبة» (or left it): «الإعدادات» joins the row's end (or leaves it)
+        appsCouch = couchNow;
         float kNow = FavBar.glassK(cfg.glassSize);
         int rowsNow = FavBar.glassRowsFit(getResources().getDisplayMetrics().heightPixels, kNow, FavBar.glassRows(cfg.glassRows));   // as many as fit at this size
         boolean glassNew = FavBar.GLASS.equals(wayNow) && wayNow.equals(appsLook) && (kNow != glassK || rowsNow != glassRowsN);   // 4.5 «زجاجي»: another size or rows
@@ -4454,6 +4468,8 @@ public class MainActivity extends Activity {
         glassRowsN = rowsNow;
         if (glassNew) {
             applyAppsLook();
+            buildApps();
+        } else if (gearNew && wayNow.equals(appsLook)) {
             buildApps();
         } else if (!wayNow.equals(appsLook)) {   // 4.4 «شكل التطبيقات»: another way of the row: its tray, its cells and their art made again
             appsLook = wayNow;
@@ -5292,6 +5308,18 @@ public class MainActivity extends Activity {
         } else {
             openSaverInstall();   // 4.3.2: «تلفزيونك», the clean home's button, the pill: the second app is missing, so it is offered, never nothing
         }
+    }
+
+    /**
+     * 4.4 beta 4 (the tester, build 654: in «كنبة» nothing on the home said «الإعدادات», and «تلفزيونك» in the control centre was not read as them):
+     * «الإعدادات» of the control centre and of the apps row open our settings screen itself, a fresh task (Back is the home), under the same lock as
+     * «تلفزيونك». No settings screen (the second app missing): what «تلفزيونك» does.
+     */
+    private void openSettingsScreen() {
+        Intent i = new Intent(Intent.ACTION_MAIN).setComponent(new ComponentName(SAVER_PKG, SAVER_PKG + ".SettingsActivity"))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        if (getPackageManager().resolveActivity(i, 0) == null) { openOurSettings(false); return; }
+        guarded(ParentalPolicy.OUR_SETTINGS, null, S.t("الإعدادات"), () -> launch(i));
     }
 
     /** The screensaver now: its full-screen preview (the same page; Home or Back leaves it). An older app without it opens its settings. */

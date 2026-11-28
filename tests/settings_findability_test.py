@@ -99,6 +99,9 @@ check("the city is in one place, «اللغة والموقع», and every way in
 center = (ROOT / "android/launcher/src/main/java/sa/urtv/home/ControlCenter.java").read_text(encoding="utf-8")
 check("«الإعدادات» means ours: the control centre's tile that opens the TV's own settings is «إعدادات الجهاز»",
       'tile("tv", S.t("إعدادات الجهاز")' in center and 'tile("tv", S.t("الإعدادات")' not in center)
+check("the way from the home is said where the settings are documented: «مركز التحكم» ← «الإعدادات», and the apps row's end in «كنبة»",
+      "the header's «مركز التحكم», then its first row «الإعدادات»" in (ROOT / "docs/SETTINGS.md").read_text(encoding="utf-8")
+      and 'tile("settings", S.t("الإعدادات")' in center)
 phone = [(ROOT / f"android/launcher/src/main/assets/phone/{p}.html").read_text(encoding="utf-8") for p in ("adb", "audio", "draw", "photos")]
 check("the phone link has one name: the help says the home's «الجوال» button, not «أسهل من الجوال» (a button of the markets page only)",
       all("أسهل من الجوال" not in p and "Easier from the phone" not in p for p in phone)

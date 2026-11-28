@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """A stand-in TV for tests/tester_auto_test.py: `fake.py tv CMD…`, `fake.py saver ARGS…`, `fake.py music ARGS…`. State lives in the folder FAKE_DIR (the front
 app, the focused row, the adhan states); every command it was given is appended to FAKE_DIR/log.txt. FAKE_JANK=bad makes the walk janky, FAKE_FRONT=none makes
-no app ever come to the front, FAKE_MUTE_ON_RADIO=1 mutes the music when a station starts."""
+no app ever come to the front, FAKE_MUTE_ON_RADIO=1 mutes the music when a station starts, FAKE_NO_SETTINGS=1 leaves «الإعدادات» out of the
+control centre (the reach step must fail)."""
 import os
 import re
 import sys
@@ -41,9 +42,20 @@ STATIONS = ["إذاعة القرآن الكريم", "محطة ثانية"]
 MARKERS = ["بحث في الإعدادات", "الأذان لكل صلاة", "احذف صورة", "التخطيط", "بدء شاشة التوقف بعد", "الخروج من تلفزيونك", "مباريات اليوم", "الرقابة الأبوية", "المدينة", "تحديث تلفزيوني", "الأسرع"]
 
 
+# the home as a person meets it after Home (the reach step): the apps row, a card in the couch strip, the header's «مركز التحكم»; its panel opens on a
+# round toggle, «الإعدادات» is the first row under them; OK on it opens our settings
+HOME_LABEL = {"apps": "يوتيوب", "card": "الأسهم", "center": "مركز التحكم", "toggle": "البلوتوث", "settings": "الإعدادات"}
+
+
 def xml():
     focused = int(st("focus", "0") or 0)
     nodes = []
+    where = st("where")
+    if st("front") == "sa.urtv.home" and where in HOME_LABEL:
+        for k, n in HOME_LABEL.items():
+            nodes.append(f'<node text="" content-desc="{n}" focused="{"true" if k == where else "false"}" bounds="[100,{100 + len(nodes) * 60}][600,{150 + len(nodes) * 60}]" />')
+        nodes.append('<node text="الرياض" focused="false" bounds="[800,40][1000,100]" />')
+        return '<?xml version="1.0"?><hierarchy>' + "".join(nodes) + "</hierarchy>"
     for m in MARKERS:
         nodes.append(f'<node text="{m}" focused="false" bounds="[100,100][400,160]" />')
     for i, n in enumerate(STATIONS):
@@ -64,8 +76,23 @@ def tv(cmd):
         if m:
             put("front", "" if os.environ.get("FAKE_FRONT") == "none" else m.group(1).split("/")[0])
             put("focus", "0")
+            put("where", "")
         if "KEYCODE_HOME" in part:
             put("front", "" if os.environ.get("FAKE_FRONT") == "none" else "sa.urtv.home")
+            put("where", "apps")
+        where = st("where") if st("front") == "sa.urtv.home" else ""
+        if where in HOME_LABEL:   # the home's own focus (the reach step)
+            card = st("card", "none") != "none" and st("layout", "classic") == "couch"
+            if "KEYCODE_DPAD_UP" in part and where in ("apps", "card"):
+                put("where", "card" if where == "apps" and card else "center")
+            elif "KEYCODE_DPAD_DOWN" in part and where == "toggle" and os.environ.get("FAKE_NO_SETTINGS") != "1":   # =1: a panel without the row (build 654)
+                put("where", "settings")
+            elif "KEYCODE_DPAD_CENTER" in part and where == "center":
+                put("where", "toggle")
+            elif "KEYCODE_DPAD_CENTER" in part and where == "settings":
+                put("front", "sa.urtv.screensaver")
+                put("where", "")
+            continue
         if "KEYCODE_DPAD_DOWN" in part:
             put("focus", str(min(len(STATIONS) - 1, int(st("focus", "0") or 0) + 1)))
         if "KEYCODE_DPAD_CENTER" in part and st("front") == "sa.urtv.home":
@@ -118,6 +145,8 @@ def saver(a):
         sys.exit(1)
     elif a[:1] == ["homelayout"] and a[1:2]:
         put("layout", a[1])
+    elif a[:1] == ["home-card"] and a[1:2]:
+        put("card", a[1])
 
 
 def music(a):
