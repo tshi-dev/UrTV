@@ -1,2 +1,0 @@
-FAIL screens-out/after-12-word5-typing.png: 0 letters measured, every ink centre within 2.0 px of its tile's centre  -> []
-FAIL screens-out/after-13-word5-coloured.png: 0 letters measured, every ink centre within 2.0 px of its tile's centre  -> []
