@@ -291,6 +291,12 @@ def send_once(cmd):
     return bool(SEND_ONCE.search(cmd))
 
 
+# properties that are never empty on an Android TV: an empty answer is read again (TV.shell)
+MUST_PROPS = {f"getprop {p}" for p in ("ro.product.manufacturer", "ro.product.brand", "ro.product.model", "ro.product.device",
+                                       "ro.build.version.release", "ro.build.version.sdk", "ro.build.display.id", "sys.boot_completed")}
+PROP_TRIES, PROP_WAIT_S = 3, 2
+
+
 class TV:
     """One connection, reopened on failure; every call retried with a growing pause."""
 
@@ -349,7 +355,16 @@ class TV:
     def shell(self, cmd, timeout=120):
         if send_once(cmd):
             return self.once(cmd, timeout)
-        return self.call("shell", cmd, read_timeout_s=timeout) or ""
+        r = self.call("shell", cmd, read_timeout_s=timeout) or ""
+        # 4.4 (reports: the probe and the precheck read empty properties): a property every TV has that comes back empty is a
+        # half-open connection or a TV still starting its services: read again on a new connection, twice at most
+        for _ in range(PROP_TRIES - 1):
+            if r.strip() or cmd.strip() not in MUST_PROPS:
+                break
+            self.close()
+            time.sleep(PROP_WAIT_S)
+            r = self.call("shell", cmd, read_timeout_s=timeout) or ""
+        return r
 
     def once(self, cmd, timeout=120):
         """Send a command that must not run twice. A connection that may have gone stale is first tested with a harmless
