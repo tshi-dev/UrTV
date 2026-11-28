@@ -2016,6 +2016,7 @@ public class MainActivity extends Activity {
         nudgeCard.setClickable(true);
         nudgeCard.setId(View.generateViewId());
         nudgeCard.setOnClickListener(v -> {
+            if (nudgeIsDoctor) { doctorCodeShown = true; updateHomeNudge(false); return; }   // 4.3.7: «ثبّته» says Downloader's code on the same bar (nothing is installed by us)
             if (nudgeIsUpdate) { launchGuarded(ParentalPolicy.PILL_UPDATES, new Intent(this, UpdateActivity.class), "تحديث تلفزيوني"); return; }   // 4.3.1: the builds differ
             if (nudgeIsCity) { openCity(); return; }   // 4.3.1: the same bar asks for the city while it is due
             try { guarded(ParentalPolicy.WIDGET_MATCHES, null, S.t("إعداد تلفزيوني"), () -> launch(new Intent(this, sa.urtv.home.setup.SetupActivity.class))); } catch (RuntimeException ignored) { }
@@ -2045,6 +2046,7 @@ public class MainActivity extends Activity {
 
     /** «لاحقاً» (or Back on the bar): hidden for 7 days, then 30 after a second press, then never; the number of presses is kept */
     private void snoozeNudge() {
+        if (nudgeIsDoctor) { DoctorOfferStore.dismiss(this, BuildConfig.VERSION_CODE); doctorCodeShown = false; updateHomeNudge(false); return; }   // 4.3.7: «لاحقاً» = never again for this build
         android.content.SharedPreferences sp = getSharedPreferences(NUDGE_PREFS, MODE_PRIVATE);
         String k = nudgeIsUpdate ? "ver_" : nudgeIsCity ? "city_" : "";   // the city question waits on its own count
         int presses = sp.getInt(k + "later_count", 0);
@@ -2053,6 +2055,8 @@ public class MainActivity extends Activity {
     }
 
     private boolean nudgeIsCity;      // the bar is asking for the city (CityAskRule), not for «إعداد تلفزيوني»
+    private boolean nudgeIsDoctor;    // 4.3.7: the bar offers «فحص تلفزيونك» after an update (DoctorOfferRule); OK says Downloader's code
+    private boolean doctorCodeShown;  // «ثبّته» was pressed: the bar says the code
     private boolean nudgeIsUpdate;    // 4.3.1: the bar says the two apps are not the same build (VersionMismatchRule); OK opens «تحديث تلفزيوني»
 
     /** the build (versionCode) of the screensaver app, 0 when it is not installed */
@@ -2102,13 +2106,20 @@ public class MainActivity extends Activity {
         String mismatch = kids ? null : buildMismatchLine();
         boolean askUpdate = mismatch != null && HomeNudgeRule.show(false, false, np.getLong("ver_later_until", 0), nowMs);   // the builds first: the city's chooser needs the new screensaver
         boolean askCity = !askUpdate && mismatch == null && CityAskRule.show(isInstalled(SAVER_PKG), cityChosenNow, java.util.TimeZone.getDefault().getID(), kids, np.getLong("city_later_until", 0), nowMs);
-        boolean show = askUpdate || askCity || HomeNudgeRule.show(isDefaultHome(), kids, np.getLong("later_until", 0), nowMs);   // never two at once: the builds, then the city, then the nudge
+        boolean homeNudge = HomeNudgeRule.show(isDefaultHome(), kids, np.getLong("later_until", 0), nowMs);
+        DoctorOfferStore.refreshIfDue(this, () -> runOnUiThread(() -> updateHomeNudge(false)));   // 4.3.7: urtv-data's flag, at most every 6 hours, in the background
+        DoctorOfferRule.Flag doctorFlag = DoctorOfferStore.flag(this);
+        boolean askDoctor = !askUpdate && !askCity && !homeNudge && DoctorOfferRule.show(doctorFlag, isInstalled(DoctorOfferRule.PKG), DoctorOfferStore.updated(this), kids, DoctorOfferStore.dismissed(this), BuildConfig.VERSION_CODE);
+        boolean show = askUpdate || askCity || homeNudge || askDoctor;   // never two at once: the builds, then the city, then the nudge, then the doctor
         boolean was = nudge.getVisibility() == View.VISIBLE;
         nudgeIsCity = askCity;
         nudgeIsUpdate = askUpdate;
-        nudgeCard.setText(askUpdate ? S.t("حدّث الآن") : askCity ? S.t("اختر المدينة") : S.t("خلّ تلفزيونك يفتح على UrTV"));
+        nudgeIsDoctor = askDoctor;
+        if (!askDoctor) doctorCodeShown = false;
+        nudgeCard.setText(askUpdate ? S.t("حدّث الآن") : askCity ? S.t("اختر المدينة") : askDoctor ? S.t("ثبّته") : S.t("خلّ تلفزيونك يفتح على UrTV"));
         if (askUpdate) nudgeAsk.setText(mismatch); else if (askCity) nudgeAsk.setText(S.t("وين أنت؟ اختر مدينتك عشان الطقس والصلاة"));
-        nudgeAsk.setVisibility(askUpdate || askCity ? View.VISIBLE : View.GONE);
+        else if (askDoctor) nudgeAsk.setText(doctorCodeShown ? S.t("افتح Downloader واكتب الرمز") + " " + doctorFlag.code : S.t("ساعدنا نحسّن UrTV، ثبّت فحص تلفزيونك، مجاني"));
+        nudgeAsk.setVisibility(askUpdate || askCity || askDoctor ? View.VISIBLE : View.GONE);
         if (show && !was) {
             GlassStyle.Look l = homeGlass();
             nudgeAsk.setBackground(opaqueTile(18));   // its words sit on the glass too, over any photo
