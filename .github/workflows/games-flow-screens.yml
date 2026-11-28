@@ -91,9 +91,16 @@ jobs:
           rm -rf games-flow-latest "$run"; mkdir -p "$run"
           cp "$GITHUB_WORKSPACE"/screens-out/*.png "$run"/ || true
           cp "$GITHUB_WORKSPACE"/screens-out/*.txt "$run"/ || true
+          cp "$GITHUB_WORKSPACE"/screens-out/*.xml "$run"/ || true
           cp -r "$run" games-flow-latest
           ls "$run" | sed "s#^#https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/data-screens/games-flow-latest/#" > games-flow-latest/index.txt
           git add -A
           git commit --quiet -m "Games screens of ${GITHUB_SHA::7} (run ${GITHUB_RUN_NUMBER})" || true
           for i in 1 2 3; do git push origin data-screens && break; git pull --rebase --quiet origin data-screens; done
           echo "Pictures: https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/data-screens/games-flow-latest/index.txt"
+
+      # the owner's rule, measured on the real pixels: every letter's ink within 2 px of its tile's centre (tests/glyph_centre_shots.py); after the pictures are published
+      - name: Letters are in the middle of their tiles
+        run: |
+          cat screens-out/glyph-centre.txt
+          ! grep -q '^FAIL' screens-out/glyph-centre.txt && grep -q '^PASS' screens-out/glyph-centre.txt

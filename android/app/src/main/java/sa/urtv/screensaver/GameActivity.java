@@ -317,6 +317,21 @@ public abstract class GameActivity extends Activity {
         return v;
     }
     protected final TextView centered(CharSequence s, float size, int color, boolean display) { TextView v = text(s, size, color, display); v.setGravity(Gravity.CENTER); v.setTextAlignment(View.TEXT_ALIGNMENT_CENTER); return v; }
+    /** one letter in the middle of a tile or a key by its INK (GlyphCentre), not by the font's line box: tall and tailed letters sit in the middle too, on every state (typing, coloured, the keys) */
+    protected final GlyphView glyph(String s, float size, int color) { return new GlyphView(this, s, size * scale, color, font("ThmanyahDisplay-Bold")); }
+    static final class GlyphView extends View {
+        private String s; private final android.graphics.Paint paint = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG); private final android.graphics.Rect ink = new android.graphics.Rect();
+        GlyphView(Context c, String s, float px, int color, Typeface face) {
+            super(c); this.s = s; paint.setTextSize(px); paint.setColor(color); paint.setTypeface(face); paint.setTextAlign(android.graphics.Paint.Align.LEFT);
+            paint.getTextBounds(s, 0, s.length(), ink); setContentDescription(s);
+        }
+        /** another letter in the same tile (a spinning wheel) */
+        void set(String letter) { s = letter; paint.getTextBounds(s, 0, s.length(), ink); setContentDescription(s); invalidate(); }
+        @Override protected void onDraw(android.graphics.Canvas cv) {
+            float[] at = GlyphCentre.origin(ink.left, ink.top, ink.right, ink.bottom, getWidth(), getHeight());
+            cv.drawText(s, at[0], at[1], paint);
+        }
+    }
     /** a text cut with «…» so that it fits `maxW` design pixels at `size` in the heavy face */
     protected final String clip(String s, float size, float maxW) {
         android.graphics.Paint paint = new android.graphics.Paint(); paint.setTypeface(display()); paint.setTextSize(size * scale);

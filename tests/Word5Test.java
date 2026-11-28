@@ -115,6 +115,30 @@ public final class Word5Test {
         for (int r = 0; r < 6; r++) { for (int c = 0; c < 7; c++) { reached.add(k.key()); k.move(Word5Keys.NEXT); } k.move(Word5Keys.DOWN); }
         check("keyboard focus: every move wraps (row ends, top to «ة», bottom to the first row); the fifth row (ة ى ء إدخال حذف) returns to the column one came from; 5,000 random moves never leave the 33 keys and all 33 are reachable",
             wraps && column && inside && reached.size() == 33);
+        // ---- ة and ه: ONE letter for the rules at the word's end (and anywhere), the tile shows what the player typed
+        {
+            boolean bank = all != null, shownKept = true, bothWin = true, keyColour = true; int taa = 0;
+            if (all != null) for (Word5Words.Answer x : all.answers) {
+                String typed = x.display, alt = x.display.replace('ة', 'ه');   // the proper spelling, and the same word with every ة typed as ه
+                for (String spelling : new String[] {typed, alt}) {
+                    Word5Game gm = new Word5Game(all, x.word, 6);
+                    String n = Word5Text.normalize(spelling); if (n.length() != 5) continue;
+                    for (int i = 0; i < 5; i++) gm.type(Word5Text.ALPHABET.indexOf(n.charAt(i)), spelling.charAt(i));
+                    shownKept &= gm.typingShown().equals(spelling) && gm.typing().equals(x.word);   // the tile shows ة as typed, the rules have ه
+                    Word5Game.Entered e = gm.enter();
+                    bothWin &= e == Word5Game.Entered.WON && gm.guessShown(0).equals(spelling) && Arrays.equals(gm.colours(0), new int[] {3, 3, 3, 3, 3});
+                    keyColour &= gm.key(Word5Text.ALPHABET.indexOf('ه')) == (x.word.indexOf('ه') >= 0 ? Word5Game.GREEN : 0);
+                }
+                if (x.display.indexOf('ة') >= 0) taa++;
+            }
+            check("ة / ه: over the whole bank an answer is won by its own spelling and by the same word with ة typed as ه, the tile shows what was typed (ة stays ة), the ه key takes the colour (the ة key reads the same letter)", bank && shownKept && bothWin && keyColour && taa > 0);
+            Word5Game g1 = new Word5Game(of(pack("مدرسه", "مدرسا"), ans("مدرسه", "مدرسة", "", 1, false)), "مدرسه", 6);
+            for (char c : "مدرسة".toCharArray()) g1.type(Word5Text.ALPHABET.indexOf(Word5Text.normalize(String.valueOf(c)).charAt(0)), c);
+            check("ة / ه: typed «مدرسة» shows ة on the tile and colours the last tile green; deleting takes the shown letter away too",
+                g1.typingShown().equals("مدرسة") && g1.enter() == Word5Game.Entered.WON && g1.guessShown(0).equals("مدرسة") && g1.guess(0).equals("مدرسه"));
+            Word5Game d = new Word5Game(of(pack("مدرسه")), "مدرسه", 6); d.type(Word5Text.ALPHABET.indexOf('م'), 'م'); d.type(Word5Text.ALPHABET.indexOf('ه'), 'ة'); d.delete();
+            check("ة / ه: delete keeps the typed and the rule spelling the same length", d.typingShown().equals("م") && d.typing().equals("م"));
+        }
         System.exit(failed == 0 ? 0 : 1);
     }
 }

@@ -83,6 +83,21 @@ shot after-10-quiz-setup 1
 key DPAD_CENTER; sleep 3
 shot after-11-quiz-room 2
 
+# ---- the word game: every letter in the middle of its tile (the owner's rule), measured on the real pixels
+dump() { adb shell uiautomator dump /sdcard/ui.xml > /dev/null 2>&1; adb pull /sdcard/ui.xml "$OUT/$1.xml" > /dev/null 2>&1; }
+leave
+tile 6
+key DPAD_CENTER; sleep 3                                  # «ابدأ»: the board and the keyboard
+key DPAD_CENTER DPAD_LEFT DPAD_CENTER DPAD_LEFT DPAD_CENTER   # ا ب ت
+shot after-12-word5-typing 1; dump after-12-word5-typing
+key DPAD_LEFT DPAD_CENTER DPAD_LEFT DPAD_CENTER; sleep 1   # ث ج: a full row
+key DPAD_CENTER DPAD_CENTER; sleep 2                      # «إدخال» (twice: a word that is not in the list is taken the second time)
+shot after-13-word5-coloured 1; dump after-13-word5-coloured
+pip install --quiet pillow > /dev/null 2>&1
+for n in after-12-word5-typing after-13-word5-coloured; do
+  python3 tests/glyph_centre_shots.py "$OUT/$n.png" "$OUT/$n.xml" | tee -a "$OUT/glyph-centre.txt"
+done
+
 adb logcat -d -s AndroidRuntime:E > "$OUT/crashes.txt"
 ls "$OUT"
 exit 0
