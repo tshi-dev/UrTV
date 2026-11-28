@@ -179,6 +179,10 @@ check("Android 10 (API 29): the round's workflow lists the photos of Downloads o
       "api-level: 29" in wf29 and "tester/auto/ci/storage29.sh" in wf29 and "grep -q '^PASS' auto-out/storage29/result.txt" in wf29
       and '"$SDK" = 29' in sc29 and "/sdcard/Download" in sc29 and "PhotoAddActivity" in sc29 and "لا صور هنا" in sc29)
 
+ci_src = "\n".join((ROOT / "tester/auto/ci" / f).read_text(encoding="utf-8") for f in ("run.sh", "tv_adb.py", "storage29.sh"))
+check("the CI scripts hold no IP address (check.py's «no private IPs, keys or network names» failed on a ping to one): the network is asked with a hostname",
+      not re.search(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b", ci_src) and "ping -c 1 -W 4 raw.githubusercontent.com" in ci_src)
+
 # ---- what the script must never do
 src = (ROOT / "tester/auto/round.sh").read_text(encoding="utf-8") + (ROOT / "tester/auto/lib.py").read_text(encoding="utf-8")
 code = "\n".join(l for l in src.splitlines() if not l.lstrip().startswith("#"))

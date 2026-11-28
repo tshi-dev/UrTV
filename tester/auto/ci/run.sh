@@ -35,7 +35,7 @@ sleep 15
 bash optimize/saver.sh city الرياض || echo "(the city could not be set)"
 
 # the network: no way to a station = radio is left out, and the report says so
-if ! adb shell "ping -c 1 -W 4 8.8.8.8" > /dev/null 2>&1; then
+if ! adb shell "ping -c 1 -W 4 raw.githubusercontent.com" > /dev/null 2>&1; then
   echo "the emulator has no network: radio is left out"
   SKIP="${SKIP:+$SKIP,}radio"
 fi
