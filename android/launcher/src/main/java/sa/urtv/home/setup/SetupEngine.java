@@ -279,10 +279,13 @@ final class SetupEngine {
         out.line("رجّعنا شغّالاً تطبيقاً من تطبيقات الريموت كنا أوقفناه قبل: " + String.join(" ", back));
     }
 
-    /** The ledger's names that the protected list names now and that are off now. */
+    /** Named, not «everything protected»: the factory step turns the stock home off on purpose and writes it in the ledger (it is protected too). */
+    static final String[] HEAL = {"com.tcl.partnercustomizer"};
+
+    /** The ledger's names that were turned off by mistake (HEAL) and are off now. */
     static List<String> healed(List<String> ledger, Set<String> off) {
         List<String> back = new ArrayList<>();
-        for (String p : ledger) if (contains(SetupLists.KEEP, p) && off.contains(p) && !back.contains(p)) back.add(p);
+        for (String p : ledger) if (contains(HEAL, p) && contains(SetupLists.KEEP, p) && off.contains(p) && !back.contains(p)) back.add(p);
         return back;
     }
 
