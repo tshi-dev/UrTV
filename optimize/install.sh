@@ -176,6 +176,12 @@ pushed_whole() {   # $1 file name: is the file on the TV (in /data/local/tmp) as
   [ "$got" = "$want" ]
 }
 
+# 4.4: what the TV answered to each install, whole, in the run folder (the screen shows it only on a failure): share.sh and the agent read it
+install_log() {   # $1 apk name, $2 the install's answer
+  mkdir -p "${URTV_RUN_DIR:-optimize/run}"
+  printf '%s %s: %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$1" "$(tr -d '\r' <<< "$2" | tr '\n' ' ' | sed 's/ *$//')" >> "${URTV_RUN_DIR:-optimize/run}/install.log" 2> /dev/null || true
+}
+
 push_install() {   # $1 apk name, $2 package
   if [ "$2" = sa.urtv.home ]; then   # the home app targets an older SDK than Play Protect likes (seen on Android 12-14)
     echo "للشخص: بعد لحظات ممكن تطلع على التلفزيون رسالة من Play Protect؛ إذا طلعت اضغط «تثبيت على أي حال» (Install anyway)."
@@ -210,6 +216,7 @@ push_install() {   # $1 apk name, $2 package
     [ -z "$streamed" ] || out=$streamed
   fi
   fi   # (the streamed install answered: no file was uploaded)
+  install_log "$1" "$out"
   if grep -q INSTALL_FAILED_VERIFICATION_FAILURE <<< "$out"; then
     [ -n "$("$PY" -I optimize/tv.py "ls /data/local/tmp/$1 2> /dev/null" 2> /dev/null | tr -d '\r')" ] || "$PY" -I optimize/tv.py --push-b64 "optimize/$1" "/data/local/tmp/$1"   # a streamed refusal: the file for the retries
     verify_retry "$1" "$2" || exit 1
@@ -234,6 +241,9 @@ push_install() {   # $1 apk name, $2 package
       exit 1
     else
       echo "!! Install of $1 failed: $out"
+      if grep -q INSTALL_FAILED_OLDER_SDK <<< "$out"; then
+        echo "   This TV's Android is older than the app needs (Android 8). optimize/precheck.sh says so before anything is changed."
+      fi
       if grep -q "Unable to open file" <<< "$out"; then
         echo "   The TV could not read the file even after it was sent again: its storage may be full or this TV may block /data/local/tmp. Free some space on the TV (Settings, Storage), then run the same command again."
       fi
@@ -330,6 +340,7 @@ from_github() {   # $1 owner/repo, $2 package, $3 asset pattern ({abi} = the TV'
     ! "$PY" -I optimize/tv.py "pm list packages $2" 2> /dev/null | tr -d '\r' | grep -x "package:$2" > /dev/null || break
     [ "$try" = 2 ] || sleep 5
   done
+  install_log "$name" "$out"
   if grep -q INSTALL_FAILED_VERIFICATION_FAILURE <<< "$out"; then   # 4.4 (cause 4): TV Bro refused by Play Protect: the same retry and hint as our apps
     verify_retry "$name" "$2" || { failed=1; return 0; }
     restore_verifier

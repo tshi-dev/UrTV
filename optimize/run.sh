@@ -59,6 +59,7 @@ finish() {
   trap - EXIT
   [ "$(cat "$LOCK" 2> /dev/null || true)" = "$$" ] && rm -f "$LOCK"
   if [ "$rc" -eq 0 ]; then echo "run.sh: done"
+  elif [ "$rc" -eq 6 ] && [ "$current" = precheck ]; then stamp "stopped $current (Android older than 8)"; echo "run.sh: stopped at precheck: this TV's Android is older than 8, which UrTV needs; nothing was changed (see above)"
   elif [ "$rc" -eq 3 ] && [ "$current" = precheck ]; then stamp "stopped $current (not an Android TV)"; echo "run.sh: stopped at precheck: this device is not an Android TV, nothing was changed (see above)"
   elif [ "$rc" -eq 5 ] && [ "$current" = launcher ]; then stamp "paused $current (waiting for the person: the Wi-Fi network)"; echo "run.sh: paused at launcher, nothing was changed there: waiting for the person to forget the Wi-Fi network and join it again (the Arabic line above). When they say «كمّل», run the same command again."
   else stamp "stopped $current (exit $rc)"; echo "run.sh: stopped at $current, run the same command again"; fi
@@ -198,7 +199,7 @@ saver_measure() {
 
 do_step() {
   case "$1" in
-    precheck)    rc=0; optimize/precheck.sh > "$RUN/precheck.txt" 2>&1 || rc=$?   # 3: not an Android TV, stop (nothing was changed)
+    precheck)    rc=0; optimize/precheck.sh > "$RUN/precheck.txt" 2>&1 || rc=$?   # 3: not an Android TV, 6: Android older than 8; stop (nothing was changed)
                  cat "$RUN/precheck.txt"; [ "$rc" = 0 ] || exit "$rc" ;;
     probe)       tv --probe | tee "$RUN/tv.txt" ;;
     backup)      optimize/backup.sh

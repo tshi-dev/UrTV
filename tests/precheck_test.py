@@ -101,6 +101,6 @@ os.environ["TV_HOST"] = "192.0.2.9"
 import tv
 cmds = re.findall(r'^\s*(?:"([^"\n]*)"|\'([^\'\n]*)\')\s*\\$', src, re.M)
 cmds = [a or b for a, b in cmds]
-check("precheck.sh sends only commands tv.py counts as reading", len(cmds) == 4 and all(tv.is_read_only(c) for c in cmds), str([c for c in cmds if not tv.is_read_only(c)]))
+check("precheck.sh sends only commands tv.py counts as reading", len(cmds) == 6 and all(tv.is_read_only(c) for c in cmds), str([c for c in cmds if not tv.is_read_only(c)]))
 print("\nall precheck checks passed" if not failed else f"\n{failed} failed")
 sys.exit(1 if failed else 0)
