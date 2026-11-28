@@ -1,17 +1,17 @@
-# Automatic round: emulator-16
+# Automatic round: emulator-17
 
 ## Health metrics
 
 | metric | now | limit | previous | change | verdict |
 |---|---|---|---|---|---|
-| cold_start_home_ms | 1504ms | max 20000 |  |  | ok |
-| cold_start_saver_ms | 1130ms | max 20000 |  |  | ok |
+| cold_start_home_ms | 1173ms | max 20000 |  |  | ok |
+| cold_start_saver_ms | 854ms | max 20000 |  |  | ok |
 | jank_home_frames | 63 |  |  |  | no limit |
 | jank_home_pct | 100.0% | max 100 |  |  | ok |
-| jank_home_p90_ms | 53ms |  |  |  | no limit |
-| jank_home_p99_ms | 57ms |  |  |  | no limit |
-| pss_home_kb | 64168KB | max 350000 |  |  | ok |
-| pss_saver_kb | 38077KB | max 350000 |  |  | ok |
+| jank_home_p90_ms | 44ms |  |  |  | no limit |
+| jank_home_p99_ms | 53ms |  |  |  | no limit |
+| pss_home_kb | 57122KB | max 350000 |  |  | ok |
+| pss_saver_kb | 39044KB | max 350000 |  |  | ok |
 | crashes | 0 | zero 0 |  |  | ok |
 | anrs | 0 | zero 0 |  |  | ok |
 | frozen_lines | 0 | zero 0 |  |  | ok |
@@ -20,7 +20,6 @@
 
 | step | result | what |
 |---|---|---|
-| radio | SKIP | left out of this round (--skip / ROUND_SKIP) |
 | layout-classic-none | PASS | كلاسيكي، بلا بطاقة: the home is in front (look at shots/layout-classic-none.png) |
 | layout-classic-stocks | PASS | كلاسيكي، الأسهم: the home is in front (look at shots/layout-classic-stocks.png) |
 | layout-classic-matches | PASS | كلاسيكي، المباريات: the home is in front (look at shots/layout-classic-matches.png) |
@@ -70,6 +69,19 @@
 | settings-tvos-update | PASS | tvOS ← حول والتحديث: «تحديث تلفزيوني» is on the screen |
 | settings-tvos-search | PASS | tvOS ← بحث في الإعدادات: «بحث في الإعدادات» is on the screen |
 | saver-start | PASS | a dream runs |
+| radio-0 | FAIL | the row «إذاعة القرآن الكريم - السعودية» was not found on the stations tab (no key pressed on it; the screen is in shots/radio-0.png and raw/radio-0-notfound.xml) |
+| radio-1 | FAIL | the row «إذاعة القرآن الكريم - مصر» was not found on the stations tab (no key pressed on it; the screen is in shots/radio-1.png and raw/radio-1-notfound.xml) |
+| radio-2 | FAIL | the row «الشيخ أبو بكر الشاطري» was not found on the stations tab (no key pressed on it; the screen is in shots/radio-2.png and raw/radio-2-notfound.xml) |
+| radio-3 | FAIL | the row «عبدالرحمن السديس» was not found on the stations tab (no key pressed on it; the screen is in shots/radio-3.png and raw/radio-3-notfound.xml) |
+| radio-4 | FAIL | the row «سعود الشريم» was not found on the stations tab (no key pressed on it; the screen is in shots/radio-4.png and raw/radio-4-notfound.xml) |
+| radio-5 | FAIL | the row «ماهر المعيقلي» was not found on the stations tab (no key pressed on it; the screen is in shots/radio-5.png and raw/radio-5-notfound.xml) |
+| radio-6 | FAIL | the row «مشاري العفاسي» was not found on the stations tab (no key pressed on it; the screen is in shots/radio-6.png and raw/radio-6-notfound.xml) |
+| radio-7 | FAIL | the row «سعد الغامدي» was not found on the stations tab (no key pressed on it; the screen is in shots/radio-7.png and raw/radio-7-notfound.xml) |
+| radio-8 | FAIL | the row «ياسر الدوسري» was not found on the stations tab (no key pressed on it; the screen is in shots/radio-8.png and raw/radio-8-notfound.xml) |
+| radio-9 | FAIL | the row «عبدالباسط عبدالصمد» was not found on the stations tab (no key pressed on it; the screen is in shots/radio-9.png and raw/radio-9-notfound.xml) |
+| radio-10 | FAIL | the row «محمد صديق المنشاوي» was not found on the stations tab (no key pressed on it; the screen is in shots/radio-10.png and raw/radio-10-notfound.xml) |
+| radio-11 | FAIL | the row «أحمد العجمي» was not found on the stations tab (no key pressed on it; the screen is in shots/radio-11.png and raw/radio-11-notfound.xml) |
+| radio-12 | FAIL | the row «الشيخ عبدالله خياط» was not found on the stations tab (no key pressed on it; the screen is in shots/radio-12.png and raw/radio-12-notfound.xml) |
 | display-720p-home | PASS | the home at 1280x720, density 213 |
 | display-720p-settings | PASS | the settings at 720p |
 | font-large-home | PASS | the home at font scale 1.3 |
@@ -98,4 +110,4 @@
 
 ## Verdict
 
-GREEN: every metric within its limit, no step failed.
+RED: step radio-0 failed; step radio-1 failed; step radio-2 failed; step radio-3 failed; step radio-4 failed; step radio-5 failed; step radio-6 failed; step radio-7 failed; step radio-8 failed; step radio-9 failed; step radio-10 failed; step radio-11 failed; step radio-12 failed
