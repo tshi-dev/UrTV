@@ -1,0 +1,118 @@
+Performing Streamed Install
+Success
+Performing Streamed Install
+Success
+screens-out/gr.json: 1 file pushed, 0 skipped. 6.9 MB/s (522 bytes in 0.000s)
+total 24
+drwxrwxrwx 2 u0_a76 u0_a76 4096 2026-11-28 18:16 .
+drwxrwxrwx 3 u0_a76 u0_a76 4096 2026-11-28 18:16 ..
+-rw-rw-rw- 1 u0_a76 u0_a76  522 2026-11-28 18:16 games-release.json
+shot after-00-list-tags 168948
+shot after-01-oddone-setup-remote 106774
+shot after-02-oddone-setup-phones 93087
+shot after-03-oddone-room-short 84812
+shot after-04-oddone-room-ok-while-short 84812
+shot after-05-oddone-room-remote-focus 88259
+shot after-06-oddone-remote-started 59524
+shot after-07-oddone-setup-remembered 106774
+shot after-08-liar-setup 87605
+shot after-09-liar-room 76989
+shot after-10-quiz-setup 112376
+shot after-11-quiz-room 112376
+shot built-02-oddone-setup-phones-720p-font1.3 57951
+shot built-03-oddone-room-short-720p-font1.3 51348
+shot after-12-word5-typing 112935
+shot after-13-word5-coloured 118422
+  ا  dx +1.0  dy +0.0
+  ب  dx +1.0  dy +0.0
+  ت  dx +1.0  dy +0.5
+  ا  dx -0.5  dy +0.0
+  ب  dx +0.0  dy +0.0
+  ت  dx +0.0  dy +0.5
+  ث  dx +0.0  dy +0.0
+  ج  dx +0.5  dy +0.0
+  ح  dx +0.5  dy +0.0
+  خ  dx +0.5  dy +0.5
+  د  dx -1.0  dy +0.0
+  ذ  dx -1.0  dy +0.5
+  ر  dx +0.0  dy +0.5
+  ز  dx +0.0  dy +0.5
+  س  dx -0.5  dy +0.5
+  ش  dx -0.5  dy +0.5
+  ص  dx -1.0  dy +1.0
+  ض  dx -1.0  dy +0.0
+  ط  dx -1.5  dy +0.0
+  ظ  dx -1.5  dy +1.0
+  ع  dx +0.5  dy -0.5
+  غ  dx +0.5  dy +0.5
+  ف  dx -2.0  dy +0.5
+  ق  dx +0.0  dy +0.5
+  ك  dx +0.0  dy +0.5
+  ل  dx +0.0  dy +0.0
+  م  dx +1.0  dy -0.5
+  ن  dx +0.0  dy +0.0
+  ه  dx -0.5  dy +0.5
+  و  dx +0.5  dy +0.5
+  ي  dx +0.0  dy +0.5
+  ة  dx -0.5  dy +0.0
+  ى  dx +0.0  dy +0.5
+  ء  dx +0.5  dy +0.5
+PASS screens-out/after-12-word5-typing.png: 34 letters measured, every ink centre within 2.0 px of its tile's centre
+  ا  dx +1.0  dy +0.0
+  ب  dx +1.0  dy +0.0
+  ت  dx +1.0  dy +0.5
+  ث  dx +1.0  dy +0.0
+  ج  dx +1.0  dy +0.0
+  ا  dx -0.5  dy +0.0
+  ب  dx +0.0  dy +0.0
+  ت  dx +0.0  dy +1.0
+  ث  dx +0.0  dy +0.0
+  ج  dx +0.5  dy +0.0
+  ح  dx +0.5  dy +0.0
+  خ  dx +0.5  dy +0.5
+  د  dx -1.0  dy +0.0
+  ذ  dx -1.0  dy +0.5
+  ر  dx +0.0  dy +0.5
+  ز  dx +0.0  dy +0.5
+  س  dx -0.5  dy +0.5
+  ش  dx -0.5  dy +0.5
+  ص  dx -1.0  dy +1.0
+  ض  dx -1.0  dy +0.0
+  ط  dx -1.5  dy +0.0
+  ظ  dx -1.5  dy +1.0
+  ع  dx +0.5  dy -0.5
+  غ  dx +0.5  dy +0.5
+  ف  dx -2.0  dy +0.5
+  ق  dx +0.0  dy +0.5
+  ك  dx +0.0  dy +0.5
+  ل  dx +0.0  dy +0.0
+  م  dx +1.0  dy -0.5
+  ن  dx +0.0  dy +0.0
+  ه  dx -0.5  dy +0.5
+  و  dx +0.5  dy +0.5
+  ي  dx +0.0  dy +0.5
+  ة  dx -0.5  dy +0.0
+  ى  dx +0.0  dy +0.5
+  ء  dx +0.5  dy +0.5
+PASS screens-out/after-13-word5-coloured.png: 36 letters measured, every ink centre within 2.0 px of its tile's centre
+after-00-list-tags.png
+after-01-oddone-setup-remote.png
+after-02-oddone-setup-phones.png
+after-03-oddone-room-short.png
+after-04-oddone-room-ok-while-short.png
+after-05-oddone-room-remote-focus.png
+after-06-oddone-remote-started.png
+after-07-oddone-setup-remembered.png
+after-08-liar-setup.png
+after-09-liar-room.png
+after-10-quiz-setup.png
+after-11-quiz-room.png
+after-12-word5-typing.png
+after-12-word5-typing.xml
+after-13-word5-coloured.png
+after-13-word5-coloured.xml
+built-02-oddone-setup-phones-720p-font1.3.png
+built-03-oddone-room-short-720p-font1.3.png
+crashes.txt
+glyph-centre.txt
+log.txt

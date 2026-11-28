@@ -14,6 +14,8 @@ https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/a
 https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/after-12-word5-typing.xml
 https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/after-13-word5-coloured.png
 https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/after-13-word5-coloured.xml
+https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/built-02-oddone-setup-phones-720p-font1.3.png
+https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/built-03-oddone-room-short-720p-font1.3.png
 https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/crashes.txt
 https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/glyph-centre.txt
 https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/log.txt
