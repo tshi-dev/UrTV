@@ -538,6 +538,15 @@ def stream_exec_tcp(dev, command, local, read_timeout_s):
     return out.decode("utf-8", "replace")
 
 
+def stream_read_s():
+    """How long a streamed install may stay silent: 12 minutes, or TV_STREAM_READ_S seconds (install.sh gives a big extra such as SmartTube
+    25 minutes: a weak TV verifies a 40 MB APK for minutes without a word)."""
+    try:
+        return max(60.0, float(os.environ.get("TV_STREAM_READ_S", "")))
+    except ValueError:
+        return SLOW_READ_S * 4
+
+
 def install_stream(tv, local, opts):
     """`pm install` without a file on the TV: the bytes go straight to `cmd package install -S <size>` (Android 7, SDK 24, and newer; what `adb
     install` does). The answer of pm, or None when it cannot be done here (an older Android, a client without the stream, a connection that
@@ -550,11 +559,12 @@ def install_stream(tv, local, opts):
     try:
         if tv.dev is None:
             tv._open()
+        read_s = stream_read_s()
         if hasattr(tv.dev, "install_stream"):   # the adb program (Wireless debugging)
-            return tv.dev.install_stream(command, local, SLOW_READ_S * 4)
+            return tv.dev.install_stream(command, local, read_s)
         if not hasattr(tv.dev, "_io_manager"):
             return None
-        return stream_exec_tcp(tv.dev, command, local, SLOW_READ_S * 4)
+        return stream_exec_tcp(tv.dev, command, local, read_s)
     except SystemExit:
         raise
     except Exception as e:  # noqa: BLE001

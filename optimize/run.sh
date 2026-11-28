@@ -154,7 +154,7 @@ report() {
   [ ! -f "$RUN/home-skipped.txt" ] || cat "$RUN/home-skipped.txt"   # a TV that won't let its home be switched (Nokia Streaming Box 8000)
   echo "Screensaver: $(tv "settings get secure screensaver_components")"
   echo "Versions: screensaver $(appver sa.urtv.screensaver), home $(appver sa.urtv.home)"
-  echo "Extras: TV Bro $([ -n "$(tv "pm list packages com.phlox.tvwebbrowser")" ] && echo yes || echo no), SmartTube $([ -n "$(tv "pm list packages org.smarttube.stable")" ] && echo yes || echo no)"
+  echo "Extras: TV Bro $([ -n "$(tv "pm list packages com.phlox.tvwebbrowser")" ] && echo yes || echo "not installed"), SmartTube $([ -n "$(tv "pm list packages org.smarttube.stable")" ] && echo yes || echo "not installed")$([ "${SKIP_EXTRAS:-}" = 1 ] && echo " (SKIP_EXTRAS=1)" || echo " (to add: optimize/install.sh extras)")"
   local picks
   picks=$(grep -cvE '^[[:space:]]*(#|$)' optimize/lists/mine.txt 2>/dev/null || true)
   echo "Optional picks (lists/mine.txt): ${picks:-0}"

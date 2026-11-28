@@ -117,10 +117,17 @@ pm_install() {   # $1 file name in /data/local/tmp, $2 package: pm's answer. A b
 # there 3 s later), a newer build already on the TV, or another signature. Anything else (an Android older than 7, a dropped connection, Play Protect,
 # no answer) prints nothing and the caller goes on the way it always did: upload the file, install it (an install -r of the same file twice is harmless).
 # URTV_STREAM=0 turns it off.
-stream_install() {   # $1 file name in optimize/, $2 package: pm's answer, or nothing (then the file is uploaded as before)
-  local out
+stream_install() {   # $1 file name in optimize/, $2 package, $3 tries (1; the extras 2): pm's answer, or nothing (then the file is uploaded as before)
+  local out try
   [ "${URTV_STREAM:-1}" = 1 ] || return 0
-  out=$("$PY" -I optimize/tv.py --install-stream "optimize/$1" -r 2> /dev/null) || true
+  for try in $(seq 1 "${3:-1}"); do
+    out=$("$PY" -I optimize/tv.py --install-stream "optimize/$1" -r 2> /dev/null) || true
+    # 4.4: a stream that gave no answer from pm (a timeout, a dropped connection; not an old Android: exit 3 with no stream at all) is tried once more
+    grep -qE 'Success|Failure' <<< "$out" && break
+    # an extra (more than one try) is streamed only when it is not on the TV: there now means the stream installed it
+    [ "${3:-1}" -gt 1 ] && "$PY" -I optimize/tv.py "pm list packages $2" 2> /dev/null | tr -d '\r' | grep -x "package:$2" > /dev/null && { out=Success; break; }
+    [ "$try" = "${3:-1}" ] || echo "   (the streamed install of $1 gave no answer: streaming it once more)" >&2
+  done
   if grep -q Success <<< "$out"; then
     sleep 3
     "$PY" -I optimize/tv.py "pm list packages $2" 2> /dev/null | tr -d '\r' | grep -x "package:$2" > /dev/null || return 0   # removed again: the file way has the Play Store retry
@@ -313,7 +320,8 @@ from_github() {   # $1 owner/repo, $2 package, $3 asset pattern ({abi} = the TV'
   # An optional app never holds the setup up: the upload and the install are tried twice (an upload resumes where it stopped),
   # and a TV that did not answer both times means this app is skipped with one line and the setup goes on.
   local try t0; t0=$(date +%s)
-  out=$(stream_install "$name" "$2")
+  # a big APK (SmartTube) on a weak TV: the stream may stay silent 25 minutes while the TV verifies it, and is tried twice
+  out=$(TV_STREAM_READ_S="${TV_STREAM_READ_S:-1500}" stream_install "$name" "$2" 2)
   [ -z "$out" ] || try=streamed
   [ "${try:-}" = streamed ] || for try in 1 2; do
     if "$PY" -I optimize/tv.py --push-b64 "optimize/$name" "/data/local/tmp/$name"; then out=$(pm_install "$name" "$2"); else out=NO_ANSWER; fi
@@ -327,6 +335,7 @@ from_github() {   # $1 owner/repo, $2 package, $3 asset pattern ({abi} = the TV'
     restore_verifier
   fi
   if [ "$out" = NO_ANSWER ] && ! "$PY" -I optimize/tv.py "pm list packages $2" 2> /dev/null | tr -d '\r' | grep -x "package:$2" > /dev/null; then
+    echo "   ${1##*/} ($2): not installed"
     echo "!! skipped after 2 timeouts: ${1##*/}; to add it later: optimize/install.sh extras"
     return 0   # the downloaded file stays, so the next try does not fetch it again
   fi
@@ -337,7 +346,7 @@ from_github() {   # $1 owner/repo, $2 package, $3 asset pattern ({abi} = the TV'
   elif grep -q Success <<< "$out"; then echo "Installed $name"
   elif grep -qE 'UPDATE_INCOMPATIBLE|signatures do not match' <<< "$out"; then
     echo "$2 is already installed from somewhere else: left as it is (with its settings)."   # never removed
-  else echo "!! Install of $name failed: $out"; failed=1; fi
+  else echo "   ${1##*/} ($2): not installed"; echo "!! Install of $name failed: $out"; failed=1; fi
 }
 
 # A home switch that a restart cut off (journal says «switching», Home is not ours, no marker) is undone first.
