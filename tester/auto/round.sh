@@ -173,6 +173,8 @@ if ! $SAVER export > "$OUT/settings-before.json" 2> "$OUT/raw/export.err" || [ !
 fi
 SETTINGS_SAVED=1
 $SAVER show > "$OUT/raw/show-before.txt" 2>&1
+# 4.4 «ابدأ بـ»: a TV that has not answered it yet would show the chooser over the round; answered «خلّه مثل ما هو» (nothing changes), and said
+if grep -q "^start: not asked yet" "$OUT/raw/show-before.txt"; then $SAVER start same > /dev/null 2>&1; echo "«ابدأ بـ» was not answered on this TV: the round answered «خلّه مثل ما هو» (nothing changed)"; fi
 LAYOUT_BEFORE=$($LIB kv "$OUT/raw/show-before.txt" homelayout); PANEL_BEFORE=$($LIB kv "$OUT/raw/show-before.txt" home_panel)
 $MUSIC adhan 2> /dev/null | tr -d '\r' > "$OUT/raw/adhan-before.txt"
 tv "wm size; wm density" 2> /dev/null | tr -d '\r' > "$OUT/raw/wm-before.txt"

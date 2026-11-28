@@ -24,6 +24,7 @@ task() { adb shell "am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urt
 music() { adb shell "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a $*" > /dev/null; }
 
 # ---- the settings that make the screens show something: a card on the home screen, three places for cards, the matches of two clubs
+saver --es start same   # 4.4 «ابدأ بـ» answered «خلّه مثل ما هو» before the home first starts (the chooser would stand over every shot)
 saver --es teams 136013:Al-Hilal --es home_panel matches,prayerrow,hourly --es panel prayers --es cardstyle glass1
 sleep 2
 
