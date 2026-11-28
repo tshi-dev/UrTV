@@ -200,6 +200,9 @@ final class RemoteButtons {
      */
     static final String[] XIAOMI_GTV_HOME_CATCH = {"MiTV-AFMU0", "MiTV-AFMU1", "MiTV-AXTU0", "MiTV-MZTU0"};
 
+    /** a Xiaomi of XIAOMI_GTV_HOME_CATCH (R-406: its buttons' own apps from the add-on, as on a TCL) */
+    static boolean xiaomiGtv(int tv, String model) { return xiaomi(tv) && homeCatchSafe(tv, model); }
+
     static boolean homeCatchSafe(int tv, String model) {
         if (homeCatchSafe(tv)) return true;
         for (String m : XIAOMI_GTV_HOME_CATCH) if (m.equals(model)) return true;

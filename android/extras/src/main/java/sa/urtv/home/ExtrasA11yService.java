@@ -360,7 +360,8 @@ public class ExtrasA11yService extends AccessibilityService {
             boolean want = Build.VERSION.SDK_INT >= SettingsKey.MIN_FILTER_SDK && (   // 4.3.6: no key filter at all below Android 9 (a Percee OTT box on 8.0 froze)
                 SettingsKey.filterWanted(front, stockHome, lowRam, homeKeyLost, Build.VERSION.SDK_INT)
                 || KeyApps.filterWanted(front, KeyApps.anyChosen(keyChoices), KeyButton.filterSafe())   // «أزرار الريموت»: only for a button given an app
-                || KeyApps.globalWanted(KeyButton.TV, wanted(this) || oursChosen(), KeyButton.filterSafe())   // beta 3: a TCL's YouTube button (a global key)
+                || KeyApps.globalWanted(KeyButton.TV, wanted(this) || oursChosen(), KeyButton.filterSafe())   // beta 3: a TCL's YouTube, Netflix, Prime buttons (R-406)
+                || KeyApps.xiaomiGtvWanted(KeyButton.xiaomiGtv(), wanted(this) || oursChosen())   // R-406: a Xiaomi Google TV's YouTube button
                 || homeKeyActive());   // 4.4 R3: the Home key caught here (on by default on a Google TV, only while the person's home is ours; never on Xiaomi: homeKeyActive)
             AccessibilityServiceInfo info = getServiceInfo();
             if (info == null) return;
@@ -413,20 +414,38 @@ public class ExtrasA11yService extends AccessibilityService {
 
     /** true: a button given an app that is on this TV, answered here (its press opens the app, its repeats and release are eaten); false: as before */
     private boolean appKey(KeyEvent e) {
+        if (KeyButton.xiaomiGtv()) return xiaomiGtvKey(e);   // R-406: a Xiaomi Google TV: only its buttons' own apps (owner choices stay off on Xiaomi, R-310)
         if (!KeyButton.filterSafe()) return false;   // TCL's Android 11: never (the filter is not asked for there either)
         String id = KeyButton.of(e);
         if (id == null) return false;   // every other key: untouched, nothing read or kept
         String choice = keyChoices.get(id);
         boolean global = false;
-        if (!KeyApps.chosen(choice)) {   // beta 3: a TCL's YouTube button is a global key no window gets while our home is the home: its own app from here
+        if (!KeyApps.chosen(choice)) {   // beta 3: a TCL's YouTube button is a global key no window gets while our home is the home: its own app from here (R-406: Netflix, Prime too)
             String own = KeyApps.globalOwn(KeyButton.TV, id, wanted(this) || oursChosen());
             if (own != null) { choice = own; global = true; }
         }
         if (KeyApps.chosen(choice) && e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0 && launchIntent(this, choice) == null) {
-            if (global) log("key app=noyoutube");   // said, never a silent nothing: the key goes on to the TV as before
+            if (global) log("key app=noyoutube");   // the word kept (R-306): any button's own app missing   // said, never a silent nothing: the key goes on to the TV as before
             choice = "";   // its app was removed: the button's own again (asked once a press)
         }
         int k = keyApps.decide(id, e.getKeyCode(), e.getAction(), e.getRepeatCount(), e.getEventTime(), global ? false : homeFront, choice, KeyButton.burstMs());   // global: our screen never sees it either
+        if (k == KeyApps.OPEN) {
+            final String pkg = keyApps.pkg;
+            new Thread(() -> openKeyApp(pkg), "extras-key-app").start();
+        }
+        return k != KeyApps.PASS;
+    }
+
+    /**
+     * R-406: a Xiaomi Google TV (RemoteButtons.XIAOMI_GTV_HOME_CATCH, whose Home catch keeps a key filter on): a button with an app of its own (YouTube) opens it while
+     * our home is the person's, as on a TCL; every other key and button goes back untouched. Xiaomi's burst is one press (KeyButton.burstMs).
+     */
+    private boolean xiaomiGtvKey(KeyEvent e) {
+        String id = KeyButton.of(e);
+        if (id == null) return false;
+        String own = KeyApps.xiaomiGtvOwn(KeyButton.TV, true, id, wanted(this) || oursChosen());
+        if (own != null && e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0 && launchIntent(this, own) == null) { log("key app=noyoutube"); own = ""; }
+        int k = keyApps.decide(id, e.getKeyCode(), e.getAction(), e.getRepeatCount(), e.getEventTime(), false, own, KeyButton.burstMs());
         if (k == KeyApps.OPEN) {
             final String pkg = keyApps.pkg;
             new Thread(() -> openKeyApp(pkg), "extras-key-app").start();

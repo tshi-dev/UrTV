@@ -34,4 +34,6 @@ final class KeyButton {
     static boolean filterSafe() { return RemoteButtons.filterSafe(TV, Build.VERSION.SDK_INT); }
     /** the Home key's catch may filter keys on this TV (off on Xiaomi only, but its Google TVs on RemoteButtons.XIAOMI_GTV_HOME_CATCH: R-405) */
     static boolean homeCatchSafe() { return RemoteButtons.homeCatchSafe(TV, Build.MODEL); }
+    /** a Xiaomi Google TV of RemoteButtons.XIAOMI_GTV_HOME_CATCH (R-406) */
+    static boolean xiaomiGtv() { return RemoteButtons.xiaomiGtv(TV, Build.MODEL); }
 }
