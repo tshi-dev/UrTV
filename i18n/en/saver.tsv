@@ -1472,7 +1472,7 @@
 أول فريق يكمل سلسلة متصلة بين جهتيه يفوز، وتُضاء السلسلة.	The first team to complete a connected chain between its sides wins, and the chain lights up.
 الفريق الأول يصل يمين اللوحة بيسارها، والثاني أعلاها بأسفلها.	The first team joins right to left, the second top to bottom.
 الفريق صاحب الدور يحرّك الإطار بالأسهم إلى خلية حرّة ويضغط «اختيار»؛ يظهر سؤال جوابه يبدأ بحرف الخلية.	The team in turn moves the frame to a free cell and presses OK: a question appears whose answer starts with the cell's letter.
-جاوبوا بصوت عالٍ. «خيارات» تُظهر أربعة خيارات. «اكشف الجواب» تُظهره.	Answer aloud. «Options» shows four options. Reveal shows the answer.
+جاوبوا بصوت عالٍ. «خيارات» تُظهر خيارات كلها تبدأ بحرف الخلية. «اكشف الجواب» تُظهره.	Answer aloud. «Options» shows choices that all start with the cell's letter. Reveal shows the answer.
 المضيف يختار من جاوب صح: الخلية له. «ما أحد»: تبقى الخلية حرّة.	The host picks who was right: the cell is theirs. «Nobody»: it stays free.
 من جاوب صح يختار الحرف التالي (أو بالتناوب، حسب الإعداد).	Whoever was right picks the next letter (or by turns, per the setting).
 خمّنوا كلمة عربية من خمسة حروف في عدد محدود من المحاولات (6 افتراضيًا).	Guess a five-letter Arabic word in a limited number of tries (6 by default).

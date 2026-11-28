@@ -97,7 +97,7 @@ public final class OddOneGame {
 
     // ---- TALK
     private void startTalk() {
-        int first = rnd.nextInt(players);
+        int skip = rnd.nextInt(players - 1), first = skip >= odd ? skip + 1 : skip;   // the first speaker is never the odd one (he would be exposed at once): any other player, the circle of seats goes on from there
         order = new int[players];
         for (int i = 0; i < players; i++) order[i] = (first + i) % players;
         talkAt = 0; talkStart = clock.now(); phase = Phase.TALK;

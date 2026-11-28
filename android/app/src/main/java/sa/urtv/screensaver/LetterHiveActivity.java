@@ -247,7 +247,7 @@ public class LetterHiveActivity extends GameActivity {
         question(meta, words, 480);
         if (!judge && !game.timeUp()) { timer = new TickTimer(game.settings.seconds, 428); timer.set((int) ((game.leftMs() + 999) / 1000)); }
         if (q.kind == HiveGame.Kind.BANK && game.optionsShown()) {
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < q.choices(); i++) {
                 int state = judge ? (i == q.rightPlace() ? STAMP_RIGHT : STAMP_WRONG) : STAMP;
                 root.addView(answer(letter(i), digits(q.option(i, en)), state), at(856, 144, 96 + (i % 2) * 872, 512 + (i / 2) * 160));
             }
