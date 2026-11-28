@@ -1066,6 +1066,12 @@ public class MainActivity extends Activity {
                 boolean beside = homeCard != null && homeCard.shownCards() > 0 && !homeCard.inRow();
                 return ScenePlan.fixedBox(dm.widthPixels, dm.heightPixels, beside, Dir.rtl());
             }
+            @Override public int floor() {
+                if (tray == null || tray.getHeight() == 0 || !tray.isShown()) return -1;
+                int[] at = new int[2];
+                tray.getLocationInWindow(at);
+                return at[1];
+            }
         });
         return root;
     }

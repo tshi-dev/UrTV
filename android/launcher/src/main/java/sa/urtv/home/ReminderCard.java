@@ -85,7 +85,7 @@ final class ReminderCard {
     }
 
     /** where the home's clock column ends (window px; -1: not known), and the big clock's digits' box while it shows (null: none) */
-    interface Under { int bottom(); int[] bigClock(); }
+    interface Under { int bottom(); int[] bigClock(); int floor(); }   // floor: the apps row's top (window px; -1: not known)
     private LinearLayout buttons;
 
     /** the two buttons side by side, or (a narrow card, beside the big clock) one over the other, each the card's width */
@@ -121,6 +121,9 @@ final class ReminderCard {
         if (p.width != width) { p.width = width; card.setLayoutParams(p); }
         int room = (card.getParent() instanceof View ? ((View) card.getParent()).getHeight() : 0) - card.getHeight() - dp(16);
         if (card.getHeight() > 0 && room > 0) top = Math.min(top, room);
+        int floor = under == null ? -1 : under.floor();   // run 32: its bottom touched the focused tile; it ends 8 dp above the apps row when it can
+        int above = floor - card.getHeight() - dp(8);     // without going back over the clock column (the bug it fixes)
+        if (floor > 0 && card.getHeight() > 0 && above < top && above >= (y > 0 ? y + dp(8) : dp(16))) top = above;
         if (p.topMargin != top) { p.topMargin = top; card.setLayoutParams(p); }
     }
 

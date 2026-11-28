@@ -55,6 +55,7 @@ check("(h) the reminder card stands 16 dp under the clock column (never above 60
       and "card.post(this::place);" in card and "reminder.under(new ReminderCard.Under() {" in main and "return at[1] + clockBlock.getHeight();" in main)
 check("(h) with the big clock it keeps clear of the digits: beside them under the clock column, as wide as that room allows, its two buttons one over the other when narrow; too narrow there, under the digits (the emulator: over the digits, then over the apps row)",
       "return ScenePlan.fixedBox(dm.widthPixels, dm.heightPixels, beside, Dir.rtl());" in main and "int side = Dir.rtl() ? parent.getWidth() - big[2] : big[0];" in card
+      and "if (floor > 0 && card.getHeight() > 0 && above < top && above >= (y > 0 ? y + dp(8) : dp(16))) top = above;" in card and "@Override public int floor() {" in main
       and "if (room >= dp(200)) width = Math.min(width, room);" in card and "else top = Math.max(top, big[3] + dp(16));" in card and "stack(width < dp(320));" in card)
 shoot = (ROOT / ".github/screens/shoot.sh").read_text(encoding="utf-8")
 check("the letters' shot opens تلاوة by its button (not exported: an adb start is refused)", 'focus_to "تلاوة وأذان" 10 DPAD_LEFT' in shoot)
