@@ -1,17 +1,17 @@
-# Automatic round: emulator-4
+# Automatic round: emulator-5
 
 ## Health metrics
 
 | metric | now | limit | previous | change | verdict |
 |---|---|---|---|---|---|
-| cold_start_home_ms | 1066ms | max 20000 |  |  | ok |
-| cold_start_saver_ms | 847ms | max 20000 |  |  | ok |
-| jank_home_frames | 67 |  |  |  | no limit |
+| cold_start_home_ms | 1157ms | max 20000 |  |  | ok |
+| cold_start_saver_ms | 910ms | max 20000 |  |  | ok |
+| jank_home_frames | 53 |  |  |  | no limit |
 | jank_home_pct | 100.0% | max 100 |  |  | ok |
-| jank_home_p90_ms | 44ms |  |  |  | no limit |
-| jank_home_p99_ms | 48ms |  |  |  | no limit |
-| pss_home_kb | 63004KB | max 350000 |  |  | ok |
-| pss_saver_kb | 39326KB | max 350000 |  |  | ok |
+| jank_home_p90_ms | 48ms |  |  |  | no limit |
+| jank_home_p99_ms | 61ms |  |  |  | no limit |
+| pss_home_kb | 58970KB | max 350000 |  |  | ok |
+| pss_saver_kb | 38574KB | max 350000 |  |  | ok |
 | crashes | 0 | zero 0 |  |  | ok |
 | anrs | 0 | zero 0 |  |  | ok |
 | frozen_lines | 0 | zero 0 |  |  | ok |
@@ -60,19 +60,19 @@
 | settings-tvos-update | PASS | tvOS ← حول والتحديث: «تحديث تلفزيوني» is on the screen |
 | settings-tvos-search | PASS | tvOS ← بحث في الإعدادات: «بحث في الإعدادات» is on the screen |
 | saver-start | PASS | a dream runs |
-| radio-0 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10} |
-| radio-1 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10} |
-| radio-2 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10} |
-| radio-3 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10} |
-| radio-4 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10} |
-| radio-5 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10} |
-| radio-6 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10} |
-| radio-7 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10} |
-| radio-8 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10} |
-| radio-9 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10} |
-| radio-10 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10} |
-| radio-11 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10} |
-| radio-12 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10} |
+| radio-0 | FAIL | the row «إذاعة القرآن الكريم - السعودية» was not found on the stations tab (no key pressed on it) |
+| radio-1 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4} |
+| radio-2 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4} |
+| radio-3 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4} |
+| radio-4 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4} |
+| radio-5 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4} |
+| radio-6 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4} |
+| radio-7 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4} |
+| radio-8 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4} |
+| radio-9 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4} |
+| radio-10 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4} |
+| radio-11 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4} |
+| radio-12 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4} |
 | display-720p-home | PASS | the home at 1280x720, density 213 |
 | display-720p-settings | PASS | the settings at 720p |
 | font-large-home | PASS | the home at font scale 1.3 |

@@ -38,19 +38,19 @@ settings-tvos-lang	PASS	tvOS ← اللغة والموقع: «المدينة» i
 settings-tvos-update	PASS	tvOS ← حول والتحديث: «تحديث تلفزيوني» is on the screen
 settings-tvos-search	PASS	tvOS ← بحث في الإعدادات: «بحث في الإعدادات» is on the screen
 saver-start	PASS	a dream runs
-radio-0	FAIL	the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10}
-radio-1	FAIL	the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10}
-radio-2	FAIL	the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10}
-radio-3	FAIL	the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10}
-radio-4	FAIL	the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10}
-radio-5	FAIL	the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10}
-radio-6	FAIL	the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10}
-radio-7	FAIL	the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10}
-radio-8	FAIL	the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10}
-radio-9	FAIL	the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10}
-radio-10	FAIL	the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10}
-radio-11	FAIL	the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10}
-radio-12	FAIL	the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10}
+radio-0	FAIL	the row «إذاعة القرآن الكريم - السعودية» was not found on the stations tab (no key pressed on it)
+radio-1	FAIL	the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4}
+radio-2	FAIL	the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4}
+radio-3	FAIL	the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4}
+radio-4	FAIL	the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4}
+radio-5	FAIL	the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4}
+radio-6	FAIL	the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4}
+radio-7	FAIL	the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4}
+radio-8	FAIL	the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4}
+radio-9	FAIL	the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4}
+radio-10	FAIL	the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4}
+radio-11	FAIL	the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4}
+radio-12	FAIL	the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4}
 display-720p-home	PASS	the home at 1280x720, density 213
 display-720p-settings	PASS	the settings at 720p
 font-large-home	PASS	the home at font scale 1.3
