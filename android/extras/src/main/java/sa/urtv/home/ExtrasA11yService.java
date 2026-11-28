@@ -466,6 +466,7 @@ public class ExtrasA11yService extends AccessibilityService {
     private boolean keyEvent(KeyEvent e) {
         if (VoiceKeys.is(e.getKeyCode())) return false;   // 4.4 (R-404): the voice / search key goes back at once, untouched (never the Home catch, an app button or the Settings key)
         if (e.getKeyCode() == KeyEvent.KEYCODE_HOME && homeKeyActive()) return homeKeyCaught(e);   // 4.4 R3: on by default on a Google TV, the person's home ours
+        if (e.getKeyCode() != KeyEvent.KEYCODE_HOME && RemoteButtons.homeKey(e.getKeyCode(), Build.MANUFACTURER, Build.BRAND) && homeKeyActive()) return homeKeyCaught(e);   // R-504: a Xiaomi remote's Home sends ALL_APPS
         if (appKey(e)) return true;   // «أزرار الريموت»: a button the owner gave an app; every other key goes on below, untouched
         Boolean lost = homeKeyLost;
         int d = settingsKey.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), homeFront, stockHome, lost != null && lost);

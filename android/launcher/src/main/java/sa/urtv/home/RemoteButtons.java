@@ -208,4 +208,16 @@ final class RemoteButtons {
         for (String m : XIAOMI_GTV_HOME_CATCH) if (m.equals(model)) return true;
         return false;
     }
+
+    /** android.view.KeyEvent's KEYCODE_HOME and KEYCODE_ALL_APPS */
+    static final int KEY_HOME = 3, KEY_ALL_APPS = 284;
+
+    /**
+     * 4.4 (R-504, docs/research/LAUNCHERS-GITHUB.md idea 7): the Home button of some Xiaomi remotes sends KEYCODE_ALL_APPS, not KEYCODE_HOME, so the Home
+     * catch never saw it. On a Xiaomi TV (Build.MANUFACTURER or BRAND, any model) that key is the Home key; elsewhere only KEYCODE_HOME is, as before.
+     */
+    static boolean homeKey(int keyCode, String manufacturer, String brand) {
+        if (keyCode == KEY_HOME) return true;
+        return keyCode == KEY_ALL_APPS && is("Xiaomi", manufacturer, brand);
+    }
 }
