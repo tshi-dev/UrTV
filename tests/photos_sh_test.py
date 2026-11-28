@@ -36,6 +36,7 @@ if [ "$3" = --push-b64 ]; then
   echo "PUSH $4 $5" >> "$SENT"; cp "$4" "$KEPT/$(ls "$KEPT" | wc -l).jpg"; echo "pushed $4 -> $5 (1 bytes, md5 ok)"; exit 0
 fi
 echo "$3" >> "$SENT"
+[ "$3" = --shot ] && printf 'png' > "$4"   # tv.py --shot saves a file (shot.sh refuses an empty one)
 case "$3" in *PHOTOS*) [ -n "${FAKE_SILENT:-}" ] && { echo "Broadcast completed: result=0"; exit 0; } ;; esac
 case "$3" in
   "wm size") echo "Physical size: ${FAKE_SCREEN:-1920x1080}" ;;

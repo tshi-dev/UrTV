@@ -738,6 +738,30 @@ def wait_for_tv(limit_s=WAIT_S, before=None, restart=False):
              + ("\n" + "\n".join(hinted) if hinted else ""))
 
 
+SHOT_TRIES = 3
+
+
+def shot(tv, local):
+    """screencap, pulled to local. 4.4 (reports: «Pillow» blamed for a screenshot of 0 bytes): an empty capture (a TV still waking, the
+    screencap cut off, a pull that wrote nothing) is taken again, up to 3 times; one that stays empty is not saved, and says so."""
+    for i in range(1, SHOT_TRIES + 1):
+        tv.shell("screencap -p /sdcard/_shot.png")
+        size = tv.shell("wc -c < /sdcard/_shot.png 2> /dev/null || echo 0").strip()
+        if size.isdigit() and int(size) > 0:
+            tv.call("pull", "/sdcard/_shot.png", local)
+        tv.shell("rm -f /sdcard/_shot.png")
+        if os.path.isfile(local) and os.path.getsize(local) > 8 and open(local, "rb").read(8) == b"\x89PNG\r\n\x1a\n":
+            print(f"saved {local}")
+            return
+        if os.path.exists(local):
+            os.remove(local)
+        if i < SHOT_TRIES:
+            print(f"   (the screenshot came back empty: taking it again, try {i + 1} of {SHOT_TRIES})", file=sys.stderr)
+            time.sleep(2)
+    sys.exit(f"!! The TV gave an empty screenshot {SHOT_TRIES} times (the screen off or asleep, or a protected picture such as a paid "
+             "video): nothing was saved. Wake the TV or leave that app, then run the same command again.")
+
+
 def main():
     a = sys.argv[1:]
     if a == ["--address-hint"]:   # only looks: prints a line if another device now has ADB open, else nothing
@@ -839,10 +863,7 @@ def main():
         print(out.rstrip())
         sys.exit(0 if "Success" in out else 1)
     elif a[0] == "--shot":
-        tv.shell("screencap -p /sdcard/_shot.png")
-        tv.call("pull", "/sdcard/_shot.png", a[1])
-        tv.shell("rm /sdcard/_shot.png")
-        print(f"saved {a[1]}")
+        shot(tv, a[1])
     elif not no_role_here(tv, shell_line(a)):   # a `cmd role` question before Android 10 answers nothing, as a TV with no holder
         print(tv.shell(shell_line(a)).rstrip())
     tv.close()
