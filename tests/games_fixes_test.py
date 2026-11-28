@@ -86,8 +86,8 @@ check("8: a step's text keeps its last line whole (font padding on, 12 px under 
 
 # 9: the room page
 lob = base[base.index("protected final void drawPhoneLobby"):]
-check("9: the room page's header is the one short line (the long one was cut after «اكتب»); the instruction and the ADDRESS stand big in the middle (as large as 56 design pixels, in its own box, Latin digits, the code inside it: no separate code box)",
-      'title(S.t("اللعب بالجوالات"), S.t("امسح الرمز بكاميرا الجوال"))' in lob and 'S.t("ما فتح؟ اكتب هذا العنوان في متصفح الجوال")' in lob and "float us = 56; while (us > 30 && measure(url, us) > 552 - 40) us -= 2;" in lob and "phones.code" not in lob and "codeBox" not in lob)
+check("9: the room page's header is the one short line (the long one was cut after «اكتب»); the instruction stands in the middle and the ADDRESS under the QR, never wider than it (shrunk to fit, or on two lines before the last «/»), Latin digits, the code inside it: no separate code box",
+      'title(S.t("اللعب بالجوالات"), S.t("امسح الرمز بكاميرا الجوال"))' in lob and 'S.t("ما فتح؟ اكتب هذا العنوان في متصفح الجوال")' in lob and "while (us > 30 && measure(url, us) > 360 - 32) us -= 2;" in lob and "root.addView(addrBox, at(360, 130, 96, 630));" in lob and "phones.code" not in lob and "codeBox" not in lob)
 check("9: its words have their English", all(tsv.get(w) for w in ("امسح الرمز بكاميرا الجوال", "ما فتح؟ اكتب هذا العنوان في متصفح الجوال")))
 
 # 10: the rows are never under the fold

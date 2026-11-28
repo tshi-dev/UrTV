@@ -352,7 +352,9 @@ public abstract class GameActivity extends Activity {
     /** a screen's title in a 200 px block: the big words, and a small saffron line at the end side (may be null) */
     protected final void title(String big, String small) {
         band(200);
-        root.addView(text(big, 96, L.onDeep, true), at(1100, 120, 96, 54));
+        TextView t = text(big, 96, L.onDeep, true);   // a taller line and a bottom padding: the tails of ب ع و ي never touch the band's edge, at any system font size
+        t.setIncludeFontPadding(true); t.setLineSpacing(0, 1.1f); t.setPadding(0, 0, 0, px(14));
+        root.addView(t, at(1100, 136, 96, 36));
         if (small != null) { TextView s = text(small, 40, L.saff, false); s.setGravity(Gravity.END); s.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END); root.addView(s, atEnd(700, 56, 96 + titleInset, 84)); }
     }
     /** the bottom line: pairs of (key, what it does), so every screen says its next key in words */
@@ -778,12 +780,18 @@ public abstract class GameActivity extends Activity {
         root.addView(qrBox, at(360, 360, 96, 250));
         TextView how = text(S.t("ما فتح؟ اكتب هذا العنوان في متصفح الجوال"), 38, L.ink, false); how.setMaxLines(3);
         root.addView(how, at(552, 130, 504, 250));
-        String url = phones.url.replace("http://", "");   // typed into a phone's browser: Latin digits always, the code is the end of it
-        float us = 56; while (us > 30 && measure(url, us) > 552 - 40) us -= 2;
-        FrameLayout addrBox = stamp(L.tile, L.ink, 6, false);
-        TextView addr = centered("\u2066" + url + "\u2069", us, L.ink, true); addr.setTextDirection(View.TEXT_DIRECTION_LTR); addr.setSingleLine(true);
-        addrBox.addView(addr, new FrameLayout.LayoutParams(-1, -1));
-        root.addView(addrBox, at(552, 130, 504, 400));
+        {   // the address is what people type: under the QR, never wider than it (360), shrunk to fit, or on two lines broken before the last «/»
+            String url = phones.url.replace("http://", "");   // Latin digits always, the code is the end of it
+            int slash = url.lastIndexOf('/');
+            float us = 48; while (us > 30 && measure(url, us) > 360 - 32) us -= 2;
+            boolean two = measure(url, us) > 360 - 32 && slash > 0;
+            String shown = two ? url.substring(0, slash) + "\n" + url.substring(slash) : url;
+            if (two) { us = 44; while (us > 28 && Math.max(measure(url.substring(0, slash), us), measure(url.substring(slash), us)) > 360 - 32) us -= 2; }
+            FrameLayout addrBox = stamp(L.tile, L.ink, 6, false);
+            TextView addr = centered("\u2066" + shown.replace("\n", "\u2069\n\u2066") + "\u2069", us, L.ink, true); addr.setTextDirection(View.TEXT_DIRECTION_LTR); addr.setSingleLine(!two); addr.setMaxLines(two ? 2 : 1);
+            addrBox.addView(addr, new FrameLayout.LayoutParams(-1, -1));
+            root.addView(addrBox, at(360, 130, 96, 630));
+        }
         java.util.List<String> names = phones.room.names();
         for (int i = 0; i < names.size(); i++) {
             FrameLayout st = stamp(L.tile, L.ink, 6, false);
@@ -798,7 +806,7 @@ public abstract class GameActivity extends Activity {
         if (!way) lobbyBtn = 0;
         if (!can) {   // the count only while it is short
             TextView short1 = text(missing == 1 ? S.t("ناقص لاعب") : S.t("ناقص %s", num(missing)), 44, L.ink, true);
-            root.addView(short1, at(640, 64, 96, 760));
+            root.addView(short1, at(552, 72, 504, 410));   // in the middle column, clear of the name tiles at the end
         }
         TextView go = button(S.t("ابدأ"), lobbyBtn == 0);
         if (!can) go.setAlpha(.55f);
