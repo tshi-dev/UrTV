@@ -10,5 +10,10 @@ https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/a
 https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/after-09-liar-room.png
 https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/after-10-quiz-setup.png
 https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/after-11-quiz-room.png
+https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/after-12-word5-typing.png
+https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/after-12-word5-typing.xml
+https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/after-13-word5-coloured.png
+https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/after-13-word5-coloured.xml
 https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/crashes.txt
+https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/glyph-centre.txt
 https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/log.txt
