@@ -195,7 +195,7 @@ set1() {   # $1 the extra's name, $2 its value
 case "${1:-}" in
   show)   rc=0; send GET || rc=$?; active; exit "$rc" ;;   # the version line stays first
   on)
-    "$PY" -I optimize/tv.py "pm list packages sa.urtv.screensaver" | tr -d '\r' | grep -qx 'package:sa.urtv.screensaver' \
+    "$PY" -I optimize/tv.py "pm list packages sa.urtv.screensaver" | tr -d '\r' | grep -x 'package:sa.urtv.screensaver' > /dev/null \
       || { echo "!! Our screensaver is not installed on this TV: optimize/install.sh saver"; exit 1; }
     printf '%s\n' "settings put secure screensaver_enabled 1" "settings put secure screensaver_components $OURS" \
       "settings put secure screensaver_default_component $OURS" | "$PY" -I optimize/tv.py --batch > /dev/null
@@ -311,7 +311,7 @@ case "${1:-}" in
     case "$op" in add|remove) ;; *) echo "usage: optimize/saver.sh reciter-fav add|remove <reciter id>" >&2; exit 2 ;; esac
     case "$id" in *[!A-Za-z0-9_-]*|"") echo "!! a reciter id is letters, digits, - and _ (optimize/music.sh reciters lists them)" >&2; exit 2 ;; esac
     out=$("$PY" -I optimize/tv.py "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.RECITER_FAV --es op $op --es id $id" | tr -d '\r') || out=""
-    case "$out" in *'data="saved'*) echo "reciter-fav $op $id: saved" ;; *error:*) echo "!! $(printf '%s\n' "$out" | sed -n 's/.*data="\(error:[^"]*\)".*/\1/p' | head -1)"; exit 1 ;; *) echo "!! the home app did not answer (is it installed and up to date?)"; exit 1 ;; esac ;;
+    case "$out" in *'data="saved'*) echo "reciter-fav $op $id: saved" ;; *error:*) echo "!! $(printf '%s\n' "$out" | sed -n 's/.*data="\(error:[^"]*\)".*/\1/p' | sed -n 1p)"; exit 1 ;; *) echo "!! the home app did not answer (is it installed and up to date?)"; exit 1 ;; esac ;;
   matchestoday) case "${2:-}" in on|off) set1 matchestoday "$2" ;; *) echo "usage: optimize/saver.sh matchestoday on|off"; exit 1 ;; esac ;;
   pagesdark) set1 pagesdark "${2:?usage: optimize/saver.sh pagesdark on|off}" ;;
   favbar)    set1 favbar "${2:?usage: optimize/saver.sh favbar 5|6|7|8|9|10|all}" ;;

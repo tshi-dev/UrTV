@@ -2,7 +2,8 @@
 """Is this device an Android TV, and is its WebView new enough? Reads the TV's answers (the output of
 optimize/precheck.sh: `tv.py --batch` blocks) and prints what to tell the person. Standard library only.
 
-    precheck.py check < answers     the full check: prints lines, exits 0 (go on) or 3 (not an Android TV: stop)
+    precheck.py check < answers     the full check: prints lines, exits 0 (go on), 3 (not an Android TV: stop), 5 (no answer: stop),
+                                    or 6 (Android older than 8: stop; nothing was changed)
     precheck.py report < answers    the two lines for report.md: «Device: …» and «WebView: …»
     precheck.py held < answers      exit 4 when the WebView is known and older than 80 (the TV's own screensaver stays
                                     selected until it is updated), else 0; prints nothing
@@ -14,12 +15,15 @@ import re
 import sys
 
 MIN_WEBVIEW = 80
+MIN_SDK = 26   # the home app and the add-on need Android 8 (minSdk 26); 4.4: refused here, before anything is changed, not at the install
 
 NOT_TV_AR = ("هذا الجهاز مو تلفزيون أندرويد (Android TV أو Google TV)، فتلفزيونك ما يشتغل عليه. تلفزيونات سامسونج (Tizen) "
              "وإل جي (webOS) ما تقدر تشغّل هالتطبيقات، والجوال أو التابلت مو تلفزيون. إذا عندك تلفزيون أو جهاز أندرويد تي في "
              "ثاني (ميبوكس، شاومي ستيك، كروم كاست مع Google TV…) وصّله على نفس الشبكة وجرّب عليه.")
 WEBVIEW_AR = ("نسخة «Android System WebView» في تلفزيونك قديمة ({v})، وشاشة التوقف تحتاج ٨٠ أو أحدث وإلا ما تشتغل. "
               "افتح متجر Play في التلفزيون، دوّر على «Android System WebView» واضغط تحديث. وإذا تبي أفتح لك صفحته بنفسي أقدر.")
+OLD_AR = ("نسخة أندرويد في هذا التلفزيون قديمة ({v})، وتلفزيونك يحتاج أندرويد ٨ أو أحدث. ما غيّرنا شي في التلفزيون. "
+          "إذا فيه تحديث للنظام من الإعدادات ← حول ← تحديث النظام، حدّثه وجرّب مرة ثانية، أو جرّب على جهاز أندرويد تي في أحدث.")
 FIRE_AR = ("هذا جهاز Fire TV من أمازون: ممكن يشتغل جزئياً، وغالباً ما يسمح بتغيير الشاشة الرئيسية (بنكمل ونقول لك وش صار).")
 
 
@@ -99,6 +103,13 @@ def check(answers):
         print("   Samsung (Tizen) and LG (webOS) TVs can't run these apps, and a phone or tablet is not a TV. Tell the person, in Arabic:")
         print("   «" + NOT_TV_AR + "»")
         return 3
+    sdk = find(answers, "getprop ro.build.version.sdk").strip()
+    if sdk.isdigit() and int(sdk) < MIN_SDK:
+        release = find(answers, "getprop ro.build.version.release").strip() or "?"
+        print(f"!! This TV runs Android {release} (SDK {sdk}): UrTV's home needs Android 8 (SDK {MIN_SDK}) or newer, so the setup stops here, "
+              "nothing was changed. Tell the person, in Arabic:")
+        print("   «" + OLD_AR.format(v=release) + "»")
+        return 6
     print("Device: " + ("Fire TV (Amazon)" if k == "fire" else "Android TV / Google TV"))
     if k == "fire":
         print("   Fire TV may work partly, and its home switch may be refused (then SKIP_LAUNCHER=1 optimize/run.sh). Tell the person, in Arabic:")

@@ -32,7 +32,8 @@ done
 
 pm enable "${STOCK%%/*}"
 pm enable com.google.android.tungsten.setupwraith
-cmd role add-role-holder --user 0 android.app.role.HOME "${STOCK%%/*}"
+sdk=$(getprop ro.build.version.sdk 2> /dev/null)
+[ "${sdk:-99}" -lt 29 ] 2> /dev/null || cmd role add-role-holder --user 0 android.app.role.HOME "${STOCK%%/*}"   # no role before Android 10 (an unknown SDK: asked, as before)
 cmd package set-home-activity --user 0 "$STOCK"
 am start -n "$STOCK"
 input keyevent KEYCODE_HOME

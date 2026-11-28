@@ -323,7 +323,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
     صفحة الجوال: fav_bar
 ——— ترتيب التطبيقات المفضلة [الرئيسية]
     مثال للوكيل: optimize/dock.sh apps
-    مثال للوكيل: optimize/dock.sh set <pkg> …  (1–10, in their order: exactly those, never topped up to five; editing the row on the TV keeps its floor of five)
+    مثال للوكيل: optimize/dock.sh set <pkg> …
     مثال للوكيل: optimize/dock.sh show
     مثال للوكيل: optimize/dock.sh reset
 ——— تعديل المفضلة [الرئيسية]

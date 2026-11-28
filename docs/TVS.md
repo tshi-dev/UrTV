@@ -206,6 +206,26 @@ exact restore as the home switch, plus the bucket line), the setting row only sh
 disabling a package needs the shell (the TV's own local ADB of «إعداد تلفزيوني» could run it). First on the TV: with `launcherx` enabled and
 ours holding the HOME role, does Home open ours on this firmware at all? If not, the mode is the stock home and nothing more.
 
+## When there is no ADB in the TV's own menus
+
+Three kinds of set came up in reports where `optimize/find-tv.sh` found nothing because ADB could not be turned on the usual way
+(Settings → Device preferences → About → press «Build» 7 times → Developer options → USB debugging / Network debugging):
+
+- **Droidlogic (Amlogic) and CVTE boards** (many unbranded TVs and the TVs built on them for small brands): Developer options may be
+  missing or show no debugging switch. On these boards ADB is in the **factory (service) menu**, opened with a remote key sequence that
+  differs by board and maker (look it up for the exact model, never guess). There, turn on only the ADB item («ADB», «USB debug»,
+  «Network ADB» or similar) and leave the menu: **change nothing else there** (the panel, white balance and region values have no undo
+  for a person). Then `optimize/find-tv.sh` as usual. The person does this with the remote; the agent only says the steps.
+- **An operator's box** (an IPTV or OTT box from a telecom, with the operator's own image, such as the JAWWY row above): the operator may
+  lock Developer options, remove apps installed over ADB (`install.sh` then installs with the Play Store as the installer, once), and
+  keep its own launcher. The limit is the operator's: where Developer options are locked there is no ADB and no setup from a computer;
+  UrTV can still be installed from the box's own store or a downloader app and used as an app (and as the screensaver where the box lets
+  a third-party screensaver run). Never try to unlock or root an operator's box.
+- **A Mi Box with no ADB route** (a Xiaomi Mi Box whose firmware has no Network debugging, only USB debugging, and Android 9, so no
+  Wireless debugging either): its USB port is a host port, so a computer cannot reach adbd over a cable, and there is no way in over
+  the network. There the setup cannot run, from a computer or on the TV («إعداد تلفزيوني» also talks to the TV's adbd): install UrTV with
+  a downloader app and use it from the apps row; say so to the person plainly instead of retrying the scan.
+
 ## D-pad direction on the home screen and its rows
 
 The home screen reads right to left. The favourites row (the app tiles under the pills) puts the **first favourite at the right edge**:

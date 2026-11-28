@@ -120,5 +120,5 @@ check("install.sh: a newer build already on the TV is a clear answer (the caller
 o, e, l = stream_sh("Success", env={"URTV_STREAM": "0"})
 check("install.sh: URTV_STREAM=0: not tried", o.strip() == "" and l == "", (o, l))
 check("install.sh: push_install and from_github try the stream first, then the file way unchanged",
-      src.count('out=$(stream_install "$1" "$2")') == 1 and src.count('out=$(stream_install "$name" "$2")') == 1 and '[ "${try:-}" = streamed ] || for try in 1 2; do' in src)
+      src.count('out=$(stream_install "$1" "$2")') == 1 and src.count('out=$(TV_STREAM_READ_S="${TV_STREAM_READ_S:-1500}" stream_install "$name" "$2" 2)') == 1 and '[ "${try:-}" = streamed ] || for try in 1 2; do' in src)
 sys.exit(1 if bad else 0)

@@ -25,10 +25,20 @@ hashes=--require-hashes
 if [ -n "$system_site" ]; then   # Pillow only serves photos.sh: it must not stop the rest where it cannot be built
   hashes=
   reqs=$(mktemp); sed -n 's/^\([A-Za-z][A-Za-z0-9_.-]*\)==.*/\1/p' requirements.txt | grep -vi '^pillow$' > "$reqs" || true
-  venv/bin/python -c "import PIL" > /dev/null 2>&1 || venv/bin/python -m pip install -q --no-cache-dir pillow > /dev/null 2>&1 \
+  venv/bin/python -c "import PIL" > /dev/null 2>&1 || venv/bin/python -m pip install -q --prefer-binary --no-cache-dir pillow > /dev/null 2>&1 \
     || echo "(Pillow is not here: photos.sh needs it; Termux: pkg install python-pillow, Alpine / iSH: apk add py3-pillow, then optimize/setup.sh again)"
 fi
-if ! venv/bin/python -m pip install -q --no-cache-dir ${hashes:+"$hashes"} -r "$reqs"; then
+# 4.4: a computer with no wheel of the pinned cryptography (Windows ARM64, 32-bit Windows, an older Mac) made pip build it from source, which
+# fails: there, and only there, the same pins with the newest cryptography that has wheels for them (requirements-fallback.txt)
+installed=yes
+if ! venv/bin/python -m pip install -q --prefer-binary --no-cache-dir ${hashes:+"$hashes"} -r "$reqs"; then
+  installed=no
+  if [ "$reqs" = requirements.txt ]; then
+    echo "(no ready-made cryptography for this computer: installing the newest that has one, $(sed -n 's/^cryptography==\([^ ]*\).*/\1/p' requirements-fallback.txt))"
+    venv/bin/python -m pip install -q --prefer-binary --no-cache-dir ${hashes:+"$hashes"} -r requirements-fallback.txt && installed=yes
+  fi
+fi
+if [ "$installed" != yes ]; then
   echo "!! Couldn't install the Python packages into optimize/venv (pip's error is above). If it is a network"
   echo "   error, allow this terminal network access (pypi.org), then run optimize/setup.sh again."
   [ -z "$system_site" ] || echo "   On a phone or an iPad the packages that need building come from the system: Termux: pkg install python-cryptography; Alpine / iSH: apk add py3-cryptography (docs/PHONE-SETUP.md)."
@@ -36,7 +46,7 @@ if ! venv/bin/python -m pip install -q --no-cache-dir ${hashes:+"$hashes"} -r "$
 fi
 [ "$reqs" = requirements.txt ] || rm -f "$reqs"
 # iPhone/Samsung HEIC photos for photos.sh: optional, so a computer with no wheel for it still gets everything else
-venv/bin/python -m pip install -q --no-cache-dir pillow-heif > /dev/null 2>&1 || echo "(HEIC photos won't be readable here: photos.sh takes JPEG, PNG, WebP, GIF and BMP)"
+venv/bin/python -m pip install -q --prefer-binary --no-cache-dir pillow-heif > /dev/null 2>&1 || echo "(HEIC photos won't be readable here: photos.sh takes JPEG, PNG, WebP, GIF and BMP)"
 # every `venv/bin/python -I` call verifies TLS with certifi (python.org's macOS Python ships no CA certificates)
 for sp in venv/lib/python3.*/site-packages venv/Lib/site-packages; do
   [ -d "$sp" ] || continue

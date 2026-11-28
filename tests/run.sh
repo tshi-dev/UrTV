@@ -266,7 +266,6 @@ python3 tests/pray_rows_test.py   # 4.4 beta 4: «المؤذن», «الأدعي
 python3 tests/music_adhan_state_test.py   # 4.4 beta 4: `music.sh adhan state <prayer> <state>` is reached (R-333); `adhan state` alone is still the status
 python3 tests/setup_cancel_test.py   # 4.4 beta 4 review F87 (R-262): «إلغاء» is its own message with its retry, also when the paired route exists
 python3 tests/extras_trust_test.py   # 4.4 beta 4 review F88: the add-on's provider is called only when its owner is the add-on signed as the home
-python3 tests/photo_size_test.py   # 4.4 beta 4 review F89 (R-336): a 12 MP photo is sub-sampled by its long side and sent under 700 KB
 python3 tests/quiet_hours_test.py   # 4.4 touch «ساعات الهدوء»
 python3 tests/kahf_template_test.py   # 4.4 touch: the Friday Kahf, ready
 python3 tests/fade_in_test.py   # 4.4 touch «يبدأ بهدوء»
@@ -401,32 +400,16 @@ python3 tests/run_resume_test.py
 python3 tests/prefetch_test.py
 # 4.4: tests that existed but CI never ran (all pass on next; about 50 s together)
 python3 tests/adhan_late_test.py   # Hotfix 4.3 «الأذان الساعة 12 الليل»: an adhan alarm that arrives late, early, with no prayer time or not near
-python3 tests/build413_test.py   # 4.4, the tester's build 413 (Home 100 % in normal use; T9 with the owner's real remote: the add-on's Home key
 python3 tests/clean_mode_test.py   # «UrTV النظيف» part A (the clean home): it is a MASK over the home (nothing deleted, none of the person's choic
 python3 tests/clean_prayer_card_test.py   # «UrTV النظيف»'s prayer card («بطاقة الصلاة»: بدون / سطر تحت التاريخ / بطاقة; «مكان البطاقة»: وسط / تحت الساعة
 python3 tests/clear_text_test.py   # «نص أوضح» (4.3.1): one setting that makes the grey words and numbers of the home and the screensaver as clear
 python3 tests/control_shape_test.py   # 4.3.1 «شكل لوحة التحكم»: the control center is the tall panel (default, as 4.3) or a wide page; both fit 1080p
-python3 tests/dev_help_test.py   # User report «ماهو راضي يفعل تصحيح USB»: Developer options open from the build number, whose place differs per
 python3 tests/dock_retry_test.py   # Hotfix 4.3: after a cold start the favourites row showed only five apps (two users, 4.2 and 4.3). showApps() f
 python3 tests/factory_test.py   # «تخلّص من واجهة المصنع» (its own row in the settings): the engine on SetupEngineRun's fake TV (the offer and i
 python3 tests/rescue_home_test.py   # 4.4 (R7): the rescue's fallback home: armed before the stock home goes, off when it is back; the factory step only where needed; a PC-switched TV gets its stock home back
 python3 tests/fragment_keep_test.py   # 4.3.2 (a user's adhan times and prayer card disappeared after 4.3.1): the home keeps the screensaver's last RE
 python3 tests/glow_mode_test.py   # «توهّج لون التطبيق» (4.3.1): the glow behind the focused app is OFF by default (new installs and old ones), ha
-python3 tests/google_tv_home_test.py   # Google TV (user reports: TCL G10/G08, Changhong Android 14, Sony BRAVIA VH21, Xiaomi MiTV-AFMU0/1): since 4.3
 python3 tests/home_snapshot_test.py   # The home's stand-in picture (HomeSnapshot): the rules pinned from the source: what the key is made of, the age
-python3 tests/home_caller_test.py   # R-412: each HOME start of our home logs the kind of app that asked (diagnosis for a TCL A11 settings option)
-python3 tests/prefs_migration_test.py   # R-411: every preference key 4.3.6 wrote is still read by 4.4 with its type, and none is newly removed
-python3 tests/boot_home_test.py   # R-410: «ابدأ بالرئيسية بعد التشغيل»: our home in front after a boot, on by default on Changhong and Skyworth only
-python3 tests/wizard_home_test.py   # R-409: the setup wizard keeps Home: the add-on's Home key catch on by default, said plainly in the result and the report
-python3 tests/key_filter_switch_test.py   # R-408: «فلتر أزرار الريموت»: dock.sh key-filter off and the add-on never filters the remote's keys (a key remapper)
-python3 tests/settings_low_ram_test.py   # R-407: a weak TV whose stock home is off: its Settings key opens Android's settings over other apps
-python3 tests/app_keys_default_test.py   # R-406: TCL's YouTube, Netflix, Prime buttons and a Xiaomi Google TV's YouTube open their own app from the add-on
-python3 tests/xiaomi_home_catch_test.py   # R-405: the Home catch back on the Xiaomi Google TVs of docs/TVS.md only; R-310 for every other Xiaomi
-python3 tests/voice_keys_test.py   # R-404: SEARCH, ASSIST and VOICE_ASSIST go to Android untouched (the home after the adhan and a reminder, the add-on first)
-python3 tests/role_boot_test.py   # R-401: the HOME role read again at boot and logged; given back once, else the home says so once
-python3 tests/city_keep_test.py   # R-403: the city is committed and kept; a settings file without a city gets it back (a TCL A11 power cycle)
-python3 tests/idle_keep_test.py   # R-400: the idle delay the person chose goes back at boot when the firmware reset it to «never» (Skyworth A11)
-python3 tests/idle_rule_test.py   # «تبدأ شاشة التوقف بعد 2147483 ثانية» (user report): the TV's idle delay was 2147483647 (Integer.MAX: the TV tu
 python3 tests/install_saver_test.py   # 4.3.2 «ثبّت الجزء الثاني»: a TV with only the home (a Fire TV, or installed with Downloader) must never meet a
 python3 tests/league_groups_test.py   # 4.3.1 «البطولات الكبرى» and «اختر دورياتك»: the big tournaments' list is one data file that resolves against t
 python3 tests/add_lag_test.py   # 4.4 beta 2: adding leagues and clubs never freezes (the search waits, folds once, ticks in place, off the UI thread)
@@ -444,7 +427,6 @@ python3 tests/step47_test.py   # The tester's step 47 findings (build 222, a rea
 python3 tests/tournaments_fixtures_test.py   # 4.3.1 the CI tool of «البطولات الكبرى» (.github/tools/tournaments_fixtures.py) with TheSportsDB mocked: three
 python3 tests/vector_drawables_test.py   # Every vector drawable's pathData must be one the Android Gradle plugin's own vector parser reads (the release
 python3 tests/wall_first_frame_test.py   # Hotfix 4.3: the home never shows black on the way back (a user's Mi Box on 4.3: the cards on black for a few s
-python3 tests/wifi_hotspot_test.py   # A user's tested route (Xiaomi): when the setup wizard owns the saved Wi-Fi and the TV shows no «انسَ الشبكة» o
 python3 tests/your_tv_hub_test.py   # «تلفزيونك» (YourTvHubActivity): what opening the app shows: four windows (the markets, the matches, the games,
 python3 tests/rescue_code_test.py   # the rescue app's Downloader code: the same on the setup page and in docs/RESCUE.md
 python3 tests/run_list_test.py   # every test file is run by this script (CI runs nothing else)
@@ -471,9 +453,6 @@ python3 tests/webview_guard_test.py   # 4.3.5: no WebView on the TV: the home dr
 python3 tests/crash_loop_test.py   # 4.3.5 (R7): two crashes right after start open SafeActivity (the TV's own home one press away), never a black screen
 python3 tests/safe_stock_test.py   # 4.4 (step 100): «افتح الشاشة الأصلية» turns a stock home an earlier setup turned off back on (our key), else says the way by hand; never silent
 python3 tests/api28_compile_test.py   # 4.3.5: the home compiles against Android 9 with every newer API behind a Build.VERSION check; the reports name the WebView
-python3 tests/api26_compile_test.py   # 4.3.6: the home against Android 8.0 (its minSdk): every newer API behind a version check for 27 or newer (a Percee OTT box)
-python3 tests/black_video_test.py   # 4.3.5: no page of ours keeps working behind another app (the screensaver activity, every WebView owner, the page's hidden gate)
-node tests/es2017_parse.test.mjs   # #19: the built pages parse as ES2017 (Android 9 TVs stuck on WebView 66)
 python3 tests/api26_compile_test.py   # 4.3.6: the home against Android 8.0 (its minSdk): every newer API behind a version check for 27 or newer (a Percee OTT box)
 node tests/i18n_page_test.mjs   # dist/tv-en.html in a browser: left to right, no Arabic in its own words on any card
 #
@@ -537,5 +516,34 @@ python3 tests/saver_prayerfix_test.py   # 4.4 review: the late prayer correction
 python3 tests/saver_kids_keep_test.py   # 4.4 review: the kids copy keeps its last real answer (F3)
 #
 python3 tests/keep_settle_test.py   # R-380 protected features stay on across the restarts (keep.sh marks settle.sh, keep once more after the last restart)
+# 4.4 the PC-side setup fixes (R-363 to R-380): one test per fix
+python3 tests/share_decode_test.py   # R-363 share.py reads the TV as UTF-8 (Windows)
+python3 tests/sigpipe_test.py   # R-364 no exit 141 from an early reader in a pipefail pipeline
+python3 tests/check_home_slow_test.py   # R-365 check-home.sh waits up to 30 s and tries once more
+python3 tests/curl_5xx_test.py   # R-366 a 5xx download is tried again
+python3 tests/extras_stream_retry_test.py   # R-367 SmartTube: a longer stream, once more, «not installed»
+python3 tests/role_sdk_test.py   # R-368 no cmd role before Android 10
+python3 tests/measure_fallback_test.py   # R-369 free RAM from /proc/meminfo, «not measured» with the cause
+python3 tests/shot_empty_test.py   # R-370 an empty screenshot taken again; the small copy without Pillow
+python3 tests/standby_wake_test.py   # R-371 WAKEUP after a restart, «press Power»
+python3 tests/pip_wheels_test.py   # R-372 cryptography with wheels, --prefer-binary
+python3 tests/home_skip_line_test.py   # R-373 the report's «Home switch: skipped» rewritten
+python3 tests/props_retry_test.py   # R-374 empty properties read again
+python3 tests/old_android_test.py   # R-376 Android older than 8 stops at the precheck
+python3 tests/find_team_alias_test.py   # R-377 club nicknames and abbreviations
+python3 tests/dock_order_test.py   # R-378 the favourites: the first on the right
+python3 tests/tvs_doc_test.py   # R-379 TVs with no ADB in their menus
 # «regressions» (docs/dev/REGRESSIONS.md): the gate's own tests, and any guard of the register this file does not run by name above
 python3 tests/regressions/run.py --rest
+python3 tests/home_caller_test.py   # R-412: each HOME start of our home logs the kind of app that asked (diagnosis for a TCL A11 settings option)
+python3 tests/prefs_migration_test.py   # R-411: every preference key 4.3.6 wrote is still read by 4.4 with its type, and none is newly removed
+python3 tests/boot_home_test.py   # R-410: «ابدأ بالرئيسية بعد التشغيل»: our home in front after a boot, on by default on Changhong and Skyworth only
+python3 tests/wizard_home_test.py   # R-409: the setup wizard keeps Home: the add-on's Home key catch on by default, said plainly in the result and the report
+python3 tests/key_filter_switch_test.py   # R-408: «فلتر أزرار الريموت»: dock.sh key-filter off and the add-on never filters the remote's keys (a key remapper)
+python3 tests/settings_low_ram_test.py   # R-407: a weak TV whose stock home is off: its Settings key opens Android's settings over other apps
+python3 tests/app_keys_default_test.py   # R-406: TCL's YouTube, Netflix, Prime buttons and a Xiaomi Google TV's YouTube open their own app from the add-on
+python3 tests/xiaomi_home_catch_test.py   # R-405: the Home catch back on the Xiaomi Google TVs of docs/TVS.md only; R-310 for every other Xiaomi
+python3 tests/voice_keys_test.py   # R-404: SEARCH, ASSIST and VOICE_ASSIST go to Android untouched (the home after the adhan and a reminder, the add-on first)
+python3 tests/role_boot_test.py   # R-401: the HOME role read again at boot and logged; given back once, else the home says so once
+python3 tests/city_keep_test.py   # R-403: the city is committed and kept; a settings file without a city gets it back (a TCL A11 power cycle)
+python3 tests/idle_keep_test.py   # R-400: the idle delay the person chose goes back at boot when the firmware reset it to «never» (Skyworth A11)

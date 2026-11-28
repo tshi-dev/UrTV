@@ -80,7 +80,7 @@ own_add() {   # $1 = the person's file: made small, uploaded, kept by the app, m
   trap '[ -z "$OWN_WORK" ] || rm -rf "$OWN_WORK"' EXIT
   local af=()
   if command -v "$FFPROBE" > /dev/null 2>&1; then   # a recording longer than 5 minutes is cut there, with a short fade so it does not stop dead
-    secs=$("$FFPROBE" -v error -show_entries format=duration -of csv=p=0 "$f" 2> /dev/null | head -n 1 | cut -d. -f1 || true)
+    secs=$("$FFPROBE" -v error -show_entries format=duration -of csv=p=0 "$f" 2> /dev/null | sed -n 1p | cut -d. -f1 || true)
     if [[ "$secs" =~ ^[0-9]+$ ]] && [ "$secs" -gt "$OWN_MAX_SECONDS" ]; then
       af=(-af "afade=t=out:st=$((OWN_MAX_SECONDS - 4)):d=4")
       note="note: the recording is $((secs / 60)):$(printf %02d $((secs % 60))) long; the adhan is at most 5 minutes, so only the first 5:00 is kept."
@@ -171,7 +171,7 @@ case "$command" in
     [ $# -eq 0 ] || usage
     # the list the INSTALLED app plays from (its own assets: `radio N` counts in it), else this folder's copy (a checkout older than the TV's app can
     # have fewer stations: the tester's had 11 of the app's 13)
-    apk=$(tv "pm path sa.urtv.home" 2> /dev/null | head -n 1 | sed 's/^package://' | tr -d '\r') || apk=""
+    apk=$(tv "pm path sa.urtv.home" 2> /dev/null | sed -n 1p | sed 's/^package://' | tr -d '\r') || apk=""
     onTv=""
     if [ -n "$apk" ]; then onTv=$(tv "unzip -p $apk assets/quran/$command.json" 2> /dev/null | tr -d '\r' || true); fi
     ONTV="$onTv" "$PY" - "$command" <<'PY'
