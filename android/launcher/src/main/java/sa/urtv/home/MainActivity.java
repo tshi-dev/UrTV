@@ -3858,7 +3858,7 @@ public class MainActivity extends Activity {
         if (lp.width != want || lp.gravity != g) { lp.width = want; lp.gravity = g; tray.setLayoutParams(lp); }
         if (tvRowsBox != null && tvRowsBox.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {   // the row under it, the bar's own start and end
             int free = want < 0 ? 0 : Math.max(0, room - want);
-            int left = g == Gravity.LEFT ? 0 : g == Gravity.RIGHT ? free : free / 2;
+            int left = FavBar.alignedLeft(appsAlignNow) ? 0 : FavBar.alignedRight(appsAlignNow) ? free : free / 2;   // the screen's own left and right (absolute, as alignGravity): named by FavBar, not written as a side here
             ViewGroup.MarginLayoutParams t = (ViewGroup.MarginLayoutParams) tvRowsBox.getLayoutParams();
             int l = bar(FavBar.SIDE) + left, r = bar(FavBar.SIDE) + free - left;
             if (t.leftMargin != l || t.rightMargin != r) { t.leftMargin = l; t.rightMargin = r; tvRowsBox.setLayoutParams(t); }

@@ -27,7 +27,7 @@ check("(a) in «بطاقات» the bar is as wide as its tiles and its own paddi
       and "if (w > dockRow.getPaddingLeft() + dockRow.getPaddingRight() && w < room) want = w;" in fit
       and "int g = FavBar.alignGravity(appsAlignNow) & Gravity.HORIZONTAL_GRAVITY_MASK;" in fit, fit[:300])
 check("(a) «كمّل المشاهدة» under it moves with it: the same frame (the bar's box and the row both have FavBar.SIDE at each side), the bar's own start and end",
-      "int left = g == Gravity.LEFT ? 0 : g == Gravity.RIGHT ? free : free / 2;" in fit and "int l = bar(FavBar.SIDE) + left, r = bar(FavBar.SIDE) + free - left;" in fit
+      "int left = FavBar.alignedLeft(appsAlignNow) ? 0 : FavBar.alignedRight(appsAlignNow) ? free : free / 2;" in fit and "int l = bar(FavBar.SIDE) + left, r = bar(FavBar.SIDE) + free - left;" in fit
       and "hero.addView(bottom, lp(-1, -2, Gravity.BOTTOM, bar(FavBar.SIDE), 0, bar(FavBar.SIDE)" in main and "content.addView(tvRowsBox, llp(-1, -2, bar(FavBar.SIDE), 0, bar(FavBar.SIDE), 0));" in main)
 check("(a) it follows the row: each layout of the tiles (one post at a time), the look, the alignment, and «كمّل المشاهدة» coming or going",
       "if (!trayFitQueued) { trayFitQueued = true; handler.post(this::fitTray); }" in main and main.count("fitTray();") >= 3
