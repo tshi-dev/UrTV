@@ -48,3 +48,11 @@ At 720p with the system font at 1.3 (SIMPLE.md rule 5) the same screens: `after-
 | `before-08-liar-setup.png`: a party game with no remote way | the same page with the row «كيف تلعبون؟» |
 
 To be decided by the owner: whether the default for the party games is «جوالات» (as now) or «ريموت واحد».
+
+## As built (work/44-games-owner, real emulator shots)
+
+The flow is built as the revised proposal says; the pictures are the CI emulator's (1920x1080, `built-*.png`, taken by `.github/screens/games-flow.sh`):
+`built-00-list-tags` (no header sentence, no phone button, one outlined tag a tile), `built-01-oddone-setup-remote` / `built-02-oddone-setup-phones` («كيف تلعبون؟» first; with phones the players row and «الأسماء» are gone), `built-03-oddone-room-short` (address under the QR, «ناقص ٣», «ابدأ» grey with the focus, «نلعب بالريموت»), `built-04` (OK on the grey «ابدأ»: nothing moves), `built-05` (the focus on «نلعب بالريموت»), `built-06` (the same game on the remote), `built-07` (the choice is remembered), `built-09-liar-room` (a phone-only game: «ابدأ» alone, no way-out button).
+UI review fixes: the address is never wider than the QR, «ناقص …» sits in the middle column clear of the name tiles, and the screen title stands 14 px higher (a padded line box clipped the dots under ب and ج, seen in the first shot and reverted).
+Word game and letter centring: `built-12-word5-typing`, `built-13-word5-coloured`; `built-glyph-centre.txt` is the measured offset of every letter's ink from its tile's centre (34 tiles and keys, at most 2 px).
+Not shot: the room with enough phones (no phone can join the emulator's room; the mockup stands), and 720p with the font at 1.3.
