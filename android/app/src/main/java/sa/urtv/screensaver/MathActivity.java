@@ -28,11 +28,15 @@ public class MathActivity extends GameActivity {
         for (int i = 0; i < qs.length; i++) qs[i] = num(MathGame.QUESTIONS[i]);
         for (int i = 0; i < secs.length; i++) secs[i] = S.t("%s ثانية", num(MathGame.SECONDS[i]));
         chips = new GameChips().add("count", S.t("الأسئلة"), qs, 0).add("level", S.t("المستوى"), new String[] {S.t("سهل"), S.t("متوسط"), S.t("صعب")}, 1).add("time", S.t("الوقت"), secs, 1);
+        modeChip(chips, 1);
         remembered(soundChip(chips));
     }
     private boolean onPhones() { return phones != null && phones.room.phase() == GamePhoneRoom.Phase.PLAY; }
 
+    @Override protected Runnable remoteWay() { return () -> { screen = Screen.SETUP; redraw(); start(); }; }
+    @Override protected GameChips lobbyChips() { return chips; }
     private void start() {
+        if (remoteOn(chips)) { startActivity(remoteIntent(CallAloudActivity.class, chips).putExtra("src", "maths")); finish(); return; }   // «ريموت واحد»: the answers are called aloud (CallAloudActivity)
         if (!openPhones()) return;
         screen = Screen.LOBBY; phoneLobby = true; redraw();
     }

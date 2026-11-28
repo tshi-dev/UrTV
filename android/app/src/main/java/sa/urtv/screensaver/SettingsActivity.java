@@ -401,6 +401,9 @@ public class SettingsActivity extends Activity {
         // «بطاقة المباريات لليوم فقط»: the «المباريات» card (beside the clock, on the home) shows only the games of the city's day; off by default
         row("بطاقة المباريات لليوم فقط", prefs.matchesToday() ? "يعمل، مباريات اليوم فقط، كل مباراة في يومها" : "متوقف، أقرب مباريات الأسبوع", R.drawable.ic_trophy,
             new Runnable() { public void run() { prefs.setMatchesToday(!prefs.matchesToday()); render(); } });
+        // 4.4 beta 5 «شكل آخر المباريات»: a club's last five in the league's table (the page of «المباريات»): dots, boxes, boxes with ف ت خ
+        row("شكل آخر المباريات", Prefs.formStyleLabel(prefs.formStyle()), R.drawable.ic_eye,
+            new Runnable() { public void run() { pickChoice("شكل آخر المباريات", Prefs.FORM_STYLES, prefs.formStyle(), v -> prefs.setFormStyle(v)); } });
 
         row("رياضات أخرى", labels(Prefs.EVENTS, prefs.list("events"), "بدون"), R.drawable.ic_trophy,
             new Runnable() { public void run() { pickMany("events", "رياضات أخرى", Prefs.EVENTS, "بدون اختيار = بدون"); } });

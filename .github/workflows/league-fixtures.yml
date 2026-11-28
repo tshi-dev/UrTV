@@ -120,6 +120,7 @@ jobs:
           sparse-checkout: |
             .github/tools
             assets/shared/teams.json
+            assets/shared/tournaments.json
           sparse-checkout-cone-mode: false
       - name: The archive so far, and urtv-data's
         id: src

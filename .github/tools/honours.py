@@ -6,6 +6,8 @@
                              Two sources that name a season must agree, or the season is left out and written to the report. "complete" is
                              true only when every season from the first is named (no gap, no disagreement): only then does "titles" (a club's
                              count) mean anything, and the page shows a count only then.
+  scorers/<leagueId>.json    (4.4: a lone scorer's "team", the archive's club id, when the English article names his club and it is one club of
+                             that season's table in the archive; else none)
   scorers/<leagueId>.json    the top scorer(s) of the last 8 seasons: Wikidata's P3279 (with its goals), the season article's infobox (ar
                              «هداف الدوري», en "league topscorer"). Published only when every source that has the season agrees on the number
                              of players and their goals, or one source alone has a plain field (names and a number). CC BY-SA 4.0, each
@@ -245,6 +247,24 @@ def scorer_value(v):
     return {"names": names, "goals": nums.pop()}
 
 
+def scorer_club(v):
+    """4.4 the club after a top scorer in an infobox, «[[Player]] ([[Club FC|Club]])»: [(target, text)] of the links inside the brackets"""
+    p, out, depth, cur = _plain(v or ""), [], 0, []
+    for ch in p:
+        if ch == "(":
+            depth += 1
+            continue
+        if ch == ")" and depth:
+            depth -= 1
+            if not depth:
+                out += [(m.group(1).strip(), (m.group(2) or m.group(1)).strip()) for m in re.finditer(r"\[\[([^|\]]+)(?:\|([^\]]+))?\]\]", "".join(cur))]
+                cur = []
+            continue
+        if depth:
+            cur.append(ch)
+    return out
+
+
 def champion_value(v):
     """an infobox's champion value -> its club's name (the first link's text, else the plain text) or ''"""
     ls = links(v)
@@ -405,8 +425,10 @@ def unique_id(en_names, names):
 
 
 # ---- a league's top scorers
-def scorers(lg, items, archive, lab, wp, ar_of_title):
-    """(the league's scorers file body, report lines): the last SCORER_SEASONS seasons that have begun"""
+def scorers(lg, items, archive, lab, wp, ar_of_title, names=None, season_clubs=None):
+    """(the league's scorers file body, report lines): the last SCORER_SEASONS seasons that have begun. 4.4: a lone top scorer's club
+    («team», the archive's id) when the English season article names one club after him and it is exactly one club of that season's table in
+    our archive (season_clubs: {season: {club ids}}; names: {club id: (en, ar)}); else no team"""
     arch_seasons = set((archive or {}).get("seasons") or [])
     recent = [it for it in items if it["start"] and season_over(it)][-SCORER_SEASONS:]   # finished seasons: a top scorer «so far» goes stale in a week
     seasons, report = {}, []
@@ -438,6 +460,13 @@ def scorers(lg, items, archive, lab, wp, ar_of_title):
                 x["en"] = x["en"] or y["en"]
         for x in top:
             x["goals"] = best["goals"]
+        ev = scorer_value(field(wp.get("en", {}).get(it["en"]), SCORER_FIELD["en"])[1]) if it["en"] else None
+        cl = scorer_club(field(wp.get("en", {}).get(it["en"]), SCORER_FIELD["en"])[1]) if it["en"] else []
+        pool = {c: (names or {})[c] for c in (season_clubs or {}).get(s, ()) if c in (names or {})}
+        if len(top) == 1 and ev and len(ev["names"]) == 1 and len(cl) == 1 and pool:
+            team = unique_id([cl[0][0], cl[0][1]], pool)
+            if team:
+                top[0]["team"] = team
         seasons[s] = {"top": [x for x in top if x["en"] or x["ar"]],
                       "src": [f"https://{w}.wikipedia.org/wiki/" + urllib.parse.quote(it[w].replace(" ", "_")) for w in ("ar", "en") if w in found]
                       + ([f"https://www.wikidata.org/wiki/{it['q']}"] if "wikidata" in found else [])}
@@ -505,8 +534,13 @@ def run(args, fetch=http):
     for lg in sorted(LEAGUES):
         archive = load_json(adir / f"sports/{lg}.json")
         names = archive_names(adir, lg)
+        season_clubs = {}   # 4.4 each season's clubs in our archive (its table), for a top scorer's club
+        for f in [adir / f"sports/{lg}.json"] + sorted((adir / f"sports/{lg}").glob("*.json")):
+            j = load_json(f) or {}
+            if j.get("season"):
+                season_clubs[str(j["season"])] = {str(r["id"]) for r in (j.get("table") or []) if r.get("id")}
         for kind, (body, rep) in (("champions", champions(lg, by_lg.get(lg, []), archive, lab, wp, names)),
-                                  ("scorers", scorers(lg, by_lg.get(lg, []), archive, lab, wp, ar_of_title))):
+                                  ("scorers", scorers(lg, by_lg.get(lg, []), archive, lab, wp, ar_of_title, names, season_clubs))):
             report += rep
             old = load_json(prev / f"{kind}/{lg}.json")
             empty = not (body.get("seasons"))

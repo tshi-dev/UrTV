@@ -621,6 +621,22 @@
 كل المواجهات (%s)	All meetings (%s)
 الأبطال	Champions
 الهدّافون	Top scorers
+النادي|لعب|فاز|تعادل|خسر|له|عليه|الفارق|نقاط|آخر خمس مباريات	Club|P|W|D|L|GF|GA|GD|Pts|Last five
+فوز|تعادل|خسارة	win|draw|loss
+آخر خمس مباريات: %s	Last five games: %s
+مع المباريات الجارية	With the live games
+دوري أبطال آسيا %s	AFC Champions League %s
+الدوري الأوروبي	Europa League
+دوري المؤتمر الأوروبي	Conference League
+الملحق	Play-off
+الهبوط	Relegation
+النادي|المباريات|النتائج|البطولات|المواجهات	Club|Games|Results|Titles|Head to head
+الأول|الثاني|الثالث|الرابع|الخامس|السادس|السابع|الثامن|التاسع|العاشر|الحادي عشر|الثاني عشر|الثالث عشر|الرابع عشر|الخامس عشر|السادس عشر|السابع عشر|الثامن عشر|التاسع عشر|العشرون	1st|2nd|3rd|4th|5th|6th|7th|8th|9th|10th|11th|12th|13th|14th|15th|16th|17th|18th|19th|20th
+%s في %s، %s نقطة من %s مباراة	%s in %s, %s points from %s games
+آخر بطولة: %s %s	Latest title: %s %s
+في الترتيب	In the table
+المباراة القادمة	Next game
+آخر خمس مباريات	Last five games
 الحالي	Current
 جدول الترتيب النهائي %s	Final table %s
 نتائج %s	Results %s
@@ -641,6 +657,7 @@
 لا نعرف أبطال هذا الدوري بعد	This league’s champions are not known yet
 البطولات	Titles
 آخرها %s	latest %s
+هدّاف %s	Top scorer, %s
 لقب واحد	one title
 لقبان	two titles
 %s ألقاب	%s titles

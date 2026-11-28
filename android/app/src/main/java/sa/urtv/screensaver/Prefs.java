@@ -84,6 +84,8 @@ final class Prefs {
     // look of the card beside the clock (sent to the page as #cardstyle=; current is the plain card it always had)
     static final String[][] CARD_STYLES = {{"current", "الحالية"}, {"dark1", "داكنة"}, {"glass1", "زجاجية"},
         {"dark3", "داكنة بإطار"}, {"glass3", "زجاجية بإطار"}, {"boxes", "مربعات"}, {"classic", "الشكل السابق"}};
+    // 4.4 beta 5 «شكل آخر المباريات»: how a club's last five show in the league's table and on its page (sent as #formstyle=; dots, the default, is not sent)
+    static final String[][] FORM_STYLES = {{"dots", "نقاط"}, {"boxes", "مربعات"}, {"boxes-letters", "مربعات بحروف"}};
 
     // markets at the top left (sent to the page as #markets=, up to MAX_MARKETS, in this order of choice; tasi,spx,btc is what it always showed)
     static final String[][] MARKETS = {
@@ -573,6 +575,9 @@ final class Prefs {
     }
 
     String cardStyle() { return sp.getString("cardStyle", "current"); }
+    String formStyle() { String v = sp.getString("formStyle", "dots"); for (String[] f : FORM_STYLES) if (f[0].equals(v)) return v; return "dots"; }
+    void setFormStyle(String v) { sp.edit().putString("formStyle", v).apply(); }
+    static String formStyleLabel(String v) { for (String[] f : FORM_STYLES) if (f[0].equals(v)) return f[1]; return FORM_STYLES[0][1]; }
     void setCardStyle(String v) { sp.edit().putString("cardStyle", v).apply(); }
 
     // 4.4 beta 4 (the owner, the findability review: «شكل البطاقات»): the cards' size, one step either way, and their corners; the defaults change
@@ -989,6 +994,7 @@ final class Prefs {
             + (backSaver() ? "&backsaver=1" : "") + (backTwice() ? "&backtwice=1" : "")
             + (fbHideDone() ? "&fbhide=1" : "") + (kickoff() ? "" : "&ko=0") + (kickoffGoal() ? "&kogoal=1" : "") + (kickoffEnd() ? "&koend=1" : "") + (dateNum() ? "&datenum=1" : "") + (searchPill() ? "&searchpill=1" : "")   // the football home without the games that ended
             + "&cardstyle=" + cardStyle()
+            + ("dots".equals(formStyle()) ? "" : "&formstyle=" + formStyle())
             + ("m".equals(cardSize()) ? "" : "&csize=" + cardSize()) + ("style".equals(cardCorner()) ? "" : "&ccorner=" + cardCorner())
             + ("off".equals(sideCards()) ? "" : "&sidecards=" + sideCards())
             + "&design=" + design() + "&bar=" + bar() + "&barat=" + barAt() + "&wx=" + wxAt()

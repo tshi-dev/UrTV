@@ -377,7 +377,7 @@ const HW = {nowS:'الحالي', tableOf:'جدول الترتيب النهائي
   goalsFew:'%s أهداف', goalsMany:'%s هدفًا', fromArchive:'من أرشيفنا', older:'قبل ذلك', srcChamps:'المصدر: نتائج المباريات وويكي بيانات',
   srcChampsWp:'المصدر: نتائج المباريات وويكي بيانات وويكيبيديا (CC BY-SA 4.0)', srcScorers:'المصدر: ويكيبيديا وويكي بيانات (CC BY-SA 4.0)',
   noScorers:'لا نعرف هدّاف هذا الموسم بعد', noChamps:'لا نعرف أبطال هذا الدوري بعد', honours:'البطولات', lastTitle:'آخرها %s',
-  title1:'لقب واحد', title2:'لقبان', titleFew:'%s ألقاب', titleMany:'%s لقبًا', titlesLast:'%s، آخرها %s',};
+  lgScorer:'هدّاف %s', title1:'لقب واحد', title2:'لقبان', titleFew:'%s ألقاب', titleMany:'%s لقبًا', titlesLast:'%s، آخرها %s',};
 const HON_BASE = DATA_OLD + 'data-honours/';   // the weekly job's branch (.github/workflows/honours.yml); a move to urtv-data adds it to DATA_MAP and the apps' DataHost together
 const honWant = (kind, id) => archWant(HON_BASE + kind + '/' + id + '.json');
 const honSeasonName = x => ar(String(x));
@@ -393,7 +393,10 @@ function honPins(v, list, chosen){
 }
 function honTable(v, id){
   const f = archWant('sports/' + id + '/' + v.season + '.json'), ch = f && f.champ, rows = [];
-  ((f && !f.cup && Array.isArray(f.table) && f.table) || []).filter(x => x && /^\d+$/.test(String(x.id)) && x.p > 0).forEach((x, i) =>
+  const own = ((f && !f.cup && Array.isArray(f.table) && f.table) || []).filter(x => x && /^\d+$/.test(String(x.id)) && x.p > 0);
+  if(own.length && typeof mptGroup === 'function')   // 4.4 beta 5 the full table's rows (no movement, no zones, no live toggle), «البطل» after the champion's name
+    return [mptGroup({id, rows: own, past: 1, champ: ch && ch.id, champW: HW.champMark, name: fw(HW.tableOf, honSeasonName(v.season))})];
+  own.forEach((x, i) =>
     rows.push(mpItem(ar(i + 1) + '. ' + clubNm(x.ar, x.n, String(x.id)), (ch && String(ch.id) === String(x.id) ? HW.champMark + '، ' : '')
       + fw(FB_W.pts, ar(+x.pts || 0)) + '، ' + fw(FB_W.played, ar(+x.p || 0)), () => mpGo({k: 'club', id: String(x.id)}))));
   if(!rows.length && ch) rows.push(honChampRow(v, ch));   // a cup's season: its champion
@@ -454,7 +457,26 @@ function honClub(id, j){
     rows.push(mpItem(lgName(lg), n > 0 ? fw(HW.titlesLast, honTitles(n), honSeasonName(won[0].s)) : fw(HW.lastTitle, honSeasonName(won[0].s)),
       () => { mpGo({k: 'league', id: lg, tab: 3}); MP.d = Math.max(0, (MP.tabs || []).findIndex(x => x.on)); }));
   });
+  // 4.4 «هدّاف الدوري»: the newest season whose lone top scorer the scorers file gives this club («team»: from the season article's link after
+  // the player, matched to one club of that season's table in the archive); nothing when the file does not say
+  [...lgs].filter(x => /^\d+$/.test(x)).forEach(lg => {
+    const sc = honWant('scorers', lg), x = honScorerSeasons(sc, null).find(k => { const t = honTop(sc, k); return t.length === 1 && String(t[0].team || '') === id; });
+    if(!x) return;
+    const t = honTop(sc, x)[0];
+    rows.push(mpItem(fw(HW.lgScorer, lgName(lg)), honSeasonName(x) + ': ' + plNm(t) + '، ' + honGoals(+t.goals), () => { mpGo({k: 'league', id: lg, tab: 4}); }));
+  });
   return rows.length ? [{key: 'hon', name: HW.honours, games: rows}] : [];
+}
+// 4.4 beta 5 the club page's header: its latest title of any competition the archive or the weekly file names ({lg, s}), null when none
+function honLastTitle(id, j){
+  const lgs = new Set();
+  ((j && j.last) || []).concat((j && j.next) || []).forEach(g => g && g.lg && lgs.add(String(g.lg)));
+  let best = null;
+  [...lgs].filter(x => /^\d+$/.test(x)).forEach(lg => {
+    const w = honChampList(lg, archWant('sports/' + lg + '.json')).list.find(c => String(c.id || '') === id);
+    if(w && (!best || String(w.s) > best.s)) best = {lg, s: String(w.s)};
+  });
+  return best;
 }
 
 // which of the league's honours have data (a tab without it is not shown): «الأبطال» when the weekly file or the archive names a champion,
@@ -511,7 +533,7 @@ SPORTS = {
   tops: spTops,
   // 4.5 the honours: the league and club pages', and named parts for the league page v2's cards (docs/research/LEAGUE-V2-PHASE-A-PLAN.md §3c),
   // each card gated on has(id) so none is ever empty
-  hon: {league: honLeague, club: honClub, has: honHas, champList: honChampList, champRow: honChampRow, top: honTop, scorers: honScorers,
+  hon: {league: honLeague, club: honClub, lastTitle: honLastTitle, has: honHas, champList: honChampList, champRow: honChampRow, top: honTop, scorers: honScorers,
     scorerSeasons: honScorerSeasons, want: honWant},
   load: spLoad,
   card(card, P){

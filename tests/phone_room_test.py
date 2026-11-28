@@ -32,7 +32,7 @@ page = (ROOT / "assets/quiz/game.html").read_text(encoding="utf-8")
 for name, a in (("odd-one", odd), ("charades", cha)):
     check(f"{name}: «كيف تلعبون؟» (ريموت واحد or جوالات) is the first row, a chip kept per game like the others, with no extra from the list forcing it",
           "modeChip(chips);" in a and 'getBooleanExtra("phones"' not in a and a.index("modeChip(chips)") < a.index("remembered(soundChip(chips))")
-          and 'c.add("phones", S.t("كيف تلعبون؟"), new String[]{S.t("ريموت واحد"), S.t("جوالات")}, 0)' in ga and 'c.first("phones")' in ga)
+          and 'c.add("phones", S.t("كيف تلعبون؟"), new String[]{S.t("ريموت واحد"), S.t("جوالات")}, def)' in ga and 'c.first("phones")' in ga)
     check(f"{name}: with the switch off the room is closed and the game is the remote's, as before", "closePhones();   // the switch is off" in a and "begin(" in a)
     check(f"{name}: no socket, no server and no java.net in the game's own screen (the room is the base's)", not __import__("re").search(r"ServerSocket|QuizServer|QuizRoom|java\.net\.", a))
 check("odd-one: the word goes only to its own phone, the outsider gets «أنت برا السالفة», the vote cannot be for yourself",

@@ -40,12 +40,13 @@ for n, hid in OLD.items():
           "protected Runnable remoteWay() { return () -> { screen = Screen.SETUP; redraw(); start(); }; }" in a and "protected GameChips lobbyChips() { return chips; }" in a)
     check(f"{n}: the rows the phones decide are skipped with phones: {hid or 'none'}",
           (("phoneHidden() { return new String[] {" + ", ".join(f'"{k}"' for k in hid) + "}; }") in a) if hid else "phoneHidden" not in a)
-check("the base: the first row, kept per game, applies the hidden rows and no names with phones",
-      'c.add("phones", S.t("كيف تلعبون؟"), new String[]{S.t("ريموت واحد"), S.t("جوالات")}, 0)' in base and 'c.first("phones"); phoneRows(c);' in base
+check("the base: the first row, kept per game (a default per game: «ريموت واحد» for the older games, «جوالات» for the party games), applies the hidden rows and no names with phones",
+      'c.add("phones", S.t("كيف تلعبون؟"), new String[]{S.t("ريموت واحد"), S.t("جوالات")}, def)' in base and "modeChip(c, 0)" in base and 'c.first("phones"); phoneRows(c);' in base
       and 'c.names = namesKind() != null && !ph;' in base and "for (String k : phoneHidden()) c.hide(k, ph);" in base)
 check("the list: no filter, no phones extra, no sentence in the header, the tile tag is one quiet outline",
       "filter" not in hub and 'putExtra("phones"' not in hub and "TextView mode" not in hub and "mb.setColor(0)" in hub and "GameRegistry.way(g.id)" in hub)
-check("the registry says how a game can be played: 2 phones only, 1 both, 0 the remote", "static int way(String id) { return needsPhones(id) ? 2 : inPhones(id) ? 1 : 0; }" in reg)
+check("the registry says how a game can be played: 2 phones only, 1 both (the older games and the party games with a one-remote way: REMOTE_WAY), 0 the remote",
+      "static int way(String id) { return needsPhones(id) ? (remoteWay(id) ? 1 : 2) : inPhones(id) ? 1 : 0; }" in reg and '{"forehead", "closest", "liar", "emoji", "quran-verse", "maths", "logic"}' in reg)
 check("the tag's three words", all(w in base for w in ('S.t("جوالات")', 'S.t("ريموت أو جوالات")', 'S.t("ريموت")')))
 lob = base[base.index("protected final void drawPhoneLobby"):]
 check("the room: no «أغلق الغرفة» BUTTON (only the footer names what Back does), no heading, no code box, the address is Latin and the code is inside it",
@@ -61,7 +62,10 @@ check("the room: «ابدأ» has the focus even while it is grey; «نلعب ب
 check("the room's way out: closes the room, remembers the remote for this game, starts the game on it; Back is the other way (the footer says «رجوع» «أغلق الغرفة»: what happens)",
       "closePhones(); go.run();" in base and 'c.get("phones").picked = 0; GamePrefs.saveChips(this, id(), c.save());' in base and 'S.t("رجوع"), S.t("أغلق الغرفة"))' in lob
       and "else if (!lobbyKey(ok, dx)) onKey(back, ok, dx, dy);" in base)
-for n in ("Forehead", "Liar", "Night", "Draw", "Link", "Author", "Closest", "Emoji", "Guess", "Math", "Logic", "QuranVerse", "QuranReciter", "EngineGame"):
+for n in ("Forehead", "Liar", "Closest", "Emoji", "Math", "Logic", "QuranVerse"):
+    a = src(n + "Activity.java")
+    check(f"{n}: a party game with a one-remote way: «كيف تلعبون؟» first (default «جوالات»), and its room has «نلعب بالريموت»", "modeChip(chips, 1);" in a and "protected Runnable remoteWay()" in a and "protected GameChips lobbyChips() { return chips; }" in a)
+for n in ("Night", "Draw", "Link", "Author", "Guess", "QuranReciter", "EngineGame"):
     try: a = src(n + "Activity.java")
     except FileNotFoundError: continue
     check(f"{n}: a phone-only game has no way out of the room (only «ابدأ»)", "remoteWay()" not in a)

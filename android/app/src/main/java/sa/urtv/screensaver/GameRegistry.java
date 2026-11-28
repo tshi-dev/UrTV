@@ -81,7 +81,10 @@ final class GameRegistry {
         return false;
     }
     /** how a game can be played, for the tile's tag: 0 one remote only, 1 the remote or phones (the player chooses on the setup page), 2 phones only */
-    static int way(String id) { return needsPhones(id) ? 2 : inPhones(id) ? 1 : 0; }
+    static int way(String id) { return needsPhones(id) ? (remoteWay(id) ? 1 : 2) : inPhones(id) ? 1 : 0; }
+    /** the party games that also have a one-remote way (they ask «كيف تلعبون؟», and their room has «نلعب بالريموت»; docs/GAMES-REMOTE.md) */
+    static final String[] REMOTE_WAY = {"forehead", "closest", "liar", "emoji", "quran-verse", "maths", "logic"};
+    static boolean remoteWay(String id) { for (String g : REMOTE_WAY) if (g.equals(id)) return true; return false; }
     static boolean held(String id) { for (String g : HELD) if (g.equals(id)) return true; return false; }
 
     static Game byId(String id) { for (Game g : ALL) if (g.id.equals(id)) return g; return null; }

@@ -139,6 +139,9 @@
 المحتوى	Content
 بطاقة ثانية	Second card
 شكل البطاقة	Card style
+شكل آخر المباريات	Recent form style
+نقاط	Dots
+مربعات بحروف	Boxes with letters
 تبديل الآية والحديث	Verse & hadith change
 الآية والحديث	Verse or hadith
 الشاشة الرئيسية (تلفزيونك)	Home screen (Your TV)
@@ -1244,7 +1247,7 @@
 اكشف الكذّاب	Show the liar
 الكذّاب	The liar
 %s يحكون، استعدوا للأسئلة	%s are telling, get your questions ready
-+%s للكذّاب	+%s for the liar
+%s للكذّاب	%s for the liar
 إيموجي يدل على كلمة، والأسرع يعرفها	An emoji stands for a word, the fastest knows it
 اختاروا الكلمة من جوالاتكم	Pick the word on your phones
 اختر الكلمة	Pick the word
@@ -1709,3 +1712,33 @@ tvOS	tvOS
 خيارات أخرى للشكل	More look options
 أذاني من ملف	My adhan from a file
 من فلاشة أو التنزيلات أو الجوال، ويصير هو الأذان	From a USB stick, Downloads or the phone; it becomes the adhan
+من قالها أول؟	Who said it first?
+الجواب: %s	The answer: %s
+اختاروا	Choose
+%s نقاط له	%s points to them
+ولّ ظهرك للتلفزيون	Turn your back to the TV
+اللي يخمّن من %s	Guesser from %s
+الباقين: شوفوا الكلمة ووصّفوها بدون ما تقولونها	Everyone else: see the word and describe it without saying it
+جاهزين، ابدأوا الوقت	Ready, start the clock
+يبدأ الوقت	Starts the clock
+وصّفوها بدون ما تقولونها	Describe it without saying it
+اللي يخمّن: ولّ ظهرك للتلفزيون	Guesser: turn your back to the TV
+صح والكلمة اللي بعدها	Right, and the next word
+اختاروا فريقًا آخر	Choose another team
+اكتبوا رقمكم على الورقة	Write your number on the paper
+كل واحد يكتب عددًا صحيحًا، ولا أحد يشوف ورقة غيره	Everyone writes a whole number, and nobody sees another's paper
+اكشف الرقم	Show the number
+الأقرب يأخذ %s، وبالضبط %s	The closest gets %s, an exact number %s
+نحدد الترتيب	Pick the order
+الأول	First
+الثاني	Second
+الثالث	Third
+من الأقرب؟ (%s)	Who is closest? (%s)
+اختاروا صاحب أقرب ورقة.	Choose the closest paper.
+بالضبط: نعم	Exact: yes
+بالضبط: لا	Exact: no
+هذا الأقرب	This is the closest
+مين اللي يكذب؟	Who is lying?
+على العدّ، الكل يشير للي يظنه. المضيف يختار الأكثر إشارة.	On the count, everyone points at who they think it is. The host picks the most pointed at.
+هذا اللي اخترناه	This is our pick
+نقطة	point

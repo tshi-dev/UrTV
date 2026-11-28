@@ -48,7 +48,7 @@ check("closest: the items come from the bundled bank, nothing repeats on this TV
 check("the bundled closest bank is a bundle (no readable Arabic, no JSON)", (ROOT / "assets/games/closest.gb").read_bytes()[:3] == b"GB1" and "مساحة".encode() not in (ROOT / "assets/games/closest.gb").read_bytes())
 li = src("LiarActivity.java")
 check("liar: the roles go only to the tellers' own phones (a secret card), the others hear the three names; the vote is a pick card; nothing on the TV names the liar before the reveal; nothing repeats on this TV",
-      "GamePhoneRoom.SECRET, names[i]" in li and "game.liarIs(i)" in li and li.count("liarIs(") == 1 and "game.liar()" in li and li.index("case REVEAL: {") < li.index("game.liar()") and "GamePhoneRoom.PICK" in li and "GamePrefs.remember(this, id(), r)" in li and 'GameBundles.load(this, "liar")' in li)
+      "GamePhoneRoom.SECRET, names[i]" in li and "game.liarIs(i)" in li and li.count("liarIs(") == 2 and "handOver(names[p], game.liarIs(p)" in li and "game.liar()" in li and li.index("case REVEAL: {") < li.index("game.liar()") and "GamePhoneRoom.PICK" in li and "GamePrefs.remember(this, id(), r)" in li and 'GameBundles.load(this, "liar")' in li)
 check("the bundled liar topics are a bundle", (ROOT / "assets/games/liar.gb").read_bytes()[:3] == b"GB1" and "موقف".encode() not in (ROOT / "assets/games/liar.gb").read_bytes())
 em = src("EmojiActivity.java")
 check("emoji: the puzzles come from the bundled bank, nothing repeats on this TV; the options are a pick card of four, the time of each answer is the room's own clock (repliedAt)",

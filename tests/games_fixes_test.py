@@ -22,7 +22,7 @@ need = set(re.findall(r'new Game\("([\w-]+)", "[^"]+", "[^"]+", "\w+", true, tru
 free = set(re.findall(r'new Game\("([\w-]+)", "[^"]+", "[^"]+", "\w+", false, true\)', reg)) - {"packs"}
 check("1: «جوالات» for the games that need phones (the registry's `phones` flag: «الأسرع» and the party games), «ريموت أو جوالات» for the older games that have both, «ريموت» for the one-remote games",
       "static boolean needsPhones(String id)" in reg and {"quiz", "forehead", "night", "draw"} <= need and {"khanat", "domino", "word5", "charades"} <= free and not (need & free)
-      and "int way = GameRegistry.way(g.id);" in hub and "static int way(String id) { return needsPhones(id) ? 2 : inPhones(id) ? 1 : 0; }" in reg and 'id.startsWith("e:") || id.startsWith("e-")' in reg)
+      and "int way = GameRegistry.way(g.id);" in hub and "static int way(String id) { return needsPhones(id) ? (remoteWay(id) ? 1 : 2) : inPhones(id) ? 1 : 0; }" in reg and 'id.startsWith("e:") || id.startsWith("e-")' in reg)
 check("1: the tile's word is a square (no pill, no rounded shape), ONE quiet outlined style for the three words (no saffron fill); the setup page says the same at its end corner (the mode row turns it to «جوالات»)",
       "setCornerRadius" not in code(hub + base) and "mb.setColor(0)" in hub and "L.saff" not in hub[hub.index("int way = GameRegistry.way"):hub.index("tile.addView(mark, kp);", hub.index("int way = GameRegistry.way"))]
       and "ph.picked == 1 ? 2 : 0" in base and "wayWord(way)" in base)

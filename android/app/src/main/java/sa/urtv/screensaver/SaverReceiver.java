@@ -24,7 +24,7 @@ import java.util.Locale;
  *       [--es sunrise on|off] [--es prayerbar on|off] [--es wxmore on|off] [--es months default|levant] [--es verse day|3|10] [--es versekind both|verse|hadith] [--es seconds on|off] [--es backexit press|hold|three] [--es occasion on|off] [--es nightdim on|off] [--es taskspill on|off] [--es backsaver on|off] [--es genres Drama,Comedy] [--es langs English]
  *       [--es photos 30] [--es idle 10] [--es digits hindi|latin] [--es hijrioffset -2..2] [--es hijriline on|off] [--es clock24 on|off] [--es ramtier low|mid|normal|auto] [--es lite auto|on|off] [--es lang ar|en]
  *       [--es design info|clean|big|frame|dayline] [--es bar none|prayers|slot|weather] [--es barat bottom|clock] [--es wx auto|usual|clock|corner|off]
- *       [--es cardstyle current|dark1|glass1|dark3|glass3|boxes] [--es national auto|off] [--es scenepacks saudi,couch] [--es scenestay 10|20|60|300] [--es scenetime on|off] [--es sceneweather on|off] [--es background photos|scenes] [--es clock plain|glass] [--es appsstyle frame|zoom] [--es couch on|off]
+ *       [--es cardstyle current|dark1|glass1|dark3|glass3|boxes] [--es formstyle dots|boxes|boxes-letters] [--es national auto|off] [--es scenepacks saudi,couch] [--es scenestay 10|20|60|300] [--es scenetime on|off] [--es sceneweather on|off] [--es background photos|scenes] [--es clock plain|glass] [--es appsstyle frame|zoom] [--es couch on|off]
  *       [--es markets tasi,gold,btc] [--es mkstyle arrows|prices] [--es mkbar on|off] [--es clocksize large|medium|small] [--es stocks 2222,1120,AAPL] [--es stkchg pct|amount]
  *       [--es leagues 'Saudi-Arabian Pro League,NBA']
  *       [--es prayermethod jafari|gulf|auto]   («طريقة الحساب»: auto = the country's own, gulf = the Gulf method for any place, jafari = Shia Ithna-Ashari)
@@ -71,6 +71,7 @@ import java.util.Locale;
  * national = auto (as always from now: the quiet green look on National Day, 21-25 September, and Founding Day, 20-24 February) or off.
  * cardstyle = the look of the card beside the clock (Prefs.CARD_STYLES; current is the plain card).
  * sidecards = off|a|b: «كنبة»'s side cards (4.4 beta 4, off by default: Prefs.SIDE_CARDS_DEFAULT is the owner's pick).
+ * formstyle = «شكل آخر المباريات», a club's last five in the league's table (Prefs.FORM_STYLES; dots is the default).
  * cardsize = s|m|l, cardcorner = style|sharp|soft|round: «حجم البطاقات» and «زوايا البطاقات» (4.4 beta 4; m and style change nothing).
  * design = the screensaver's design (Prefs.SAVER_DESIGNS; info is the page as it always was); bar = a centred bar (none, prayers, slot: the left slot's
  * item, weather), barat = where it goes (bottom, clock: under the clock); wx = the weather's place (auto: as the design has it).
@@ -422,6 +423,9 @@ public class SaverReceiver extends BroadcastReceiver {
         String cardStyle = i.getStringExtra("cardstyle");
         if (cardStyle != null && !isChoice(Prefs.CARD_STYLES, cardStyle))
             return "error: cardstyle is one of " + choices(Prefs.CARD_STYLES);
+        String formStyle = i.getStringExtra("formstyle");
+        if (formStyle != null && !isChoice(Prefs.FORM_STYLES, formStyle))
+            return "error: formstyle is one of " + choices(Prefs.FORM_STYLES);
         String cardSize = i.getStringExtra("cardsize"), cardCorner = i.getStringExtra("cardcorner");
         if (cardSize != null && !java.util.Arrays.asList(Prefs.CARD_SIZES).contains(cardSize)) return "error: cardsize is one of s, m, l";
         if (cardCorner != null && !java.util.Arrays.asList(Prefs.CARD_CORNERS).contains(cardCorner)) return "error: cardcorner is one of style, sharp, soft, round";
@@ -609,6 +613,7 @@ public class SaverReceiver extends BroadcastReceiver {
         if (lang != null) p.setLang(lang);
         if (national != null) p.setNational(national);
         if (cardStyle != null) p.setCardStyle(cardStyle);
+        if (formStyle != null) p.setFormStyle(formStyle);
         if (cardSize != null) p.setCardSize(cardSize);
         if (cardCorner != null) p.setCardCorner(cardCorner);
         if (sideCards != null) p.setSideCards(sideCards);
@@ -804,6 +809,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nlite: " + p.lite() + " (light now: " + (Prefs.lowRam(c) ? "yes" : "no") + ")"
             + "\nlang: " + p.lang()
             + "\nnational: " + p.national()
+            + "\ncardstyle: " + p.cardStyle() + "\nformstyle: " + p.formStyle()
             + "\ncardstyle: " + p.cardStyle()
             + "\ncardsize: " + p.cardSize() + "\ncardcorner: " + p.cardCorner() + "\nsidecards: " + p.sideCards()
             + "\ndesign: " + p.design() + "\nbar: " + p.bar() + "\nbarat: " + p.barAt() + "\nwx: " + p.wxAt()

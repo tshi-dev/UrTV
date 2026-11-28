@@ -188,6 +188,7 @@ python3 tests/league_fixtures_test.py
 python3 tests/match_archive_test.py   # 4.3.1 the match archive: append-only, a corrected score, the live window, the backfill names
 python3 tests/sports_files_test.py   # 4.4 the sports cards' files: sports/<league>.json from the store, f1/next.json once a day
 python3 tests/honours_study_test.py   # 4.5 honours study: a season's champion from our archive only when sure (both legs of a final, never MLS's table leader)
+python3 tests/form_style_test.py   # 4.4 beta 5 «شكل آخر المباريات»: the row, SettingsHub, saver.sh formstyle, export/import, docs
 python3 tests/honours_test.py   # 4.5 honours: champions and top scorers from the archive, Wikidata and Wikipedia, weekly (docs/HONOURS-STUDY.md)
 python3 tests/kickoff_test.py   # 4.4 «تنبيه بداية المباراة»: the rules on a JVM (KickoffRun.java), the whistle, the defaults, the settings, saver.sh and dock.sh overlay
 python3 tests/overlay_offer_test.py   # 4.4 the add-on's «فوق تطبيق آخر» offered once on the first run (rule on a JVM, the bar, the once-flag, the changelog line)
@@ -500,6 +501,7 @@ python3 tests/games_kit_test.py   # the games' kit, the registry and the list, �
 python3 tests/games_fixes_test.py   # the tester's ten game bugs of build 629: the tile and setup words, «ابدأ», the Domino backs, the hex letters, «بدون كلام»'s cover, «ه» and the letter names, «خمّن الكلمة», the how-to, the room page, the setup rows
 python3 tests/games_flow_test.py   # the phone / no-phone flow: one mode row on the game's page, no phones filter, the room as one block, the way out to the remote
 python3 tests/glyph_centre_shots.py   # every letter in the middle of its tile: GlyphCentre on a JVM, the ink measuring on drawn images, the glyph views in the word game and «خمس خانات» (CI also measures real shots)
+python3 tests/remote_modes_test.py   # «اللعب بالريموت بس»: «نادوا الجواب» (4 games), «على الظهر», «واحد يكذب» by hands, «أقرب رقم» on paper: the rules on a JVM and the wiring by source
 python3 tests/domino_test.py   # «دومينو»: the rules and the computer players on a plain JVM, whole games from seeds (docs/DOMINO.md)
 #
 python3 tests/tvports_test.py   # BETA LG/Samsung packages: manifests, files, sizes (docs/LG-SAMSUNG.md)
@@ -527,6 +529,8 @@ node tests/football_page.test.mjs   # the football home's widgets and «المب
 node tests/sports_cards.test.mjs   # 4.4 «الرياضة»: the sports cards (dist/sports.js) on the home, the couch row and the screensaver, the takeover, only the page's own build
 node tests/many_follows.test.mjs   # 4.4 40 clubs and 24 leagues in the page: the extra ones asked every 2nd load, files 4 at a time, the bar built once a minute, the warning's two OKs, «فرقي» at 720p
 node tests/sports_hist.test.mjs   # 4.4 the league page's table from the archive first (TheSportsDB's after it, a plain line when neither), the club page's all-time meetings
+node tests/club_page.test.mjs   # 4.4 beta 5 the club page (mockup 6): tabs, its place and latest title, the last five as tiles, the next game, the table round it; nothing the files do not say
+node tests/league_table.test.mjs   # 4.4 beta 5 the league's full table (phase a): movement, zones, form styles, focused mode, live toggle, sizes at 720p and 540p
 node tests/honours.test.mjs   # 4.5 the league page's seasons, «الأبطال», «الهدّافون» with their source, the club page's titles (docs/HONOURS-STUDY.md)
 node tests/sport_tops.test.mjs   # «رياضي»: SPORTS.tops(n), the top of every followed league from the files the TV has, never invented
 node tests/matches_archive.test.mjs   # «المباريات» with the match archive (data-archive): every followed team, yesterday's results, a club, a league, the chooser

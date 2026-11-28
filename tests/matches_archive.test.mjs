@@ -131,15 +131,20 @@ const ids = (p, key) => p.evaluate(k => ((MP.leagues.find(x => x.key === k) || {
   await p.waitForTimeout(500);
   check('A2: no script error', !errors.length, errors.join(' | '));
   check('A2: the card closed, the club\'s page is open with its name', await p.evaluate(() => !MP.detail && MP.view && MP.view.k === 'club') && /الهلال/.test(await p.textContent('#mp-h')), await p.textContent('#mp-h'));
-  const secs = await p.evaluate(() => MP.leagues.map(g => g.name + ':' + g.games.map(e => e.idEvent).join('+')));
+  // 4.4 beta 5 the club page has tabs by key: 1 «المباريات» (by round), 2 «النتائج», 4 «المواجهات»; the sections are the same as before, each under its tab
+  const sec = tab => p.evaluate(t => { MP.view.tab = t; mpRender(); return MP.leagues.map(g => g.name + ':' + g.games.map(e => e.idEvent).join('+')); }, tab);
+  const s1 = await sec(1), s2 = await sec(2), s4 = await sec(4), secs = s1.concat(s2, s4);
   check('A2: the coming games one section per round (the competition and its round), then the last results, then the meetings (4.4: the all-time count first, an item with no game)', secs.length === 5 && /الجولة ١٣:11$/.test(secs[0]) && /الجولة ١٤:14$/.test(secs[1]) && /:15$/.test(secs[2])
     && secs[3] === 'آخر النتائج:23+d:2026-10-20:136013:136016' && /^المواجهات مع .+:\+23\+d:2025-03-01:136011:136013$/.test(secs[4]), secs.join(' | '));
+  await p.evaluate(() => { MP.view.tab = 2; mpRender(); });
   check('A2: a result in the club\'s page says its day, not «انتهت»', /أمس|الإثنين|٢ نوفمبر/.test(await p.textContent('#mp-list section[data-g="last"] li')), await p.textContent('#mp-list section[data-g="last"] li'));
+  await p.evaluate(() => { MP.view.tab = 0; mpRender(); });
   const tabs = await p.$$eval('#mp-days li', ls => ls.map(l => l.textContent));
-  check('A2: the strip: follow or unfollow the club, and the other club\'s page', tabs.length === 2 && /^ألغِ متابعة الهلال$/.test(tabs[0]) && /^صفحة /.test(tabs[1]), tabs.join(' / '));
-  await p.evaluate(() => { MP.zone = 'days'; MP.d = 1; mpRender(); });
+  check('A2: the strip: the tabs, then follow or unfollow the club, and the other club\'s page', tabs.slice(0, 3).join('|') === 'النادي|المباريات|النتائج' && tabs.includes('المواجهات')
+    && /^ألغِ متابعة الهلال$/.test(tabs[tabs.length - 2]) && /^صفحة /.test(tabs[tabs.length - 1]), tabs.join(' / '));
+  await p.evaluate(n => { MP.zone = 'days'; MP.d = n - 1; mpRender(); }, tabs.length);
   await p.keyboard.press('Enter');
-  check('A2: «صفحة …» swaps to the other club, the meetings still there', await p.evaluate(() => MP.view.id === '136011' && MP.view.vs === '136013' && MP.leagues.some(g => g.key === 'h2h')));
+  check('A2: «صفحة …» swaps to the other club, the meetings still there', await p.evaluate(() => MP.view.id === '136011' && MP.view.vs === '136013' && MP.tabs.some(t => t.k === 4)));
   await p.evaluate(() => { MP.zone = 'rows'; MP.r = 0; mpRender(); });
   await p.keyboard.press('Enter');
   check('A2: OK on a game of the club\'s page opens its card', await p.evaluate(() => !!MP.detail));
@@ -151,7 +156,9 @@ const ids = (p, key) => p.evaluate(k => ((MP.leagues.find(x => x.key === k) || {
   await p.evaluate(() => mpGo({k: 'club', id: '136014'}));
   await p.waitForTimeout(400);
   const none = await p.$$eval('#mp-list .fnone', ns => ns.map(n => n.textContent));
-  check('A2: no file, no error: the empty lists say so', !errors.length && none.length === 2 && none.every(t => t === 'لا شيء هنا بعد'), errors.join(' | ') + none.join(' / '));
+  await p.evaluate(() => { MP.view.tab = 2; mpRender(); });
+  const none2 = await p.$$eval('#mp-list .fnone', ns => ns.map(n => n.textContent));
+  check('A2: no file, no error: the empty lists say so (the coming games on «النادي», the results on «النتائج»)', !errors.length && none.length === 1 && none2.length === 1 && none.concat(none2).every(t => t === 'لا شيء هنا بعد'), errors.join(' | ') + none.join(' / ') + ' // ' + none2.join(' / '));
   await ctx.close();
 }
 
@@ -232,7 +239,7 @@ const ids = (p, key) => p.evaluate(k => ((MP.leagues.find(x => x.key === k) || {
   check('native: the page has it at once (pinned, «دورياتي»)', await p.evaluate(() => CONFIG.ownLeagues.includes('Dutch Eredivisie') && mpPins().some(x => x.pin === '4337')) && await p.textContent('#mp-age') === 'أُضيف الدوري الهولندي إلى دورياتك', await p.textContent('#mp-age'));
   await p.evaluate(() => { MP.zone = 'rows'; MP.r = 1; mpRender(); });
   await p.keyboard.press('Enter');
-  await p.evaluate(() => { MP.zone = 'days'; MP.d = 0; mpRender(); });
+  await p.evaluate(() => { MP.zone = 'days'; MP.d = MP.tabs.findIndex(t => !('k' in t)); mpRender(); });   // 4.4 beta 5: follow is after the club page's tabs
   await p.keyboard.press('Enter'); await p.keyboard.press('Enter');
   check('native: a club of the league followed from its page (its English name to the app)', await p.evaluate(() => __calls.includes('follow:133600:Ajax') && CONFIG.teamIds.includes('133600')), await p.evaluate(() => __calls.join()));
   await p.evaluate(() => { mpBack(); mpBack(); MP.zone = 'leagues'; MP.l = 2; mpRender(); });
@@ -288,7 +295,8 @@ const ids = (p, key) => p.evaluate(k => ((MP.leagues.find(x => x.key === k) || {
   check('form: the marks are coloured text, no box round them', await p.$eval('#mp-detail .fm-l', i => getComputedStyle(i).backgroundColor === 'rgba(0, 0, 0, 0)' && getComputedStyle(i).borderStyle === 'none' && getComputedStyle(i).color !== getComputedStyle(document.querySelector('#mp-detail .fm-w')).color));
   await p.evaluate(() => { mpBack(); mpGo({k: 'club', id: '136013'}); });
   await p.waitForTimeout(300);
-  check('form: on the club\'s page, beside its name', await p.textContent('#mp-age') === 'آخر ٥فت', await p.textContent('#mp-age'));
+  const tl = await p.$$eval('.mpcl .tl .fo i', is => is.map(i => i.className).join());   // 4.4 beta 5: the club page's last five are its tiles, in «شكل آخر المباريات»
+  check('form: on the club\'s page, its last results as tiles (a win, then a draw)', tl === 'fdot w,fdot d', tl);
   check('form: no script error', !errors.length, errors.join(' | '));
   await ctx.close();
 }

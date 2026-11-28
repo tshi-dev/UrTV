@@ -35,6 +35,7 @@ public class ForeheadActivity extends GameActivity {
         for (int i = 0; i < turns.length; i++) turns[i] = num(ForeheadGame.TURNS[i]);
         chips = new GameChips().add("teams", S.t("الفرق"), new String[]{num(2), num(3), num(4)}, 0).add("time", S.t("الوقت"), secs, 1)
             .add("turns", S.t("أدوار كل فريق"), turns, 1).add("kids", S.t("للأطفال"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
+        modeChip(chips, 1);
         remembered(soundChip(chips));
     }
     @Override protected void onPause() { super.onPause(); keep(); }
@@ -45,8 +46,14 @@ public class ForeheadActivity extends GameActivity {
     }
 
     private int teamCount() { return ForeheadGame.MIN_TEAMS + chips.picked("teams"); }
+    @Override protected Runnable remoteWay() { return () -> { screen = Screen.SETUP; redraw(); start(); }; }
+    @Override protected GameChips lobbyChips() { return chips; }
     private void start() {
         if (words == null) { toast(S.t("قريبًا")); return; }
+        if (remoteOn(chips)) {   // «ريموت واحد»: «على جبيني» is a mode of «بدون كلام»: the word on the TV, the guesser's back to it
+            startActivity(new android.content.Intent(this, CharadesActivity.class).putExtra("behind", true).putExtra("teams", chips.picked("teams")).putExtra("time", chips.picked("time")).putExtra("kids", chips.picked("kids")));
+            finish(); return;
+        }
         if (!openPhones()) return;
         screen = Screen.LOBBY; phoneLobby = true; redraw();
     }

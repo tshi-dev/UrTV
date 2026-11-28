@@ -33,13 +33,17 @@ public class LogicActivity extends GameActivity {
         for (int i = 0; i < qs.length; i++) qs[i] = num(EmojiGame.QUESTIONS[i]);
         for (int i = 0; i < secs.length; i++) secs[i] = S.t("%s ثانية", num(EmojiGame.SECONDS[i]));
         chips = new GameChips().add("count", S.t("الأسئلة"), qs, 0).add("time", S.t("الوقت"), secs, 1);
+        modeChip(chips, 1);
         remembered(soundChip(chips));
     }
     @Override protected void onPause() { super.onPause(); keep(); }
     private void keep() { if (game != null) { List<String> r = new ArrayList<>(); for (String x : game.asked()) if (x.startsWith("lg-") && !x.startsWith("lg-order-") && !x.startsWith("lg-seq-") && !x.startsWith("lg-odd-") && !x.startsWith("lg-age-")) r.add(x); Collections.reverse(r); GamePrefs.remember(this, id(), r); } }
     private boolean onPhones() { return phones != null && phones.room.phase() == GamePhoneRoom.Phase.PLAY; }
 
+    @Override protected Runnable remoteWay() { return () -> { screen = Screen.SETUP; redraw(); start(); }; }
+    @Override protected GameChips lobbyChips() { return chips; }
     private void start() {
+        if (remoteOn(chips)) { startActivity(remoteIntent(CallAloudActivity.class, chips).putExtra("src", "logic")); finish(); return; }   // «ريموت واحد»: the answers are called aloud (CallAloudActivity)
         if (bank == null) { toast(S.t("قريبًا")); return; }
         if (!openPhones()) return;
         screen = Screen.LOBBY; phoneLobby = true; redraw();
