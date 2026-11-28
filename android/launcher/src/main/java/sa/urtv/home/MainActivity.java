@@ -490,7 +490,7 @@ public class MainActivity extends Activity {
         loadTvRows();   // what one watched since: «كمّل المشاهدة» moves on
         showUpdateResult();
         wireFocus();   // the «المهام» card may have come or gone with the settings
-        View last = lastFocusedId == View.NO_ID ? null : findViewById(lastFocusedId);
+        View last = lastFocusedId == View.NO_ID || !keyedSinceHome ? null : findViewById(lastFocusedId);
         if (last == null && !dockCards.isEmpty()) last = dockCards.get(0);
         if (last != null) last.requestFocus();
         if ("open".equals(getIntent().getStringExtra("bar")) && pillBar != null) { barHeld = true; pillBar.focusInside(true); }   // a picture of the open row (DebugBarShot); nothing else sets it
@@ -821,7 +821,13 @@ public class MainActivity extends Activity {
         // Home pressed while already home: jump back to the first dock app.
         if (inputsPopup != null) inputsPopup.dismiss();
         if (control != null) { control.dismiss(); control.forgetLast(); }
-        if (!dockCards.isEmpty()) dockCards.get(0).requestFocus();
+        keyedSinceHome = false;   // Home: the first app, not the place the focus had before (onResume and the apps' build would put it back)
+        lastFocusedId = View.NO_ID;
+        if (!dockCards.isEmpty()) {
+            dockCards.get(0).requestFocus();
+            final View first = dockCards.get(0);   // 4.4 beta 4 (the emulator's rounds 9-10): the window gave the focus back to the top row's last button
+            handler.post(() -> { if (first.isAttachedToWindow() && !first.hasFocus()) first.requestFocus(); });   // after it came back from another app
+        }
         glideTo(0);
     }
 
@@ -1874,7 +1880,7 @@ public class MainActivity extends Activity {
         appsLabel.setVisibility(rest.isEmpty() ? View.GONE : View.VISIBLE);
         wireFocus();
         if (!dock.isEmpty()) { title.setText(dock.get(0).label); setGlow(dock.get(0).color); }
-        View last = lastFocusedId == View.NO_ID ? null : findViewById(lastFocusedId);
+        View last = lastFocusedId == View.NO_ID || !keyedSinceHome ? null : findViewById(lastFocusedId);
         if (last != null) last.requestFocus();
         else if (!dockCards.isEmpty()) dockCards.get(0).requestFocus();
         appsShown = true;
@@ -2123,7 +2129,28 @@ public class MainActivity extends Activity {
 
     /** Explicit D-pad targets: one row per press, ends of rows and of the top bar don't wrap. */
     private int dbgFocus;
-    private int lastPillId = View.NO_ID;   // the pill that had the focus last: ▲ from a home card goes back to it
+    private int lastPillId = View.NO_ID;
+    /**
+     * 4.4 beta 4 (the emulator's «reach» round 12: after Home the focus stood on «الجوال», three buttons from «مركز التحكم»): before the apps
+     * came, the top row's first button took the window's first focus and was kept as «the last place»; until the person presses a key after
+     * the home opens (or Home), the place is the first app
+     */
+    private boolean keyedSinceHome;   // the pill that had the focus last: ▲ from a home card goes back to it
+
+    /**
+     * 4.4 beta 4 (the emulator's «reach» rounds 8-10: ▲ from the apps row or a card went to the first button of the top row, four buttons away from
+     * «مركز التحكم» in «كنبة»): the button ▲ lands on from below is «مركز التحكم» while it is on the top row (our settings are its first row),
+     * else the first button there that is shown
+     */
+    private View upPill() {
+        if (onTopRow(centerPill)) return centerPill;   // in the row and not hidden (isShown is false before the window is there: the first wiring)
+        for (View p : pills) if (onTopRow(p)) return p;
+        return pills.get(0);
+    }
+
+    private boolean onTopRow(View p) {
+        return p != null && pills.contains(p) && p.getParent() == pillRow && p.getVisibility() == View.VISIBLE && p.isFocusable();
+    }
 
     private void wireFocus() {
         footballHeader();   // the home card was just made again (or not): «الواجهة» may have changed with it
@@ -2146,7 +2173,7 @@ public class MainActivity extends Activity {
                 View v = order[i], toStart = i > 0 ? order[i - 1] : v, toEnd = i < order.length - 1 ? order[i + 1] : v;
                 v.setNextFocusRightId((Dir.rtl() ? toStart : toEnd).getId());
                 v.setNextFocusLeftId((Dir.rtl() ? toEnd : toStart).getId());
-                v.setNextFocusUpId(pills.get(0).getId());
+                v.setNextFocusUpId(upPill().getId());
                 v.setNextFocusDownId(dockId != View.NO_ID ? dockId : v.getId());
             }
             fMt.setNextFocusUpId(fPr.getId());
@@ -2160,11 +2187,11 @@ public class MainActivity extends Activity {
             p.setNextFocusDownId(card != null ? card.getId() : dockId != View.NO_ID ? dockId : p.getId());
         }
         wireNudge();   // the bar above the top row (when it shows): UP from the buttons reaches it
-        int topId = card != null ? card.getId() : pills.get(0).getId();
+        int topId = card != null ? card.getId() : upPill().getId();
         if (fMt != null && fPr != null && fWx != null) topId = fMt.getId();   // the football home: ▲ from the tray is the games
         if (nowCard != null) {   // the «يُتلى الآن» card: down to the cards or the dock, left and up to the pills (right: the end of the row)
             nowCard.setNextFocusLeftId(pills.get(0).getId());
-            nowCard.setNextFocusUpId(pills.get(0).getId());
+            nowCard.setNextFocusUpId(upPill().getId());
             nowCard.setNextFocusRightId(nowCard.getId());
             nowCard.setNextFocusDownId(card != null ? card.getId() : dockId != View.NO_ID ? dockId : nowCard.getId());
         }
@@ -2174,12 +2201,13 @@ public class MainActivity extends Activity {
             View next = i + 1 < targets.size() ? targets.get(i + 1) : t, prev = i > 0 ? targets.get(i - 1) : t;
             if (Dir.rtl()) { t.setNextFocusLeftId(next.getId()); t.setNextFocusRightId(prev.getId()); }
             else { t.setNextFocusRightId(next.getId()); t.setNextFocusLeftId(prev.getId()); }
-            t.setNextFocusUpId(pills.get(0).getId());   // a pill's own focus moves this to that pill, see pill()
+            t.setNextFocusUpId(upPill().getId());   // a pill's own focus moves this to that pill, see pill()
             t.setOnKeyListener((v, keyCode, ev) -> {   // ▲ from a home card is a pill that is on screen: the pill it last came from may be gone (the bell leaves the row), and the focus then stayed on the card (step 28b)
                 if (keyCode != KeyEvent.KEYCODE_DPAD_UP) return false;
                 if (ev.getAction() != KeyEvent.ACTION_DOWN) return true;
                 View to = null;
-                for (View pv : pills) if (pv.isShown() && pv.isFocusable()) { if (to == null) to = pv; if (pv.getId() == lastPillId) { to = pv; break; } }
+                for (View pv : pills) if (pv.isShown() && pv.isFocusable() && pv.getId() == lastPillId) { to = pv; break; }
+                if (to == null) to = upPill();
                 return to != null && to.requestFocus();
             });
             t.setNextFocusDownId(dockId != View.NO_ID ? dockId : t.getId());
@@ -5464,6 +5492,7 @@ public class MainActivity extends Activity {
     @Override
     public boolean dispatchKeyEvent(KeyEvent e) {
         if (e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0) watchKey();   // 4.4 beta 3: the frozen-screen watchdog
+        if (e.getAction() == KeyEvent.ACTION_DOWN) keyedSinceHome = true;   // the person has moved: their place is kept from now on
         if (e.getAction() != KeyEvent.ACTION_DOWN || !DebugFlags.on(this, "keytrace")) return dispatchKey(e);
         KeyTrace trace = KeyTrace.begin(this, e);   // debug only: where the time of this key goes (dock.sh debug keytrace on)
         boolean r = dispatchKey(e);

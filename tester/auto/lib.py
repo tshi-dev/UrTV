@@ -229,11 +229,22 @@ def _label(a):
     return (a.get("text") or a.get("content-desc") or "").strip()
 
 
+def _focused_index(nodes):
+    """the node that has the focus: a page's WebView says focused="true" too while one of our views over it has it (the stocks card's «الأسواق»,
+    emulator run 10), so a view that is not a WebView wins, then the smallest"""
+    cand = [i for i, a in enumerate(nodes) if a.get("focused") == "true"]
+    if not cand:
+        return None
+    area = lambda i: ((nodes[i]["_box"][2] - nodes[i]["_box"][0]) * (nodes[i]["_box"][3] - nodes[i]["_box"][1])) if nodes[i]["_box"] else 1 << 40
+    return min(cand, key=lambda i: ("WebView" in nodes[i].get("class", ""), area(i)))
+
+
 def focused(xml):
     """the text of the focused node of a uiautomator dump, else of the first one inside it that has a text (a row's name sits in a child)"""
     nodes = list(_nodes(xml))
+    fi = _focused_index(nodes)
     for i, a in enumerate(nodes):
-        if a.get("focused") == "true":
+        if i == fi:
             if _label(a):
                 return _label(a)
             box = a["_box"]
@@ -242,6 +253,33 @@ def focused(xml):
                     return _label(c)
             return ""
     return ""
+
+
+def focus_key(xml):
+    """where the focus is: the focused node's place on the screen and its name («label@[l,t][r,b]»), empty when nothing has it; two places with the
+    same name (or none, as a card drawn by a page) are told apart"""
+    nodes = list(_nodes(xml))
+    fi = _focused_index(nodes)
+    return "" if fi is None else focused(xml) + "@" + nodes[fi].get("bounds", "")
+
+
+def toward(xml, label):
+    """the arrow a person presses from the focused item toward the item named label, as the screen shows them: «here», UP, DOWN, LEFT or RIGHT;
+    «none» when that name is not on the screen or nothing has the focus"""
+    nodes = list(_nodes(xml))
+    if focused(xml) == label:
+        return "here"
+    fi = _focused_index(nodes)
+    fb = nodes[fi]["_box"] if fi is not None else None
+    tb = next((a["_box"] for a in nodes if _label(a) == label and a["_box"]), None)
+    if not fb or not tb:
+        return "none"
+    ty = (tb[1] + tb[3]) / 2
+    if ty < fb[1]:
+        return "UP"
+    if ty > fb[3]:
+        return "DOWN"
+    return "LEFT" if (tb[0] + tb[2]) / 2 < (fb[0] + fb[2]) / 2 else "RIGHT"
 
 
 def has_text(xml, needle):
@@ -396,6 +434,10 @@ def main(a):
         print(wm_back(_read(a[2])))
     elif cmd == "focused":
         print(focused(_read(a[2])))
+    elif cmd == "focus-key":
+        print(focus_key(_read(a[2])))
+    elif cmd == "toward":
+        print(toward(_read(a[2]), a[3]))
     elif cmd == "has-text":
         print("yes" if has_text(_read(a[2]), a[3]) else "no")
     elif cmd == "box":
