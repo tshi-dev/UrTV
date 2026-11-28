@@ -229,11 +229,22 @@ def _label(a):
     return (a.get("text") or a.get("content-desc") or "").strip()
 
 
+def _focused_index(nodes):
+    """the node that has the focus: a page's WebView says focused="true" too while one of our views over it has it (the stocks card's «الأسواق»,
+    emulator run 10), so a view that is not a WebView wins, then the smallest"""
+    cand = [i for i, a in enumerate(nodes) if a.get("focused") == "true"]
+    if not cand:
+        return None
+    area = lambda i: ((nodes[i]["_box"][2] - nodes[i]["_box"][0]) * (nodes[i]["_box"][3] - nodes[i]["_box"][1])) if nodes[i]["_box"] else 1 << 40
+    return min(cand, key=lambda i: ("WebView" in nodes[i].get("class", ""), area(i)))
+
+
 def focused(xml):
     """the text of the focused node of a uiautomator dump, else of the first one inside it that has a text (a row's name sits in a child)"""
     nodes = list(_nodes(xml))
+    fi = _focused_index(nodes)
     for i, a in enumerate(nodes):
-        if a.get("focused") == "true":
+        if i == fi:
             if _label(a):
                 return _label(a)
             box = a["_box"]
@@ -247,10 +258,9 @@ def focused(xml):
 def focus_key(xml):
     """where the focus is: the focused node's place on the screen and its name («label@[l,t][r,b]»), empty when nothing has it; two places with the
     same name (or none, as a card drawn by a page) are told apart"""
-    for a in _nodes(xml):
-        if a.get("focused") == "true":
-            return focused(xml) + "@" + a.get("bounds", "")
-    return ""
+    nodes = list(_nodes(xml))
+    fi = _focused_index(nodes)
+    return "" if fi is None else focused(xml) + "@" + nodes[fi].get("bounds", "")
 
 
 def toward(xml, label):
@@ -259,7 +269,8 @@ def toward(xml, label):
     nodes = list(_nodes(xml))
     if focused(xml) == label:
         return "here"
-    fb = next((a["_box"] for a in nodes if a.get("focused") == "true" and a["_box"]), None)
+    fi = _focused_index(nodes)
+    fb = nodes[fi]["_box"] if fi is not None else None
     tb = next((a["_box"] for a in nodes if _label(a) == label and a["_box"]), None)
     if not fb or not tb:
         return "none"
