@@ -21,6 +21,7 @@ python3 tests/prayer_adj_test.py
 python3 tests/hijri_offset_test.py
 python3 tests/saver_hijri_test.py
 python3 tests/clock_skew_test.py   # 4.4 beta 4: the TV clock against the network's
+python3 tests/photo_log_test.py   # 4.4 beta 4: photo load errors in the log, a bundled photo stands in
 python3 tests/upload_test.py
 python3 tests/photo_twin_test.py   # 4.4 beta 4: the same photo is kept once
 python3 tests/install_extras_test.py
@@ -496,6 +497,7 @@ node tests/hijri_crosscheck_page.mjs
 node tests/page.test.mjs
 node tests/mkbar_push.test.mjs   # 4.4 beta 4: «شريط الأسواق» on or off reaches the running page
 node tests/clock_off.test.mjs   # 4.4 beta 4: a TV clock far off: «ساعة التلفزيون غير مضبوطة» instead of a wrong date
+node tests/photo_log.test.mjs   # 4.4 beta 4: a photo that does not load is said, and a bundled one that loads stands in
 node tests/pack_fallback.test.mjs   # 4.4 beta 3: a pack or «صوري» photo that does not load never leaves the screensaver black (a bundled photo shows)
 node tests/tafsir.test.mjs   # «التفسير الميسر» (#tafsir=1): every verse of the deck has its tafsir, whole, in pages of three lines at most, never «…»
 node tests/saver_designs.test.mjs   # 4.4 the screensaver's designs (the owner approved them): each shows what it should; a prayer's name and time never touch

@@ -4615,6 +4615,34 @@ function photoSet(n){
 // fails gives way to the next of theirs; none loads, or none in time
 // it when they arrive).
 const OWN_WAIT_MS = 6000;
+// 4.4 beta 4 (photos stayed black on some Google TVs): a photo that does not load is said in the app's log (UrtvNative.photoError: what failed
+// and the file's name only, never an address or a path; a browser: the console), so a report shows why; nothing else changes.
+function photoLog(what, url){
+  const name = String(url || '').split(/[?#]/)[0].split('/').pop().slice(0, 60);
+  try{ if(window.UrtvNative && window.UrtvNative.photoError) window.UrtvNative.photoError(String(what), name); else console.warn('photo: ' + what + ' ' + name); }catch(e){}
+}
+// and when, this long after the start, no photo is on the screen or the one there does not load (every load failed, or the rotation threw),
+// a bundled one that loads is shown, and that is said
+const PHOTO_GUARD_MS = 8000;
+function photoGuard(){
+  if(CONFIG.widget) return;   // the launcher's card: no photo of its own
+  const bundled = k => {
+    if(k >= BGS.length){ photoLog('bundled', ''); return; }
+    const b = BGS[k], img = new Image();
+    img.onload = () => showBackground(b.u, b);
+    img.onerror = () => bundled(k + 1);
+    img.src = b.u;
+  };
+  setTimeout(() => {
+    const ph = document.querySelector('.photo');
+    if(!ph || !BGS.length) return;
+    const m = /url\(["']?(.*?)["']?\)/.exec(ph.style.backgroundImage || ''), cur = m && m[1];
+    if(!cur){ photoLog('none', ''); bundled(0); return; }
+    const img = new Image();
+    img.onerror = () => { photoLog('shown', cur); if(ph.style.backgroundImage.indexOf(cur) >= 0) bundled(0); };
+    img.src = cur;
+  }, PHOTO_GUARD_MS);
+}
 let BG_SLOT = -1, PREFETCHED = false, BG_TURN = 0;
 function showOwn(pick, own, local){
   const at = own.indexOf(pick), order = own.slice(at).concat(own.slice(0, at)), turn = ++BG_TURN;
@@ -4624,7 +4652,7 @@ function showOwn(pick, own, local){
     if(i >= order.length){ clearTimeout(t); bundled(); return; }
     const img = new Image();
     img.onload = () => { clearTimeout(t); if(turn === BG_TURN) showBackground(order[i].url, order[i].b); };
-    img.onerror = () => next(i + 1);
+    img.onerror = () => { photoLog('own', order[i].url); next(i + 1); };
     img.src = order[i].url;
   };
   next(0);
@@ -4658,11 +4686,11 @@ function applyBackground(force){
     const t = setTimeout(fallback, 1200);
     const img = new Image();
     img.onload = () => { done = true; clearTimeout(t); showBackground(url, b); };
-    img.onerror = () => { clearTimeout(t); fallback(); done = true; };
+    img.onerror = () => { photoLog('hosted', url); clearTimeout(t); fallback(); done = true; };
     img.src = url;
     // fetch the rest of the set once, quietly, so the app has each one on disk before its turn
     if(!PREFETCHED && set.length){ PREFETCHED = true; setTimeout(() => set.forEach(x => { new Image().src = PHOTO_BASE + x.f; }), 20000); }
-  } catch(e) {}
+  } catch(e) { photoLog('error', (e && e.name) || ''); }   // 4.4 beta 4: was silent (a black screen with no word in the log)
 }
 
 // Last painted panels, shown at once on the next start while fresh data loads.
@@ -5891,6 +5919,7 @@ function boot(){
   }
   document.title = 'شاشة تلفزيونك';
   applyBackground(true);
+  photoGuard();   // 4.4 beta 4: no photo, or one that does not load, 8 s on: a bundled one
   loadPhotoIndex().then(() => applyBackground(true));
   setInterval(() => applyBackground(false), (CONFIG.photoMinutes < 1 ? 5 : 60)*1000);   // 30 s photos: looked at every 5 s
   tickClock(); tickDates(); tickOccasion(); renderSlot();

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261128132115">
+<meta name="urtv-build" content="20261128132138">
 <title>شاشة تلفزيونك</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -4145,6 +4145,30 @@ function photoSet(n){
   return pick;
 }
 const OWN_WAIT_MS = 6000;
+function photoLog(what, url){
+  const name = String(url || '').split(/[?#]/)[0].split('/').pop().slice(0, 60);
+  try{ if(window.UrtvNative && window.UrtvNative.photoError) window.UrtvNative.photoError(String(what), name); else console.warn('photo: ' + what + ' ' + name); }catch(e){}
+}
+const PHOTO_GUARD_MS = 8000;
+function photoGuard(){
+  if(CONFIG.widget) return;
+  const bundled = k => {
+    if(k >= BGS.length){ photoLog('bundled', ''); return; }
+    const b = BGS[k], img = new Image();
+    img.onload = () => showBackground(b.u, b);
+    img.onerror = () => bundled(k + 1);
+    img.src = b.u;
+  };
+  setTimeout(() => {
+    const ph = document.querySelector('.photo');
+    if(!ph || !BGS.length) return;
+    const m = /url\(["']?(.*?)["']?\)/.exec(ph.style.backgroundImage || ''), cur = m && m[1];
+    if(!cur){ photoLog('none', ''); bundled(0); return; }
+    const img = new Image();
+    img.onerror = () => { photoLog('shown', cur); if(ph.style.backgroundImage.indexOf(cur) >= 0) bundled(0); };
+    img.src = cur;
+  }, PHOTO_GUARD_MS);
+}
 let BG_SLOT = -1, PREFETCHED = false, BG_TURN = 0;
 function showOwn(pick, own, local){
   const at = own.indexOf(pick), order = own.slice(at).concat(own.slice(0, at)), turn = ++BG_TURN;
@@ -4154,7 +4178,7 @@ function showOwn(pick, own, local){
     if(i >= order.length){ clearTimeout(t); bundled(); return; }
     const img = new Image();
     img.onload = () => { clearTimeout(t); if(turn === BG_TURN) showBackground(order[i].url, order[i].b); };
-    img.onerror = () => next(i + 1);
+    img.onerror = () => { photoLog('own', order[i].url); next(i + 1); };
     img.src = order[i].url;
   };
   next(0);
@@ -4184,10 +4208,10 @@ function applyBackground(force){
     const t = setTimeout(fallback, 1200);
     const img = new Image();
     img.onload = () => { done = true; clearTimeout(t); showBackground(url, b); };
-    img.onerror = () => { clearTimeout(t); fallback(); done = true; };
+    img.onerror = () => { photoLog('hosted', url); clearTimeout(t); fallback(); done = true; };
     img.src = url;
     if(!PREFETCHED && set.length){ PREFETCHED = true; setTimeout(() => set.forEach(x => { new Image().src = PHOTO_BASE + x.f; }), 20000); }
-  } catch(e) {}
+  } catch(e) { photoLog('error', (e && e.name) || ''); }
 }
 
 const SNAP_KEY = LS.snap;
@@ -5327,6 +5351,7 @@ function boot(){
   }
   document.title = 'شاشة تلفزيونك';
   applyBackground(true);
+  photoGuard();
   loadPhotoIndex().then(() => applyBackground(true));
   setInterval(() => applyBackground(false), (CONFIG.photoMinutes < 1 ? 5 : 60)*1000);
   tickClock(); tickDates(); tickOccasion(); renderSlot();
