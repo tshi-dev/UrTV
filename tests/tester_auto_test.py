@@ -111,6 +111,10 @@ reach = {s[0]: s[2] for s in steps if s[0].startswith("reach-")}
 check("from the home to our settings in each layout × card (the tester, build 654: not found in «كنبة»): up to «مركز التحكم», OK, «الإعدادات», OK, the presses counted",
       len(reach) == 9 and "the settings in 4 presses from the home" in reach.get("reach-classic-none", "") and "the settings in 5 presses from the home" in reach.get("reach-couch-stocks", "")
       and "REACH_MAX=6" in (ROOT / "tester/auto/round.sh").read_text(encoding="utf-8"), reach)
+r6, out6, _ = run({"FAKE_NUDGE": "1"}, ("--only", "reach"))
+reach6 = {l.split("\t")[0]: l.split("\t")[2] for l in (out6 / "steps.tsv").read_text(encoding="utf-8").splitlines() if l.startswith("reach-")} if (out6 / "steps.tsv").exists() else {}
+check("a TV with no city («اختر المدينة» where UP lands): the UP that does not move is not counted, one LEFT to «مركز التحكم», still within the limit",
+      r6.returncode == 0 and len(reach6) == 9 and "the settings in 5 presses from the home" in reach6.get("reach-classic-none", "") and "the settings in 6 presses from the home" in reach6.get("reach-couch-stocks", ""), reach6)
 r5, out5, _ = run({"FAKE_NO_SETTINGS": "1"}, ("--only", "reach"))
 rep5 = (out5 / "report.md").read_text(encoding="utf-8") if (out5 / "report.md").exists() else ""
 check("a control centre without «الإعدادات» (build 654) is a FAIL of every layout × card and the round is red",

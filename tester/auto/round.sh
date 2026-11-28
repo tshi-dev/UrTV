@@ -107,11 +107,14 @@ focus_walk() {   # $1 text, $2 the key, $3 at most how many presses: press only 
   return 1
 }
 PRESSES=0
-reach_walk() {   # like focus_walk, every key counted in PRESSES (the reach step: what a person presses from the home)
-  local i
+reach_walk() {   # like focus_walk, every key counted in PRESSES (the reach step: what a person presses from the home); a key that did not move the focus
+  local i now was=""   # is the edge: not counted, and that way stops (a TV with no city has «اختر المدينة» in the header, beside «مركز التحكم»)
   for i in $(seq 0 "$3"); do
     dump "$OUT/raw/focus.xml"
-    if [ "$($LIB focused "$OUT/raw/focus.xml")" = "$1" ]; then return 0; fi
+    now=$($LIB focused "$OUT/raw/focus.xml")
+    if [ "$now" = "$1" ]; then return 0; fi
+    if [ "$i" -gt 0 ] && [ "$now" = "$was" ]; then PRESSES=$((PRESSES - 1)); return 1; fi
+    was=$now
     [ "$i" -lt "$3" ] && key "$2" && PRESSES=$((PRESSES + 1)) && nap 1
   done
   return 1

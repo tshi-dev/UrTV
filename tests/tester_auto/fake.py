@@ -2,7 +2,7 @@
 """A stand-in TV for tests/tester_auto_test.py: `fake.py tv CMD…`, `fake.py saver ARGS…`, `fake.py music ARGS…`. State lives in the folder FAKE_DIR (the front
 app, the focused row, the adhan states); every command it was given is appended to FAKE_DIR/log.txt. FAKE_JANK=bad makes the walk janky, FAKE_FRONT=none makes
 no app ever come to the front, FAKE_MUTE_ON_RADIO=1 mutes the music when a station starts, FAKE_NO_SETTINGS=1 leaves «الإعدادات» out of the
-control centre (the reach step must fail)."""
+control centre (the reach step must fail), FAKE_NUDGE=1 puts «اختر المدينة» where UP lands in the header."""
 import os
 import re
 import sys
@@ -44,7 +44,7 @@ MARKERS = ["بحث في الإعدادات", "الأذان لكل صلاة", "ا
 
 # the home as a person meets it after Home (the reach step): the apps row, a card in the couch strip, the header's «مركز التحكم»; its panel opens on a
 # round toggle, «الإعدادات» is the first row under them; OK on it opens our settings
-HOME_LABEL = {"apps": "يوتيوب", "card": "الأسهم", "center": "مركز التحكم", "toggle": "البلوتوث", "settings": "الإعدادات"}
+HOME_LABEL = {"apps": "يوتيوب", "card": "الأسهم", "nudge": "اختر المدينة", "center": "مركز التحكم", "toggle": "البلوتوث", "settings": "الإعدادات"}
 
 
 def xml():
@@ -83,8 +83,11 @@ def tv(cmd):
         where = st("where") if st("front") == "sa.urtv.home" else ""
         if where in HOME_LABEL:   # the home's own focus (the reach step)
             card = st("card", "none") != "none" and st("layout", "classic") == "couch"
+            nudge = os.environ.get("FAKE_NUDGE") == "1"   # a TV with no city: UP lands on «اختر المدينة», «مركز التحكم» is one LEFT from it
             if "KEYCODE_DPAD_UP" in part and where in ("apps", "card"):
-                put("where", "card" if where == "apps" and card else "center")
+                put("where", "card" if where == "apps" and card else "nudge" if nudge else "center")
+            elif "KEYCODE_DPAD_LEFT" in part and where == "nudge":
+                put("where", "center")
             elif "KEYCODE_DPAD_DOWN" in part and where == "toggle" and os.environ.get("FAKE_NO_SETTINGS") != "1":   # =1: a panel without the row (build 654)
                 put("where", "settings")
             elif "KEYCODE_DPAD_CENTER" in part and where == "center":
