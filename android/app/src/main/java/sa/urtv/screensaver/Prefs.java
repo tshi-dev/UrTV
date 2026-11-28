@@ -133,6 +133,7 @@ final class Prefs {
     Prefs(Context c) {
         ctx = c;
         sp = c.getSharedPreferences("settings", Context.MODE_PRIVATE);
+        if (sp.getAll().size() <= 1 || SettingsCopy.pending(c)) SettingsCopy.restoreSoon(c, sp.getAll().keySet());   // 4.4: a fresh install takes back the home's copy of the settings, once, on a thread
         if (!sp.contains("tournaments")) sp.edit().putBoolean("tournaments", sp.getAll().isEmpty()).apply();   // 4.3.1 «البطولات الكبرى»: on for a new install (nothing saved yet), off for one that already had settings
         GlassStyle.setTweaks(tweaks());
         if (ZoneFix.logger == null) ZoneFix.logger = line -> android.util.Log.i("UrTVZone", line);

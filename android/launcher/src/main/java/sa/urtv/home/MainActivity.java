@@ -426,6 +426,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
+        SaverSettingsCopy.refreshSoon(this);   // 4.4: the copy of the screensaver's settings kept fresh, at most every 30 min, on a thread
         shown = true;
         if (wallTrimmed) { wallTrimmed = false; nextWallpaper(); }
     }

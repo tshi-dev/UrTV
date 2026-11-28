@@ -101,6 +101,13 @@ public class NowPlayingProvider extends ContentProvider {
             return new Bundle();
         }
         // 4.3.3 «مسح الملفات المؤقتة» in the screensaver's settings (same key only): this app's cache folder, its size or the sweep (CacheSweep keeps the adhan's sounds and an APK on its way)
+        // 4.4: a fresh install of the screensaver takes back the copy of its settings the home kept (SaverSettingsCopy), the screensaver only
+        if ("saver_settings_copy".equals(method) && getContext() != null
+                && getContext().checkCallingPermission("sa.urtv.home.READ_NOW_PLAYING") == PackageManager.PERMISSION_GRANTED) {
+            Bundle b = new Bundle();
+            b.putString("copy", sa.urtv.home.SaverSettingsCopy.kept(getContext()));
+            return b;
+        }
         if (("cache_size".equals(method) || "clear_cache".equals(method)) && getContext() != null
                 && getContext().checkCallingPermission("sa.urtv.home.READ_NOW_PLAYING") == PackageManager.PERMISSION_GRANTED) {
             java.io.File cache = getContext().getCacheDir();
