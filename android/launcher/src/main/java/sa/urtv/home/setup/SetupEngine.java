@@ -228,6 +228,7 @@ final class SetupEngine {
         if (installed == null || wasOff == null) {
             return failed("لم يقل التلفزيون أي التطبيقات عنده وأيها موقوف أصلاً، فما أوقفنا شيئاً (ما نقدر نرجعها بدقة). جرّب مرة ثانية.");
         }
+        healKept(wasOff);
         List<String> intended = new ArrayList<>();
         for (String p : pkgs) if (installed.contains(p) && !wasOff.contains(p)) intended.add(p);
         if (!intended.isEmpty()) {   // disable.sh's handler guard (4.4): what opens the TV's Settings, channels or inputs stays on
@@ -260,6 +261,32 @@ final class SetupEngine {
         for (String p : intended) if (nowOff.contains(p)) confirmed.add(p);
         remember(prev, confirmed);   // the ledger holds what the TV says is off now
         return done("أوقفنا " + confirmed.size() + " تطبيقاً من القائمة الآمنة" + (intended.size() > confirmed.size() ? " (" + (intended.size() - confirmed.size()) + " رفض التلفزيون إيقافها)." : "."));
+    }
+
+    /**
+     * 4.4 (report row 765, R-362): a package an earlier setup turned off (it is in the ledger) and that the protected list now names (com.tcl.partnercustomizer: a TCL
+     * OTT box on Android 8 lost its remote after the setup) is turned back on and leaves the ledger. Only what the ledger holds, and only what is off now: nothing the
+     * maker or the person had off is touched. The step does nothing when the ledger is empty or the TV said nothing.
+     */
+    private void healKept(Set<String> wasOff) throws IOException {
+        List<String> prev = ledgerNames(store.get("disabled-by-us.txt"));
+        List<String> back = healed(prev, wasOff);
+        if (back.isEmpty()) return;
+        for (String p : back) sh.run("pm enable --user 0 " + p);
+        List<String> rest = new ArrayList<>(prev);
+        rest.removeAll(back);
+        store.put("disabled-by-us.txt", ledgerText(rest, new ArrayList<String>(), store.get(SetupPrep.BACKUP)));
+        out.line("رجّعنا شغّالاً تطبيقاً من تطبيقات الريموت كنا أوقفناه قبل: " + String.join(" ", back));
+    }
+
+    /** Named, not «everything protected»: the factory step turns the stock home off on purpose and writes it in the ledger (it is protected too). */
+    static final String[] HEAL = {"com.tcl.partnercustomizer"};
+
+    /** The ledger's names that were turned off by mistake (HEAL) and are off now. */
+    static List<String> healed(List<String> ledger, Set<String> off) {
+        List<String> back = new ArrayList<>();
+        for (String p : ledger) if (contains(HEAL, p) && contains(SetupLists.KEEP, p) && off.contains(p) && !back.contains(p)) back.add(p);
+        return back;
     }
 
     /** What debloat would turn off on this TV now (installed, not off already): the start screen's count. Null when the TV did not say. */

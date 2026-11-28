@@ -284,6 +284,13 @@ public class SetupEngineRun {
         FakeTv tb = tv(); tb.dashFailsMarker = true; Mem mb = new Mem();
         SetupEngine.Result rb = engine(tb, mb, new Dead(), new ArrayList<>()).debloat();
         line("B " + rb.status + " disables=" + tb.count("pm disable-user") + " ledger=" + mb.get("disabled-by-us.txt"));
+        // Kheal (report row 765, R-362): an earlier setup turned com.tcl.partnercustomizer off; it is protected now: the next run turns it back on and drops it from the ledger,
+        // and leaves alone what the ledger does not hold (a package the maker had off) and what is still on the safe list
+        FakeTv tk = tv(); tk.installed.add("com.tcl.partnercustomizer"); tk.off.add("com.tcl.partnercustomizer"); tk.installed.add("com.maker.off"); tk.off.add("com.maker.off");
+        Mem mk = new Mem(); mk.put("disabled-by-us.txt", "com.tcl.partnercustomizer\ncom.tcl.messagebox\n");
+        SetupEngine.Result rk = engine(tk, mk, new Dead(), new ArrayList<>()).debloat();
+        line("Kheal " + rk.status + " partnerOff=" + tk.off.contains("com.tcl.partnercustomizer") + " makerOff=" + tk.off.contains("com.maker.off")
+            + " ledgerHas=" + SetupEngine.ledgerNames(mk.get("disabled-by-us.txt")).contains("com.tcl.partnercustomizer") + " healed=" + SetupEngine.healed(Arrays.asList("com.tcl.partnercustomizer", "com.tcl.bi", "x.y"), new LinkedHashSet<>(Arrays.asList("com.tcl.partnercustomizer", "com.tcl.bi"))));
         // C: a TV that answers nothing at all: nothing counts as done, nothing is changed
         FakeTv tc = tv(); tc.silent = true; Mem mc = new Mem(); Dead dc = new Dead();
         SetupEngine ec = engine(tc, mc, dc, new ArrayList<>());

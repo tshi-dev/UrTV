@@ -2147,7 +2147,6 @@ K com.tcl.messagebox
 K com.tcl.notereminder
 K com.tcl.ocean.instructions
 K com.tcl.overseasappshow
-K com.tcl.partnercustomizer
 K com.tcl.repairguide
 K com.tcl.t_solo
 K com.tcl.useragreement

@@ -46,6 +46,8 @@ check("A: the undo gives back the stock home, the role, the screensaver the TV h
 check("A: after the undo the TV is as it was (only what was already off stays off), and the journal says restored", got.get("A_same") == "A_same true [com.tcl.bi]" and got.get("A_journal_state") == "A_journal_state restored", (got.get("A_same"), got.get("A_journal_state")))
 check("A: a second run changes nothing more (the ledger is the same, Home is already ours)", (got.get("A2") or "").startswith("A2 true DONE true"), got.get("A2"))
 check("B: the TV does not end its list of disabled packages: nothing turned off, nothing remembered", got.get("B") == "B FAILED disables=0 ledger=null", got.get("B"))
+check("Kheal (R-362): a TV an earlier setup turned com.tcl.partnercustomizer off on gets it back on, out of the ledger, and a package the maker had off stays off",
+      got.get("Kheal") == "Kheal DONE partnerOff=false makerOff=true ledgerHas=false healed=[com.tcl.partnercustomizer]", got.get("Kheal"))
 check("C: a TV that answers nothing: no step counts as done, and not one change is sent, no file written, no safety switch armed",
       got.get("C") == "C FAILED FAILED FAILED FAILED FAILED changes=0 files=[] armed=0", got.get("C"))
 check("D: Home does not open ours: the stock home and the role are back, the setup app is not left off, the switch is disarmed, the journal says restored",

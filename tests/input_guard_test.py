@@ -142,9 +142,8 @@ check("every community list credits Clean Your TV (MIT) and names its commit", a
 for p in ("com.tcl.xian.StartandroidService", "com.xiaomi.android.tvsetup.partnercustomizer"):
     check(f"{p} is protected (keep.txt): no list, ours or a community one, turns it off", p in KEEP and all(p not in com.packages(str(f), KEEP) for f in lists)
           and p not in words("tcl-safe.txt"))
-check("com.tcl.partnercustomizer stays on the safe list, with why (our home answers the remote's app keys itself)",
-      "com.tcl.partnercustomizer" in words("tcl-safe.txt") and "com.tcl.partnercustomizer" not in KEEP
-      and "our home answers the remote's app keys itself" in (ROOT / "optimize/lists/tcl-safe.txt").read_text(encoding="utf-8"))
+check("com.tcl.partnercustomizer is protected (keep.txt, R-362: a TCL OTT box on Android 8 lost its remote after the setup, report row 765): not on the safe list, no list turns it off",
+      "com.tcl.partnercustomizer" in KEEP and "com.tcl.partnercustomizer" not in words("tcl-safe.txt") and all("com.tcl.partnercustomizer" not in com.packages(str(f), KEEP) for f in lists))
 for p in ("com.amazon.tv.ooberesource", "com.oneplus.oobe.tv", "org.droidtv.hidwizard"):
     check(f"a first-run or pairing wizard ({p}) is never taken from a community list", bool(com.NOT_FOR_US.search(p)))
 # 4.3.6: a TV's own Settings, Live TV / channel and tuning apps that community lists named are kept by name too, each with its reason

@@ -97,6 +97,19 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
           script: bash tester/auto/ci/storage29.sh android/launcher/build/outputs/apk/debug/launcher-debug.apk auto-out
 
+      # review round 3, report row 765: the D-pad must keep moving the focus on Android 8 (a TCL OTT box froze), alone and with the add-on's accessibility service on
+      - name: The remote on Android 8
+        if: always()
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 26
+          target: android-tv
+          arch: x86
+          profile: tv_1080p
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          script: bash tester/auto/ci/remote26.sh android/launcher/build/outputs/apk/debug/launcher-debug.apk android/extras/build/outputs/apk/debug/extras-debug.apk auto-out
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -122,6 +135,7 @@ jobs:
             rm -rf "$run"; mkdir -p "$run/auto"
             cp -r "$GITHUB_WORKSPACE"/auto-out/auto/. "$run/auto/"
             [ -d "$GITHUB_WORKSPACE/auto-out/storage29" ] && cp -r "$GITHUB_WORKSPACE/auto-out/storage29" "$run/"   # the Android 10 photos check (review F97)
+            [ -d "$GITHUB_WORKSPACE/auto-out/remote26" ] && cp -r "$GITHUB_WORKSPACE/auto-out/remote26" "$run/"   # the Android 8 remote check (row 765)
             find "$run/auto/raw" -type f -size +1500k -delete 2>/dev/null || true   # a whole logcat is not published
             rm -rf latest-auto; cp -r "$run" latest-auto
             git add -A
@@ -141,3 +155,10 @@ jobs:
           [ -s auto-out/storage29/result.txt ] || { echo "the Android 10 check left no result"; exit 1; }
           cat auto-out/storage29/result.txt
           grep -q '^PASS' auto-out/storage29/result.txt
+
+      - name: Android 8 remote verdict
+        if: always()
+        run: |
+          [ -s auto-out/remote26/result.txt ] || { echo "the Android 8 check left no result"; exit 1; }
+          cat auto-out/remote26/result.txt
+          grep -q '^PASS' auto-out/remote26/result.txt

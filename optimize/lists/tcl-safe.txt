@@ -7,7 +7,6 @@
 com.tcl.bi                             # telemetry (over a thousand events a day)
 com.tcl.logkit                         # log collection
 com.tcl.usercenter                     # TCL account / phone binding
-com.tcl.partnercustomizer              # partner app rows and promos, the T key's promo page; our home answers the remote's app keys itself
 com.tcl.overseasappshow                # preinstalled-app showcase
 com.tcl.messagebox                     # promo pop-ups
 com.tcl.esticker                       # on-screen promo stickers

@@ -82,6 +82,7 @@ public final class PairCommandShapes {
         "input keyevent KEYCODE_HOME",
         "pm disable P N> /dev/null",
         "pm disable-user --user N P",
+        "pm enable --user N P",
         "pm enable P",
         "pm grant P+",
         "pm list features",
