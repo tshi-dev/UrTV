@@ -112,8 +112,8 @@ public class StartActivity extends Activity {
         t.setClipToOutline(true);
         ImageView pic = new ImageView(this);
         pic.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        Bitmap bm = picture(key);
-        if (bm != null) pic.setImageBitmap(bm);
+        Bitmap bm = pics.get(key);
+        if (bm != null) pic.setImageBitmap(bm); else load(key, pic);
         t.addView(pic, new LinearLayout.LayoutParams(-1, dp(130)));
         String[] st = "more".equals(key) ? null : Parts.start(key);
         TextView name = text(st == null ? "المزيد" : st[1], 22, look.text, "Bold");
@@ -231,8 +231,20 @@ public class StartActivity extends Activity {
         return t;
     }
 
-    private Bitmap picture(String key) {
-        try (java.io.InputStream in = getAssets().open("starts/" + key + ".jpg")) { return BitmapFactory.decodeStream(in); }
+    /** the pictures are decoded on a worker, never on the UI thread (tests/regressions/ui_thread_ipc_test.py), and kept for the redraws */
+    private static final java.util.concurrent.ExecutorService decoder = java.util.concurrent.Executors.newSingleThreadExecutor();
+    private final java.util.Map<String, Bitmap> pics = new java.util.HashMap<>();   // the UI thread's only
+
+    private void load(final String key, final ImageView pic) {
+        final android.content.res.AssetManager am = getAssets();
+        decoder.execute(() -> {
+            final Bitmap b = picture(am, key);
+            if (b != null) pic.post(() -> { pics.put(key, b); if (!isFinishing()) pic.setImageBitmap(b); });
+        });
+    }
+
+    private static Bitmap picture(android.content.res.AssetManager am, String key) {
+        try (java.io.InputStream in = am.open("starts/" + key + ".jpg")) { return BitmapFactory.decodeStream(in); }
         catch (java.io.IOException | RuntimeException e) { return null; }
     }
 
