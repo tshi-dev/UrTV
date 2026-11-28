@@ -1,17 +1,17 @@
-# Automatic round: emulator-17
+# Automatic round: emulator-18
 
 ## Health metrics
 
 | metric | now | limit | previous | change | verdict |
 |---|---|---|---|---|---|
-| cold_start_home_ms | 1173ms | max 20000 |  |  | ok |
-| cold_start_saver_ms | 854ms | max 20000 |  |  | ok |
-| jank_home_frames | 63 |  |  |  | no limit |
+| cold_start_home_ms | 1038ms | max 20000 |  |  | ok |
+| cold_start_saver_ms | 835ms | max 20000 |  |  | ok |
+| jank_home_frames | 64 |  |  |  | no limit |
 | jank_home_pct | 100.0% | max 100 |  |  | ok |
-| jank_home_p90_ms | 44ms |  |  |  | no limit |
-| jank_home_p99_ms | 53ms |  |  |  | no limit |
-| pss_home_kb | 57122KB | max 350000 |  |  | ok |
-| pss_saver_kb | 39044KB | max 350000 |  |  | ok |
+| jank_home_p90_ms | 46ms |  |  |  | no limit |
+| jank_home_p99_ms | 48ms |  |  |  | no limit |
+| pss_home_kb | 57452KB | max 350000 |  |  | ok |
+| pss_saver_kb | 40718KB | max 350000 |  |  | ok |
 | crashes | 0 | zero 0 |  |  | ok |
 | anrs | 0 | zero 0 |  |  | ok |
 | frozen_lines | 0 | zero 0 |  |  | ok |
