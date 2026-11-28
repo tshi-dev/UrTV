@@ -1,3 +1,10 @@
+▶▶ 4.3.7 RC RE-CHECK (28 Nov night). Thanks for the report. Do this before the other queued blocks:
+1. Your scripts were older than the rc. `git fetch origin work/rel-437 && git checkout origin/work/rel-437 -- optimize` (scripts only, the APKs stay 687).
+2. `optimize/saver.sh updatechannel stable` (the beta note came from the TV being on the beta channel; on stable it must never show). Reinstall 687 over itself (`APK_TAG=apk-437rc optimize/install.sh all`) and open the home: no «أنت على النسخة التجريبية» note (shot).
+3. `optimize/keep.sh`: expect «Turning back on…» naming partnercustomizer, partnersetup, usercenter. Then `pm list packages -d | grep -i -E "partnercustomizer|partnersetup|usercenter"` must be empty. One `adb reboot`, wait 2 min, same grep still empty, HOME → our home (shot).
+4. Rescue 4.3.3 is expected (unchanged in 4.3.7; not checked).
+Append the results to tester/437rc/REPORT.md as «Re-check» and push. Leave the TV on the beta channel afterwards (`saver.sh updatechannel next`), so beta 4 comes back.
+
 ▶▶ USAGE WATCH (owner, 28 Nov: «when reaching 94% stop all and let only the tester keep going»). Do this FIRST, it is quick, then carry on with your queue.
 1. Find whether you can read the account's plan usage from this machine (the 5-hour session % and its reset time), e.g. `claude` CLI usage/status output in non-interactive mode, or the local stats the CLI keeps. Do not log in anywhere new, do not install anything paid, read only.
 2. If you CAN: every 5 min while you work, write one line to tester/usage/now.txt on work/tester-report: `<UTC time> session=<N>% resets=<UTC time> weekly=<N>%` and push. When session ≥ 94%, also write tester/usage/STOP with the reset time and push at once. You keep working regardless (you are the one exempt).
