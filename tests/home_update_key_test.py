@@ -40,7 +40,7 @@ rm = heal.split("static void rearm(final Context app, final String when) {")[1].
 check("the call into the add-on runs on its own thread, a fixed word logged", 'new Thread(() -> Log.i(TAG, "add-on home key " + when + ": " + Extras.rearmHomeKey(app)), "addon-rearm").start();' in rm)
 rk = ext.split("static String rearmHomeKey(Context c) {")[1].split("\n    }\n")[0]
 check("the person's choice is read first and told back as it is (never changed): WANTED stays WANTED, UNWANTED stays UNWANTED",
-      "call(u, ExtrasWords.WATCH, null, null)" in rk and "now.getBoolean(ExtrasWords.WANTED) ? ExtrasWords.WANTED : ExtrasWords.UNWANTED" in rk and "HOME_KEY_ON" not in rk and "HOME_KEY_OFF" not in rk)
+      "ExtrasTrust.call(c, ExtrasWords.WATCH, null, null)" in rk and "ExtrasTrust.ok(c)" in rk and "now.getBoolean(ExtrasWords.WANTED) ? ExtrasWords.WANTED : ExtrasWords.UNWANTED" in rk and "HOME_KEY_ON" not in rk and "HOME_KEY_OFF" not in rk)
 check("never a silent no-op: no add-on, no answer, a switched-off catch each say so", all(w in rk for w in ['"no-answer"', '"no-addon"', '"catch-off"', '"rearmed"']))
 sw = svc.split("static void setWanted(Context c, boolean on) {")[1].split("\n    }\n")[0]
 check("the add-on judges the catch again when told the person's choice (what the home's re-arm relies on, also in the add-on as shipped)", "s.main.post(s::filterKeys);" in sw
