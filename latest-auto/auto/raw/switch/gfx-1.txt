@@ -1,9 +1,9 @@
 Applications Graphics Acceleration Info:
-Uptime: 2790559 Realtime: 2790559
+Uptime: 2794243 Realtime: 2794243
 
-** Graphics info for pid 2958 [sa.urtv.home] **
+** Graphics info for pid 3062 [sa.urtv.home] **
 
-Stats since: 2787378784507ns
+Stats since: 2791044961634ns
 Total frames rendered: 0
 Janky frames: 0 (0.00%)
 50th percentile: 4950ms
@@ -23,14 +23,14 @@ HISTOGRAM: 5ms=0 6ms=0 7ms=0 8ms=0 9ms=0 10ms=0 11ms=0 12ms=0 13ms=0 14ms=0 15ms
 99th gpu percentile: 4950ms
 GPU HISTOGRAM: 1ms=0 2ms=0 3ms=0 4ms=0 5ms=0 6ms=0 7ms=0 8ms=0 9ms=0 10ms=0 11ms=0 12ms=0 13ms=0 14ms=0 15ms=0 16ms=0 17ms=0 18ms=0 19ms=0 20ms=0 21ms=0 22ms=0 23ms=0 24ms=0 25ms=0 4950ms=0
 Font Cache (CPU):
-  Size: 1247.50 kB 
-  Glyph Count: 99 
+  Size: 1231.49 kB 
+  Glyph Count: 138 
 CPU Caches:
 GPU Caches:
   Other:
     Other: 0.00 bytes (1 entry)
   Image:
-    Texture: 9.25 MB (21 entries)
+    Texture: 12.15 MB (31 entries)
   Scratch:
     Texture: 2.00 MB (1 entry)
     Buffer Object: 78.00 KB (2 entries)
@@ -38,24 +38,24 @@ Other Caches:
                          Current / Maximum
   Layers Total           0.00 KB (numLayers = 0)
 Total GPU memory usage:
-  11878384 bytes, 11.33 MB (9.25 MB is purgeable)
+  14920000 bytes, 14.23 MB (12.15 MB is purgeable)
 
 
 Pipeline=Skia (OpenGL)
 Profile data in ms:
 
-	sa.urtv.home/sa.urtv.home.MainActivity/android.view.ViewRootImpl@482e1a0 (visibility=8)
-	sa.urtv.home/sa.urtv.home.MainActivity/android.view.ViewRootImpl@e390159 (visibility=8)
+	sa.urtv.home/sa.urtv.home.MainActivity/android.view.ViewRootImpl@d8fc673 (visibility=8)
+	sa.urtv.home/sa.urtv.home.MainActivity/android.view.ViewRootImpl@4a0b930 (visibility=8)
 View hierarchy:
 
-  sa.urtv.home/sa.urtv.home.MainActivity/android.view.ViewRootImpl@482e1a0
-  116 views, 120.43 kB of render nodes
+  sa.urtv.home/sa.urtv.home.MainActivity/android.view.ViewRootImpl@d8fc673
+  116 views, 120.49 kB of render nodes
 
-  sa.urtv.home/sa.urtv.home.MainActivity/android.view.ViewRootImpl@e390159
-  116 views, 117.85 kB of render nodes
+  sa.urtv.home/sa.urtv.home.MainActivity/android.view.ViewRootImpl@4a0b930
+  116 views, 112.70 kB of render nodes
 
 
 Total ViewRootImpl   : 2
 Total attached Views : 232
-Total RenderNode     : 238.28 kB (used) / 254.05 kB (capacity)
+Total RenderNode     : 233.18 kB (used) / 252.89 kB (capacity)
 

@@ -1,0 +1,110 @@
+Broadcasting: Intent { act=sa.urtv.screensaver.SET flg=0x400000 cmp=sa.urtv.screensaver/.SaverReceiver (has extras) }
+Broadcast completed: result=0, data="saved
+version: 4.4 (build 27)
+city: الرياض (24.6877, 46.7219)
+timezone: Asia/Riyadh
+country: SA
+teams: 136013|الهلال, 136137|المنتخب السعودي
+panel: verse
+panel2: none
+home_panel: none
+greeting: on
+greetingname: off
+listenpill: on
+homephotos: same
+homepacks: none
+homeours: on
+homemine: same
+albummode: seconds
+albumdate: on
+albumtitle: on
+albumfit: fit
+albumsize: normal
+cleartext: off
+glow: off
+pillshidden: none
+matchapp: auto
+keyapps: 
+updatebell: on
+watchnext: on
+appearance: dark
+look: glass
+accent: default
+baropacity: 100
+walldim: 0
+focusstyle: solid
+looksync: on
+surface quick: 100 look
+surface cards: 100 glass
+surface tray: 100 glass
+preset: tv
+couch: off
+homelayout: classic
+settingsstyle: buttons
+background: photos
+clock: plain
+appsstyle: frame
+scenepacks: saudi
+scenestay: 20
+scenetime: off
+sceneweather: off
+favbar: 5
+matchestoday: off
+pagesdark: on
+adhanbar: on
+adhanlead: 10
+updatechannel: latest
+yearstrip: off
+sunrise: off
+prayerbar: off
+wxmore: off
+months: default
+verse: day
+versekind: both
+seconds: off
+backexit: press
+occasion: on
+nightdim: on
+taskspill: on
+backsaver: off
+backtwice: off
+fbhide: off
+kickoff: on (whistle)
+kickoffgoal: off
+kickoffend: off
+kickoffover: off
+datenum: off
+searchpill: off
+prayermethod: auto
+prayeradj: off fajr=0 dhuhr=0 asr=0 maghrib=0 isha=0
+hijrioffset: 0
+hijriline: on
+minrating: 7
+photos: 30 (30s needs 2 GB; 1477 MB here)
+digits: hindi
+clock24: off
+ramtier: auto (in use: low)
+lite: auto (light now: yes)
+lang: ar
+national: auto
+cardstyle: current
+cardsize: m
+cardcorner: style
+sidecards: off
+design: info
+bar: none
+barat: bottom
+wx: auto
+markets: tasi,spx,btc
+clocksize: large
+mkstyle: arrows
+stocks: 2222,1120,7010,2010
+stkchg: pct
+slot: matches
+countdown: none
+idle: 10
+genres: 
+langs: 
+events: 
+leagues: 
+autoupdate: true"

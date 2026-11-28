@@ -2,6 +2,6 @@ Starting: Intent { cmp=sa.urtv.home/.MainActivity }
 Status: ok
 LaunchState: COLD
 Activity: sa.urtv.home/.MainActivity
-TotalTime: 1197
-WaitTime: 1202
+TotalTime: 1018
+WaitTime: 1019
 Complete

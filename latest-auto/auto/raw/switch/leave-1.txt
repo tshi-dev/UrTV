@@ -2,6 +2,6 @@ Starting: Intent { act=android.settings.SETTINGS }
 Status: ok
 LaunchState: COLD
 Activity: com.android.tv.settings/.MainSettings
-TotalTime: 423
-WaitTime: 431
+TotalTime: 377
+WaitTime: 381
 Complete
