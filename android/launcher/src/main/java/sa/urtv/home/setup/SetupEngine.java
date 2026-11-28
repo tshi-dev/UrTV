@@ -821,7 +821,7 @@ final class SetupEngine {
      * 4.4 (build 413, the tester's T1): the result said the Home step failed while it worked: it was judged before Android had bound the add-on. Android's
      * own answer (Bound services) is read once a second, up to BOUND_WAIT_MS, before the Home key is tried; false when it never said ours.
      */
-    static final int BOUND_WAIT_MS = 10_000;
+    static final int BOUND_WAIT_MS = 30_000;   // was 10 s (build 413): build 427 on a slow TV still said the step failed while Home worked; the wait ends the second Android says «bound», so a fast TV loses nothing
 
     boolean boundWithin(int ms) throws IOException {
         String svc = sa.urtv.home.ExtrasWords.SERVICE;

@@ -416,7 +416,7 @@ Not regressions (they never worked); listed so a release review knows them. A fi
 - Iqama bar drawn over the apps page's first row: open (tester step 71)
 - Matches page source line runs into the big title (tester step 73): R-021 fixed it in 4.3.2 and its guard still passes on 4.4; not re-seen on a TV since that report, so a TV that shows it again is a regression of R-021 (extend its guard)
 - Dock of 3 apps leaves a wide empty bar: open (tester step 76); the stations part was R-325
-- Setup result says the Home step failed while Home works: open: judged before the add-on bound; last seen 427 (tester step 88, 92)
+- Setup result says the Home step failed while Home works (tester step 88, 92; last seen 427): the add-on is now waited for 30 s (R-358, it was 10 s); not re-seen on a TV since
 - Reinstall loses the setup record: «تراجع» and rescue leave 18 apps off: open: record lives in app data (tester step 92)
 - Rescue leaves our screensaver when nothing recorded the TV's own: open (design question) (tester step 93)
 - Screensaver flashes then closes immediately on TCL 65C7K Google TV: Model allows only Google's dream (system Colors dream closes too) (GitHub #42)
@@ -450,3 +450,4 @@ Not regressions (they never worked); listed so a release review knows them. A fi
 | R-355 | No way to show the Gregorian date alone (GitHub #15, the backlog part) | the Hijri line was always shown | 4.4 | `tests/hijri_line_test.py` | «التاريخ الهجري» (يظهر / ما يظهر) in the settings and `saver.sh hijri on` or `off`: off drops the Hijri line on the screensaver, the home's cards and the home's date line | N |
 | R-356 | `music.sh radio N` made Android log a ClassCastException in `MusicReceiver` (tester step 33) | the station key was read with `getIntExtra` and then `getStringExtra` | 4.4 | `tests/music_receiver_station_test.py` | the string is read only when the int is missing | N |
 | R-357 | The radio stopped silently when the TV updated System WebView (the home's process ends: no error, no restart; tester step 71) | nothing remembered that the sound was playing | 4.4 | `tests/resume_offer_test.py` | «was playing» is written when a recitation or a station starts and cleared by a pause or a stop; a home that starts with it still written offers «كمّل الإذاعة» (or «كمّل التلاوة») on its bar and never starts the sound by itself | N |
+| R-358 | The setup said the Home step failed while Home worked, on a slow TV (tester steps 88, 92; build 427) | the add-on was judged before Android had bound it; build 413 waited 10 s, too short there | 4.4 | `tests/bound_wait_test.py` | the wait is 30 s, read once a second, and ends the second Android says «bound»; the Home key is tried after it | N |
