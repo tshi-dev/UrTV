@@ -492,6 +492,7 @@ public class MainActivity extends Activity {
         backExit.reset(); backGuarded = false;   // «الخروج من تلفزيونك»: a new visit, its count and its hint start again
         sa.urtv.home.tilawah.AdhanFront.home(true);   // «الأذان على شاشة التوقف فقط»: the adhan's alarm asks what is in front
         try { sa.urtv.home.tilawah.MusicService.keepForeground(this); } catch (RuntimeException ignored) { }   // 4.3.3 G1: a surah started from the background gets its foreground notice now
+        ReceiverHeal.onStart(this);   // R-501: our own boot receivers turned off by a TV's startup manager are put back (once per process, then 5 s and 15 s)
         A11yHeal.onStart(this);   // once per process: our accessibility service listed but not bound after an update (see A11yHeal)
         Parental.SESSION.clear();   // the home screen is in front again: an app opened with the PIN asks again next time
         if (control != null) control.forgetLast();   // «مركز التحكم» opens on its first tile again
