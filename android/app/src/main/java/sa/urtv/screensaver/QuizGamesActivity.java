@@ -132,7 +132,7 @@ public class QuizGamesActivity extends Activity {
         root.addView(band, at(-1, 200, 0, 0));
         TextView page = text(S.t("الألعاب"), 96, L.onDeep, true); page.setIncludeFontPadding(true); page.setLineSpacing(0, 1.15f); page.setPadding(0, 0, 0, px(14));   // the tail of «ع» is never cut
         root.addView(page, at(640, 150, 96, 30));
-        TextView mode = text(filter == 1 ? S.t("كل واحد بجواله، والريموت للمضيف") : S.t("بدون جوالات: ريموت واحد يدور بينكم"), 36, L.saff, false); mode.setGravity(Gravity.CENTER_VERTICAL | Gravity.END); mode.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END); mode.setSingleLine(true); mode.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        TextView mode = text(filter == 1 ? S.t("كل واحد بجواله، والريموت للمضيف") : S.t("ريموت واحد يدور بينكم، إلا اللي عليها «جوال»"), 36, L.saff, false); mode.setGravity(Gravity.CENTER_VERTICAL | Gravity.END); mode.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END); mode.setSingleLine(true); mode.setEllipsize(android.text.TextUtils.TruncateAt.END);
         mode.setIncludeFontPadding(true); mode.setPadding(0, 0, 0, px(8));
         FrameLayout.LayoutParams mp = new FrameLayout.LayoutParams(px(780), px(72), Gravity.END | Gravity.TOP); mp.setMarginEnd(px(96 + 3 * 72 + 2 * 16 + 40)); mp.topMargin = px(64);   // beside the three buttons, never over them
         root.addView(mode, mp);
@@ -160,11 +160,10 @@ public class QuizGamesActivity extends Activity {
                 EngineIcons mark = new EngineIcons(this, d == null ? "star" : d.icon, L.ink); mark.setBackgroundColor(accent); mark.setPadding(px(8), px(6), px(8), px(6));
                 LinearLayout.LayoutParams kp = new LinearLayout.LayoutParams(px(52), px(52)); kp.gravity = Gravity.START;
                 tile.addView(mark, kp);
-            } else if (!g.id.equals("packs")) {   // how it is played, in a word: «جوال» on a saffron square (it needs phones; in the «بالجوالات» view every game is played with them), «ريموت» in an outlined one (one remote)
-                boolean ph = filter == 1 || GameRegistry.needsPhones(g.id);
-                TextView mark = text(ph ? S.t("جوال") : S.t("ريموت"), 30, ph ? L.onSaff : focus ? L.onInk : L.ink, true); mark.setSingleLine(true); mark.setGravity(Gravity.CENTER);
-                GradientDrawable mb = new GradientDrawable(); mb.setColor(ph ? L.saff : focus ? L.ink : L.tile); mb.setStroke(px(3), ph ? L.saff : focus ? L.onInk : L.ink); mark.setBackground(mb);
-                mark.setPadding(px(16), px(4), px(16), px(4)); mark.setContentDescription(ph ? S.t("بالجوالات") : S.t("ريموت"));
+            } else if (!g.id.equals("packs") && filter == 0 && GameRegistry.needsPhones(g.id)) {   // the audit (G2): only the exception is marked, «جوال»; «ريموت» was on 7 of 8 tiles, and in «بالجوالات» the header says it   // how it is played, in a word: «جوال» on a saffron square (it needs phones; in the «بالجوالات» view every game is played with them), «ريموت» in an outlined one (one remote)
+                TextView mark = text(S.t("جوال"), 30, L.onSaff, true); mark.setSingleLine(true); mark.setGravity(Gravity.CENTER);
+                GradientDrawable mb = new GradientDrawable(); mb.setColor(L.saff); mb.setStroke(px(3), L.saff); mark.setBackground(mb);
+                mark.setPadding(px(16), px(4), px(16), px(4)); mark.setContentDescription(S.t("بالجوالات"));
                 LinearLayout.LayoutParams kp = new LinearLayout.LayoutParams(-2, px(52)); kp.gravity = Gravity.START;
                 tile.addView(mark, kp);
             }

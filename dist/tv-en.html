@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261128044557">
+<meta name="urtv-build" content="20261128113930">
 <title>Your TV Screen</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -725,6 +725,7 @@
   
   #fb-wx-c{display:flex;flex-direction:column;justify-content:space-between}
   .fwc{display:flex;align-items:center;gap:calc(var(--u)*8);font-size:calc(var(--u)*28*var(--k));color:var(--fs)}
+  html.fb-short #fb-wx .fbc{padding-block:calc(var(--u)*10)}
   .fwm{display:flex;align-items:center;justify-content:space-between;gap:calc(var(--u)*16)}
   .fwi{font-size:calc(var(--u)*84*var(--k));color:var(--fam);display:flex}
   .fwt{display:flex;flex-direction:column;align-items:flex-end;min-width:0}
@@ -4684,6 +4685,7 @@ const FB_U = () => innerWidth / 1920;
 function fbLayout(){
   document.documentElement.style.setProperty('--u', FB_U() + 'px');
   document.documentElement.style.setProperty('--ft', FB.top + '');
+  document.documentElement.classList.toggle('fb-short', FB.top > 280);
 }
 function fbTop(t){ FB.top = Math.max(150, Math.min(320, +t || 216)); fbLayout(); }
 function fbLight(on){ FB.light = !!on; document.documentElement.classList.toggle('fb-light', FB.light); }

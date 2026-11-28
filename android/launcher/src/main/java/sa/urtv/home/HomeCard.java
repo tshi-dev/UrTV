@@ -90,6 +90,8 @@ final class HomeCard {
     private volatile int cards;   // how many the page in `web` shows
     /** how many cards the page shows now (0: none, or the football layout) */
     int shownCards() { return cards; }
+    private volatile boolean prayerTimes;   // the audit (H5): today's prayer times are on the screen (a prayer card, or the football home's widget)
+    boolean prayerTimes() { return prayerTimes; }
     private volatile boolean tasks;   // «المهام» is one of them: `target` exists
     private View target;
     private FrameLayout.LayoutParams targetParams;
@@ -376,6 +378,7 @@ final class HomeCard {
         String[] choice = HomeCardChoice.pick(frag, panel, sp.getString("frag", null), sp.getString("panel", null));
         football = HomeCardChoice.football(layout, choice) && footballHost != null;   // 4.3.4: «بدون» turns the football home's widgets off too
         footballShown = football;   // «أرسل تقرير» says which layout the home had
+        prayerTimes = football || HomeCardChoice.hasPrayerTimes(choice);
         if (football) { cards = 0; tasks = false; stocks = false; stocksFirst = false; row = false; couch = false; tvos = false; return withGlass(HomePage.fresh(activity, HomeCardChoice.footballUrl(choice))); }
         row = "couch".equals(layout);
         couch = row;

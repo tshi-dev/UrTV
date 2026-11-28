@@ -762,13 +762,18 @@
   #fb-wx{inset-inline-start:calc(var(--u)*1418);width:calc(var(--u)*382)}
   .fbc{height:100%;background:var(--fbg);border:1px solid var(--fln);border-radius:calc(var(--u)*28);box-shadow:inset 0 1px 0 var(--fhl),0 20px 50px rgba(0,0,0,.18);
     padding:calc(var(--u)*24);overflow:hidden;transition:box-shadow .15s ease-out}
-  .fbw.f .fbc{box-shadow:inset 0 0 0 calc(var(--u)*3) var(--fring),0 18px 36px rgba(0,0,0,.36)}
+  /* the audit (H11): the focused widget grows a little with a deeper shadow, no ring (the owner: the focus is the size and a shadow); the full-screen
+     page leaves room round each widget, so nothing is cut */
+  .fbw .fbc{transition:box-shadow .15s ease-out,transform .2s cubic-bezier(.2,.8,.2,1)}
+  .fbw.f .fbc{transform:scale(1.03);box-shadow:inset 0 1px 0 var(--fhl),0 24px 48px rgba(0,0,0,.45)}
+  html.lowram .fbw.f .fbc{transform:none}
   #fb svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
   .fg{display:inline-flex;font-size:calc(var(--u)*26)}
   .fnone{display:flex;height:100%;align-items:center;justify-content:center;color:var(--fs);text-align:center}
   /* weather */
   #fb-wx-c{display:flex;flex-direction:column;justify-content:space-between}
   .fwc{display:flex;align-items:center;gap:calc(var(--u)*8);font-size:calc(var(--u)*28*var(--k));color:var(--fs)}
+  html.fb-short #fb-wx .fbc{padding-block:calc(var(--u)*10)}
   .fwm{display:flex;align-items:center;justify-content:space-between;gap:calc(var(--u)*16)}
   .fwi{font-size:calc(var(--u)*84*var(--k));color:var(--fam);display:flex}
   .fwt{display:flex;flex-direction:column;align-items:flex-end;min-width:0}
@@ -5187,6 +5192,9 @@ const FB_U = () => innerWidth / 1920;
 function fbLayout(){
   document.documentElement.style.setProperty('--u', FB_U() + 'px');
   document.documentElement.style.setProperty('--ft', FB.top + '');
+  // the audit (H2, run auto-25: the weather card's last row, الرياح والرطوبة والمحسوسة, cut at its edge): under a tall header the card is
+  // short and its padding does not shrink with --k: under a tall header the card's padding above and below is less, and the three stay inside it
+  document.documentElement.classList.toggle('fb-short', FB.top > 280);
 }
 // called by the launcher
 function fbTop(t){ FB.top = Math.max(150, Math.min(320, +t || 216)); fbLayout(); }

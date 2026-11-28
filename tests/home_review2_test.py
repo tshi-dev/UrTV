@@ -64,7 +64,7 @@ check("overlay F2: the posted runnable takes a token (compareAndSet 0 to 1) and 
 
 # overlay F4: the saver's «فوق تطبيق آخر» row is honest about the add-on's permission and never asks the package manager in a render
 sa = src(ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsActivity.java")
-NEWLINE = "يعمل لو سمحت للإضافة بالظهور فوق التطبيقات"
+NEWLINE = "مفعّل لو سمحت للإضافة بالظهور فوق التطبيقات"
 tsv = (ROOT / "i18n/en/saver.tsv").read_text(encoding="utf-8")
 check("overlay F4: the row says «يعمل لو سمحت…» when the add-on is installed, with an English entry",
       NEWLINE in sa and any(l.startswith(NEWLINE + "\t") and l.split("\t")[1].strip() for l in tsv.splitlines()))

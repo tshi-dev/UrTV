@@ -20,9 +20,9 @@ words = src("Words.java")
 # 1: the badge says how a game is played
 need = set(re.findall(r'new Game\("([\w-]+)", "[^"]+", "[^"]+", "\w+", true, true\)', reg))
 free = set(re.findall(r'new Game\("([\w-]+)", "[^"]+", "[^"]+", "\w+", false, true\)', reg)) - {"packs"}
-check("1: «جوال» only for the games that need phones (the registry's `phones` flag: «الأسرع» and the party games), «ريموت» for the one-remote games",
+check("1: «جوال» only for the games that need phones (the registry's `phones` flag: «الأسرع» and the party games), and no word on the one-remote games (the audit)",
       "static boolean needsPhones(String id)" in reg and {"quiz", "forehead", "night", "draw"} <= need and {"khanat", "domino", "word5", "charades"} <= free and not (need & free)
-      and "boolean ph = filter == 1 || GameRegistry.needsPhones(g.id);" in hub and 'S.t("جوال") : S.t("ريموت")' in hub and 'id.startsWith("e:") || id.startsWith("e-")' in reg)
+      and "filter == 0 && GameRegistry.needsPhones(g.id)" in hub and 'S.t("ريموت")' not in hub and 'id.startsWith("e:") || id.startsWith("e-")' in reg)
 check("1: the tile's word is a square (no pill, no rounded shape), saffron for «جوال» and outlined for «ريموت»; the setup page says the same at its end corner (the phones switch turns it to «جوال»)",
       "setCornerRadius" not in code(hub + base) and "GameRegistry.needsPhones(id()) || (ph != null && ph.picked == 1)" in base and 'S.t("جوال") : S.t("ريموت")' in base)
 check("1: both words have their English", all(tsv.get(w) for w in ("جوال", "ريموت")) and all(f'S.n("{w}")' in words for w in ("جوال", "ريموت")))

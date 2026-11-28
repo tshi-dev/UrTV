@@ -39,9 +39,9 @@ Worst first. Each area keeps its own numbering.
 |---|---|---|---|---|
 | S1 | repeat | Every value ends with where it applies («، كل التلفزيون»، «، الرئيسية وشاشة التوقف»), and «، شاشة التوقف» on every row of the شاشة التوقف page | Say it once in the section's head, and on a row only when it differs | Later: the owner asked for these words in 4.4 |
 | S2 | ugly | The couch style's focused section item shows its dim line with the big name blank (family, saver and update, in auto round 25; run 34 was fine) | Find the cause on a TV: CouchStyle.ink or the shot's timing | 4.4, once found |
-| S3 | imprecise | On and off said six ways: «يعمل»، «مفعّل»، «تعمل/متوقفة»، «مفعّلة/متوقفة»، «ظاهر/مخفي»، «مطفأ» | مفعّل / متوقف everywhere; OnOff reads both | 4.4 (many rows; their pins) |
+| S3 | imprecise | On and off said six ways: «يعمل»، «مفعّل»، «تعمل/متوقفة»، «مفعّلة/متوقفة»، «ظاهر/مخفي»، «مطفأ» | مفعّل / متوقف everywhere; OnOff reads both | Fixed (second batch): مفعّل / متوقف; «ظاهر / مخفي» stays for buttons and labels that are shown on the screen |
 | S4 | ugly | An on row has green marks, a green word and its icon at once; couch draws a ring and drops the word | The marks and the word, the same in every style | 4.4 |
-| S5 | hard | Second lines over 8 words: «تعتيم الليل» (15), «المناسبة القادمة» (17), «الأذان» (11), «تنبيه قبل الأذان» (11), «النسخ التجريبية» (12, the same in both states), «الجوالات المسموح لها» (11); «تصفية المواقع» gives no state | Short lines with the state first | 4.4 |
+| S5 | hard | Second lines over 8 words: «تعتيم الليل» (15), «المناسبة القادمة» (17), «الأذان» (11), «تنبيه قبل الأذان» (11), «النسخ التجريبية» (12, the same in both states), «الجوالات المسموح لها» (11); «تصفية المواقع» gives no state | Short lines with the state first | Fixed (second batch) |
 | S6 | duplicate | «تخصيص» lists the rows right under it (التخطيط، الألوان والإضاءة، the cards) | Show it only after a change, or remove it | Later |
 | S7 | duplicate | A row and its own on/off row: «رجّع الشكل السابق» / «زر رجّع الشكل السابق», «المظهر على الرئيسية» / «لوحة المظهر على الرئيسية» | Drop the two switches, keep the defaults | Later |
 | S8 | duplicate | Three update rows; one only explains the overlap and says «صفحة»، «التطبيقين» | Fold «تحديث صفحة شاشة التوقف» into «تحديث تلفزيوني» | Later (the words: 4.4) |
@@ -50,7 +50,7 @@ Worst first. Each area keeps its own numbering.
 | S11 | repeat | 89 rows with the eye icon, every prayer row a gear | The section's icon only | Later (the owner's look) |
 | S12 | duplicate | Search: the page and its only row have the same name; the hub's line says «الصف»; couch's box has an outline | «اكتب كلمة»; no outline | 4.4 |
 | S13 | repeat | Each section has a different line in each style | One short line per section for every style | 4.4 |
-| S14 | hard | «المدينة: الرياض. لتغييرها: الإعدادات ثم اللغة والموقع» (a menu path) on the hub, on the lang page above the city row, and on the screensaver | A row that opens the city picker, nothing on the lang page or the screensaver | 4.4 for the lang page, later for the rest |
+| S14 | hard | «المدينة: الرياض. لتغييرها: الإعدادات ثم اللغة والموقع» (a menu path) on the hub, on the lang page above the city row, and on the screensaver | A row that opens the city picker, nothing on the lang page or the screensaver | Fixed on the lang page; the hub and the screensaver keep it (the findability review asked for the section's name) |
 | S15 | repeat | Row names repeat their header: «… ألبوم صوري» ×5, «زر … في الريموت» ×19, «زر …» ×10 | «السرعة»، «الحجم»… under the header | Later (names are search keys) |
 | S16 | duplicate | «تبديل الآية والحديث» beside «الآية والحديث»; four market rows | One row each, the choice inside | Later |
 | S17 | imprecise | The app called «UrTV», «تلفزيونك» and «تلفزيوني» | تلفزيونك in the lines | 4.4 for the lines, later for the row names |
@@ -62,17 +62,17 @@ Worst first. Each area keeps its own numbering.
 
 | # | Kind | What | Fix | Mark |
 |---|---|---|---|---|
-| H1 | imprecise | Football layout: «بتوقيت الرياض» drawn over «مباريات اليوم» | The card box starts under the zone line | 4.4 |
-| H2 | imprecise | Football weather card: its last row (الرياح، الرطوبة، المحسوسة) cut at the edge | Drop that row when it does not fit | 4.4 |
+| H1 | imprecise | Football layout: «بتوقيت الرياض» drawn over «مباريات اليوم» | The card box starts under the zone line | Fixed (second batch) |
+| H2 | imprecise | Football weather card: its last row (الرياح، الرطوبة، المحسوسة) cut at the edge | Drop that row when it does not fit | Fixed (second batch): less padding under a tall header, the city kept |
 | H3 | imprecise | Side cards: the first starts inside the top row; three squeezed to unreadable text (B); stocks touch the tray | Start under the bar, at most what fits | Later |
 | H4 | duplicate | «اختر مدينتك للطقس والصلاة» and its button «اختر المدينة» say the same, while the screen already says «في الرياض» | One button «اختر مدينتك» and «لاحقاً»; ask only with no city | 4.4 for the words |
-| H5 | duplicate | «الغروب ٥:٠٤ م» under the greeting, «المغرب ٥:٠٤ م» in the prayer card | No sun line while a prayer card shows | 4.4 |
+| H5 | duplicate | «الغروب ٥:٠٤ م» under the greeting, «المغرب ٥:٠٤ م» in the prayer card | No sun line while a prayer card shows | Fixed (second batch) |
 | H6 | duplicate | Three ways to the settings in couch: the gear tile, «مركز التحكم ← الإعدادات», «مركز التحكم ← تلفزيونك» | The owner's call | Later |
 | H7 | duplicate | Match rows: «اليوم ٥:٢٠ م» then «بعد ٥ ساعات» | The day and time; «بعد …» only within the hour | 4.4 |
 | H8 | hard | «المهام» drawn with a microphone | A list icon | 4.4 if one exists |
 | H9 | imprecise | The city strip moves 100–300 px with each step along the top row; the panel covers it | Pinned to the bar's widest state | Later |
 | H10 | imprecise | The app's name above its banner repeats the logo, at the screen's edge, in line with nothing | At the tray's own edge | 4.4 for the place |
-| H11 | ugly | Rings: the focused tasks card (white), football cards (inset), live cards (gold), «ما يشارك» (white outline) | Scale and shadow only | 4.4 (CSS) |
+| H11 | ugly | Rings: the focused tasks card (white), football cards (inset), live cards (gold), «ما يشارك» (white outline) | Scale and shadow only | Fixed for the football widgets; the live cards keep their inset ring (a scale would be cut at the WebView's edge) and the tray's ring is the person's choice: later |
 | H12 | ugly | The now-playing card is a capsule, 10 dp taller than the row | The row's radius and height | 4.4 for the radius |
 | H13 | repeat | Time left written three ways: «٢ س و ٥٤ د»، «بعد ساعتين و ٤٦ دقيقة»، «بعد ١٢ دقيقة» | The bar's words everywhere they fit | 4.4, cell by cell at 720p |
 | H14 | jargon | Football heading: «TheSportsDB» and «٩ مباريات» with three shown | The source in «مصادر البيانات»; «٣ من ٩» | 4.4 if its licence allows |
@@ -86,7 +86,7 @@ Worst first. Each area keeps its own numbering.
 |---|---|---|---|---|
 | V1 | duplicate | One match twice: in «مباريات فرقك» and in the bottom slot | The slot takes another item | Later |
 | V2 | duplicate | The iqama countdown twice: the top bar and the bottom panel's «now» | Hide the bar while the panel says it | Later |
-| V3 | hard | «المدينة: الرياض. لتغييرها: …» (S14), with the city already said three times | Drop it on the screensaver | 4.4 |
+| V3 | hard | «المدينة: الرياض. لتغييرها: …» (S14), with the city already said three times | Drop it on the screensaver | Kept: the findability review asked for it; it shows for the first three starts of a fresh install only |
 | V4 | jargon | «Open-Meteo، الآن»: the name is the licence's | Keep the name, drop «الآن» | 4.4 |
 
 ## تلاوة وأذان
@@ -101,8 +101,8 @@ Worst first. Each area keeps its own numbering.
 
 | # | Kind | What | Fix | Mark |
 |---|---|---|---|---|
-| G1 | imprecise | The «الكل» view's header «بدون جوالات: ريموت واحد يدور بينكم» while its first game needs phones | «بالريموت، و«جوال» يحتاج جوالات», or no line | 4.4, with the games session (its test pins the line) |
-| G2 | repeat | «ريموت» on 7 of 8 tiles | Mark only «جوال» | 4.4, with the games session |
+| G1 | imprecise | The «الكل» view's header «بدون جوالات: ريموت واحد يدور بينكم» while its first game needs phones | «بالريموت، و«جوال» يحتاج جوالات», or no line | Fixed (second batch, the supervisor's OK) |
+| G2 | repeat | «ريموت» on 7 of 8 tiles | Mark only «جوال» | Fixed (second batch, the supervisor's OK) |
 | G3 | repeat | A key legend on every screen, Back as a label | Only a key that is not obvious | 4.4 |
 | G4 | duplicate | Two different lobbies (الأسرع and the others) | One lobby | Later |
 | G5 | repeat | The lobby's hint repeats the button («اختيار ابدأ» under «ابدأ») | No hint in the lobby | 4.4 |
