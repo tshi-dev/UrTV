@@ -180,3 +180,22 @@ jobs:
             version.txt
           prerelease: true
           make_latest: false
+
+      # a release candidate of a point release (4.3.7), for the tester's real-TV round: ONLY from a work/rel-* branch started by hand; its own tag, never apk-latest
+      # (what every TV updates from) and never apk-next (the beta channel). version.txt inside, as in apk-next; the tag points at the built commit.
+      - name: Publish to the apk-437rc test release
+        if: github.event_name == 'workflow_dispatch' && startsWith(github.ref_name, 'work/rel-')
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apk-437rc
+          target_commitish: ${{ github.sha }}
+          name: Release candidate of ${{ steps.ver.outputs.name }}
+          body: "Both apps and the rescue app at version ${{ steps.ver.outputs.name }} (build ${{ github.run_number }}), built from ${{ github.ref_name }} at ${{ github.sha }}. A release candidate for testing only: not what the TVs update from."
+          fail_on_unmatched_files: true
+          files: |
+            urtv-screensaver.apk
+            urtv-home.apk
+            urtv-rescue.apk
+            version.txt
+          prerelease: true
+          make_latest: false
